@@ -1,0 +1,6 @@
+{
+  "search": {"placeholder":"Pesquisar..."},
+  "footer": {"copyright":"© Soulmask Database"},
+  "nav": {"home":"Home","masks":"Máscaras","builds":"Builds","talents":"Talentos"},
+  "home": {"title":"Bem-vindo ao Soulmask Database","subtitle":"Base de dados pronta para crescer — rápida, acessível e multilíngue.","cards":{"masks":"Máscaras","masks_desc":"Lista completa de máscaras e detalhes.","builds":"Builds","builds_desc":"Coleções de builds e recomendações."}}
+}

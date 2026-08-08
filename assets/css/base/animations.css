@@ -1,0 +1,5 @@
+.view{opacity:1;transform:none;transition:opacity var(--transition) ease-out,transform var(--transition) ease-out}
+.view.view-enter{opacity:0;transform:translateY(12px)}
+.view.view-enter.view-enter-active{opacity:1;transform:none}
+.view.view-exit{opacity:1;transform:none}
+.view.view-exit.view-exit-active{opacity:0;transform:translateY(12px)}

@@ -1,0 +1,7 @@
+/* Reset default browser styles */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;width:100%;font-family:Inter,Segoe UI,Arial,sans-serif;-webkit-font-smoothing:antialiased;background:#0B0A09;color:#F3EFE8}
+img,svg,video,canvas,iframe{display:block;max-width:100%;}
+button,input,textarea,select{font:inherit;border:none;background:none;outline:none}
+ul,ol{list-style:none}
+a{text-decoration:none;color:inherit}

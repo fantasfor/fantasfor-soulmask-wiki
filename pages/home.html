@@ -1,0 +1,52 @@
+<script>
+  if (window.location.pathname.endsWith('/pages/home.html')) {
+    window.location.replace('../index.html#home');
+  }
+</script>
+<section>
+  <div class="home-intro">
+    <div class="home-top">
+      <div class="home-top-text">
+        <h1>Bem-vindo ao</h1>
+        <h1 class="home-intro-accent">Soulmask Fantasfor Wiki</h1>
+        <p class="home-intro-subtitle">Uma wiki organizada para ajudar na navegação, builds, ferramentas e conteúdos do Soulmask.</p>
+      </div>
+      <div class="home-top-image">
+        <img src="assets/img/qr-code.png" alt="QR code de contribuição" />
+        <p class="home-top-caption">Sua contribuição nos ajuda a manter o site ativo, adquirir o domínio<br>e continuar trazendo conteúdo atualizado para a comunidade.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-quick-nav" aria-label="Navegação rápida">
+    <a class="home-nav-square" href="#talentos"><span class="home-nav-box"><img class="home-nav-icon" src="assets/img/menu-icons/talentos.png" alt="" aria-hidden="true"></span><span class="home-nav-text">Talentos</span></a>
+    <a class="home-nav-square" href="#builder-maker"><span class="home-nav-box"><img class="home-nav-icon" src="assets/img/menu-icons/builder.png" alt="" aria-hidden="true"></span><span class="home-nav-text">Builder</span></a>
+    <a class="home-nav-square" href="#conforto"><span class="home-nav-box"><img class="home-nav-icon" src="assets/img/menu-icons/conforto.png" alt="" aria-hidden="true"></span><span class="home-nav-text">Conforto</span></a>
+    <a class="home-nav-square" href="#mascaras"><span class="home-nav-box"><img class="home-nav-icon" src="assets/img/menu-icons/mascaras.png" alt="" aria-hidden="true"></span><span class="home-nav-text">Máscaras</span></a>
+    <a class="home-nav-square" href="#plantio"><span class="home-nav-box"><img class="home-nav-icon" src="assets/img/menu-icons/plantio.png" alt="" aria-hidden="true"></span><span class="home-nav-text">Plantio</span></a>
+    <a class="home-nav-square" href="#alimentos"><span class="home-nav-box"><img class="home-nav-icon" src="assets/img/menu-icons/alimentos.png" alt="" aria-hidden="true"></span><span class="home-nav-text">Alimentos</span></a>
+    <a class="home-nav-square" href="#animas"><span class="home-nav-box"><img class="home-nav-icon" src="assets/img/menu-icons/animas.png" alt="" aria-hidden="true"></span><span class="home-nav-text">Animas</span></a>
+    <a class="home-nav-square" href="#apoie"><span class="home-nav-box"><img class="home-nav-icon" src="assets/img/menu-icons/apoie.png" alt="" aria-hidden="true"></span><span class="home-nav-text">Apoie</span></a>
+  </div>
+
+  <div class="home-feed">
+    <div class="home-feed-column home-feed-soulmask">
+      <h2>Feed Soulmask</h2>
+      <ul id="soulmask-feed" class="home-feed-list"></ul>
+    </div>
+    <div class="home-feed-column home-feed-youtube">
+      <h2>Feed YouTube</h2>
+      <ul id="youtube-feed" class="home-feed-list"></ul>
+    </div>
+  </div>
+
+  <div class="home-updates">
+    <h2>Notas de Atualização do Site</h2>
+    <div id="home-updates-list" class="home-updates-list">
+      <article class="home-update-card">
+        <h3>Carregando notas...</h3>
+        <p style="margin:0; color:#d9d2c5;">Buscando atualizações diretamente do repositório GitHub.</p>
+      </article>
+    </div>
+  </div>
+</section>

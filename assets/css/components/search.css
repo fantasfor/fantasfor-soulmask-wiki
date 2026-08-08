@@ -1,0 +1,2 @@
+.search-box{display:flex;gap:10px}
+.search-box input{flex:1;padding:10px 12px;border:1px solid rgba(255,255,255,.04);background:rgba(0,0,0,.18);color:var(--text)}

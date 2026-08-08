@@ -1,0 +1,252 @@
+/* Sidebar container */
+.sidebar {
+  width: 250px;
+  min-width: 250px;
+  max-width: 250px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  padding: 18px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: var(--panel);
+  border-right: 1px solid rgba(255, 255, 255, 0.02);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.02);
+  z-index: 10;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Subtle panel texture */
+.sidebar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><defs><pattern id='p' width='50' height='50' patternUnits='userSpaceOnUse'><g fill='none' stroke='%23ffffff' stroke-opacity='0.03' stroke-width='1'><path d='M12.5 0 L37.5 0 L50 25 L37.5 50 L12.5 50 L0 25 Z'/></g></pattern></defs><rect width='200' height='200' fill='url(%23p)'/></svg>");
+  background-repeat: repeat;
+  transform: scale(1.02);
+}
+
+.sidebar-inner {
+  position: relative;
+}
+
+/* Header area */
+.sidebar-top {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 18px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background-color: var(--panel);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.sidebar-logo img {
+  width: 44px;
+  height: 44px;
+  border-radius: 0;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  background: #0b0b0b;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.sidebar-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-brand-text .site-name {
+  margin: 0;
+  text-align: left;
+  font-family: 'Cinzel', serif;
+  font-size: 25px; /* ajuste aqui o tamanho do nome Soulmask */
+  font-weight: 700;
+  color: var(--text);
+}
+
+.site-tagline {
+  margin: 0;
+  text-align: left;
+  font-family: 'Cinzel', serif;
+  font-size: 12px; /* ajuste aqui o tamanho de Fantasfor Wiki */
+  color: #ece084;
+  letter-spacing: 0.6px;
+  line-height: 1.2;
+}
+
+/* Search input */
+.sidebar-search-wrapper {
+  margin-top: 0;
+}
+
+.sidebar-search {
+  width: 100%;
+  max-width: 100%;
+  height: 38px;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  border-radius: 2px;
+  border: 1px solid #686e73;
+  background: #191a1a;
+  color: var(--text);
+  font-family: Spectral, serif;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.sidebar-search:focus {
+  outline: none;
+  border-color: #1aecec;
+  box-shadow: inset 0 0 20px rgba(23, 236, 236, 0.14);
+}
+
+/* Navigation area */
+.sidebar-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-x: hidden;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 4px;
+  margin: 3px 0 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-section {
+  padding: 4px 12px 2px 2px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-family: 'Cinzel', serif;
+  color: #ece084;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 36px;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  margin-left: 1px;
+  color: var(--text);
+  font-family: Spectral, serif;
+  font-size: 14px;
+  font-weight: 400;
+  background: #191a1a;
+  border: 1px solid #686e73;
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  text-decoration: none;
+}
+
+.nav-link::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 1px;
+  width: 4px;
+  height: 30px;
+  background: #90d1ee;
+  opacity: 0.35;
+  transition: opacity 200ms ease, box-shadow 200ms ease, background 200ms ease, width 200ms ease;
+}
+
+.nav-link.active::before {
+  background: #17ecec;
+  opacity: 1;
+  width: 6px;
+  box-shadow: 0 0 48px rgba(23, 236, 236, 1), 0 0 12px rgba(23, 236, 236, 0.55);
+}
+
+.nav-link.active {
+  border-color: #17ecec;
+  background: rgba(23, 236, 236, 0.12);
+  box-shadow: inset 0 0 20px rgba(23, 236, 236, 0.14);
+}
+
+.nav-link svg {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  opacity: 0.98;
+}
+
+.nav-link .label {
+  margin-left: 4px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.nav-link:hover {
+  background: #232425;
+  border-color: #1aecec;
+}
+
+.nav-link.active {
+  background: #191a1a;
+  border-color: #1aecec;
+}
+
+.nav-link.active::before {
+  opacity: 1;
+  box-shadow: 0 0 18px rgba(144, 209, 238, 0.45);
+}
+
+.nav-link:focus {
+  outline: none;
+}
+
+/* Sub-navigation */
+.nav-sublist {
+  list-style: none;
+  margin: 6px 0 0 18px;
+  padding: 0;
+}
+
+.nav-subitem {
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.nav-subitem:hover {
+  background: rgba(255, 255, 255, 0.01);
+  transform: translateY(-1px);
+}
+
