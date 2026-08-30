@@ -1,4 +1,40 @@
-<section>
-  <h2>Talentos</h2>
-  <p>Tabela de talentos e guias relacionados.</p>
+<section class="talents-page">
+  <div class="talents-header">
+    <h1>Talentos</h1>
+    <p class="talents-subtitle">Explore e filtre todos os talentos disponíveis no Soulmask</p>
+  </div>
+
+  <div class="talents-filters">
+    <input 
+      type="text" 
+      id="talents-search" 
+      class="talents-search-input" 
+      placeholder="Buscar talentos..."
+      aria-label="Buscar talentos"
+    />
+    
+    <select id="talents-type-filter" class="talents-filter-select" aria-label="Filtrar por tipo">
+      <option value="">Todos os tipos</option>
+    </select>
+
+    <select id="talents-exclusive-filter" class="talents-filter-select" aria-label="Filtrar por exclusivo">
+      <option value="">Todos os exclusivos</option>
+    </select>
+
+    <button id="talents-favorites-btn" class="talents-filter-btn" title="Mostrar apenas favoritos">
+      ★ Favoritos
+    </button>
+
+    <button id="talents-lang-toggle" class="talents-filter-btn" title="Alternar idioma dos talentos">
+      EN
+    </button>
+
+    <div class="talents-stats">
+      <span id="talents-count">Carregando...</span>
+    </div>
+  </div>
+
+  <div id="talents-container" class="talents-grid">
+    <div class="talents-loading">Carregando talentos...</div>
+  </div>
 </section>

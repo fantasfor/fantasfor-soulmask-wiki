@@ -1,4 +1,627 @@
-<section>
-  <h2>Builder Maker</h2>
-  <p>Ferramenta para criar e compartilhar builds.</p>
+<section class="builder-maker-page">
+  <style>
+    .builder-maker-page {
+      --builder-bg: var(--bg);
+      --builder-panel: var(--panel);
+      --builder-panel-alt: rgba(0, 0, 0, 0.16);
+      --builder-line: rgba(255, 255, 255, 0.08);
+      --builder-line-soft: rgba(255, 255, 255, 0.12);
+      --builder-text: var(--text);
+      --builder-muted: var(--muted);
+      --builder-cyan: var(--accent);
+      --builder-red: #ff6b6b;
+      --builder-shadow: rgba(0, 0, 0, 0.35);
+    }
+
+    .builder-maker-page * {
+      box-sizing: border-box;
+    }
+
+    .builder-maker-page {
+      width: 100%;
+      min-height: calc(100vh - 130px);
+      color: var(--builder-text);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.12));
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      padding: 18px;
+      box-shadow: 0 12px 24px var(--builder-shadow);
+    }
+
+    .builder-shell {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 100%;
+    }
+
+    .builder-topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      border-bottom: 1px solid var(--builder-line);
+      padding-bottom: 14px;
+    }
+
+    .builder-title-wrap {
+      display: grid;
+      gap: 6px;
+    }
+
+    .builder-title {
+      margin: 0;
+      font-family: "Cinzel", serif;
+      letter-spacing: 0.06em;
+      font-size: clamp(1.35rem, 1.8vw, 2rem);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .builder-title-edit {
+      width: 18px;
+      height: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 4px;
+      display: inline-grid;
+      place-items: center;
+      font-size: 0.72rem;
+      color: var(--builder-muted);
+    }
+
+    .builder-subtitle {
+      margin: 0;
+      font-size: 0.82rem;
+      letter-spacing: 0.02em;
+      color: var(--builder-muted);
+      text-transform: uppercase;
+    }
+
+    .builder-top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .builder-btn {
+      background: rgba(10, 19, 29, 0.88);
+      color: var(--builder-text);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      padding: 10px 16px;
+      font-size: 0.74rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color 170ms ease, box-shadow 170ms ease, transform 170ms ease;
+    }
+
+    .builder-btn:hover {
+      border-color: var(--builder-cyan);
+      box-shadow: inset 0 0 0 1px rgba(144, 209, 238, 0.2);
+      transform: translateY(-1px);
+      background: linear-gradient(180deg, rgba(144, 209, 238, 0.1), transparent);
+    }
+
+    .builder-btn.danger {
+      border-color: rgba(255, 62, 80, 0.72);
+      color: #ff6674;
+    }
+
+    .builder-main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.7fr) minmax(250px, 1fr);
+      gap: 12px;
+      min-height: 0;
+      flex: 1;
+    }
+
+    .builder-panel {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.18));
+      border: 1px solid #686e73;
+      border-radius: 4px;
+      box-shadow: none;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .builder-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent 40%);
+      pointer-events: none;
+    }
+
+    .panel-section-title {
+      margin: 0;
+      font-size: 0.94rem;
+      font-family: "Cinzel", serif;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--builder-cyan);
+    }
+
+    .panel-block {
+      padding: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .panel-block:last-child {
+      border-bottom: 0;
+    }
+
+    .equipment-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      min-height: 0;
+      align-items: stretch;
+    }
+
+    .equipment-stage {
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) 54px;
+      gap: 10px;
+      align-items: center;
+      min-height: 260px;
+      padding-right: 4px;
+    }
+
+    .builder-profile-image {
+      width: 100%;
+      max-width: 245px;
+      height: 290px;
+      object-fit: contain;
+      justify-self: center;
+      filter: drop-shadow(0 16px 20px rgba(0, 0, 0, 0.45));
+    }
+
+    .equipped-strip {
+      display: grid;
+      gap: 6px;
+      align-content: center;
+    }
+
+    .equipped-slot {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #686e73;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.2));
+      position: relative;
+      overflow: hidden;
+    }
+
+    .equipped-slot::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: var(--icon-image, none);
+      background-size: cover;
+      background-position: center;
+      opacity: 0.95;
+    }
+
+    .equipped-slot.empty::after {
+      opacity: 0;
+    }
+
+
+    .talents-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0 16px;
+      margin-bottom: 8px;
+    }
+
+    .talents-header .panel-section-title {
+      font-size: 0.9rem;
+    }
+
+    .panel-counter {
+      font-size: 0.76rem;
+      color: var(--builder-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .talent-selector-list {
+      padding: 0 16px 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .selector-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .selector-shell {
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      min-width: 0;
+    }
+
+    .selector-tile-icon {
+      width: 56px;
+      height: 56px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      background: #191a1a;
+      border: 2px solid #686e73;
+      transform: rotate(45deg);
+      cursor: pointer;
+      transition: border-color 160ms ease, background 160ms ease;
+    }
+
+    .selector-tile-icon::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transform: scale(0.88);
+    }
+
+    .selector-tile-icon::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      background-image: var(--icon-image, none);
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      transform: rotate(-45deg) scale(1.35);
+    }
+
+    .selector-tile-icon.empty::after {
+      content: "+";
+      color: #8ea2b5;
+      font-size: 1.5rem;
+      font-weight: 400;
+      background: none;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      transform: rotate(-45deg);
+    }
+
+    .selector-tile-icon:hover,
+    .selector-tile-icon.selected {
+      border-color: var(--builder-cyan);
+      background: linear-gradient(180deg, rgba(144, 209, 238, 0.08), rgba(0, 0, 0, 0.08));
+    }
+
+    .selector-label {
+      width: 100%;
+      text-align: center;
+      font-size: 0.66rem;
+      color: var(--builder-muted);
+      line-height: 1.2;
+      min-height: 2.4em;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+    }
+
+    .selector-options-wrap {
+      min-height: 54px;
+    }
+
+    .selector-options {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid #686e73;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.22));
+      max-height: 270px;
+      overflow: auto;
+    }
+
+    .selector-option {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+      color: var(--builder-text);
+      padding: 8px 6px;
+      cursor: pointer;
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .selector-option:hover,
+    .selector-option.selected {
+      border-color: var(--builder-cyan);
+      background: linear-gradient(180deg, rgba(144, 209, 238, 0.1), rgba(0, 0, 0, 0.16));
+    }
+
+    .selector-option-icon {
+      width: 36px;
+      height: 36px;
+      background-image: var(--icon-image, none);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .selector-option-name {
+      font-size: 0.64rem;
+      line-height: 1.2;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .empty-state {
+      border: 1px dashed rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--builder-muted);
+      font-size: 0.76rem;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .action-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .action-card {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--builder-panel);
+      color: var(--builder-text);
+      padding: 10px 12px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.77rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      transition: border-color 170ms ease;
+    }
+
+    .action-card small {
+      display: block;
+      color: var(--builder-muted);
+      text-transform: none;
+      letter-spacing: 0;
+      margin-top: 2px;
+      font-size: 0.72rem;
+    }
+
+    .action-card:hover {
+      border-color: var(--builder-cyan);
+      background: linear-gradient(180deg, rgba(144, 209, 238, 0.08), transparent);
+    }
+
+    .action-card.danger {
+      border-color: rgba(255, 62, 80, 0.64);
+      color: #ff6a78;
+    }
+
+    .builder-field {
+      width: 100%;
+      background: var(--builder-panel);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: var(--builder-text);
+      padding: 10px;
+      font-size: 0.8rem;
+      outline: none;
+    }
+
+    .builder-field:focus {
+      border-color: var(--builder-cyan);
+      box-shadow: 0 0 12px rgba(144, 209, 238, 0.3);
+      background: linear-gradient(180deg, rgba(144, 209, 238, 0.05), transparent);
+    }
+
+    .field-stack {
+      display: grid;
+      gap: 8px;
+    }
+
+    .saved-builds-list {
+      padding: 10px;
+      display: grid;
+      gap: 10px;
+      max-height: 560px;
+      overflow: auto;
+    }
+
+    .saved-build-card {
+      border: 1px solid #686e73;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.2));
+      padding: 10px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .saved-build-card.active {
+      border-color: var(--builder-cyan);
+      box-shadow: inset 0 0 0 1px rgba(144, 209, 238, 0.2);
+    }
+
+    .saved-build-name {
+      margin: 0;
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--builder-text);
+    }
+
+    .saved-build-date {
+      margin: 3px 0 0;
+      color: var(--builder-muted);
+      font-size: 0.72rem;
+    }
+
+    .saved-build-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .saved-build-main {
+      border: 0;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .saved-build-btn {
+      width: 28px;
+      height: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--builder-text);
+      cursor: pointer;
+      font-size: 0.8rem;
+      display: grid;
+      place-items: center;
+    }
+
+    .saved-build-btn.delete {
+      color: #ff6a78;
+      border-color: rgba(255, 62, 80, 0.5);
+    }
+
+    .saved-build-empty {
+      padding: 18px;
+      text-align: center;
+      color: var(--builder-muted);
+      border: 1px dashed rgba(255, 255, 255, 0.16);
+      font-size: 0.8rem;
+      margin: 10px;
+    }
+
+    @media (max-width: 1240px) {
+      .builder-main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .saved-builds-list {
+        max-height: 320px;
+      }
+    }
+
+    @media (max-width: 780px) {
+      .builder-maker-page {
+        padding: 12px;
+      }
+
+      .builder-topbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .builder-top-actions {
+        justify-content: flex-start;
+      }
+
+      .selector-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .selector-options {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+  </style>
+
+  <div class="builder-shell">
+    <header class="builder-topbar">
+      <div class="builder-title-wrap">
+        <h1 class="builder-title"><span id="builderHeaderName">Build sem nome</span> <span class="builder-title-edit">✎</span></h1>
+        <p class="builder-subtitle">Tribo: <span id="builderHeaderTribe">Nao selecionada</span></p>
+      </div>
+
+      <div class="builder-top-actions">
+        <button type="button" class="builder-btn" id="topImportBuild">Importar</button>
+        <button type="button" class="builder-btn" id="topExportBuild">Exportar</button>
+        <button type="button" class="builder-btn danger" id="topClearBuild">Limpar</button>
+      </div>
+    </header>
+
+    <div class="builder-main-grid">
+      <section class="builder-panel">
+        <div class="panel-block">
+          <h2 class="panel-section-title">Equipamento</h2>
+        </div>
+
+        <div class="equipment-grid panel-block">
+          <div class="equipment-stage">
+            <img id="builderProfileImage" class="builder-profile-image" src="assets/img/builder/personagem.png" alt="Personagem da build" />
+            <div class="equipped-strip" id="equippedPreview"></div>
+          </div>
+        </div>
+
+        <div class="talents-header">
+          <h2 class="panel-section-title">Talentos</h2>
+          <div class="panel-counter"><span id="positiveCounter">0</span>/7</div>
+        </div>
+
+        <div class="talent-selector-list">
+          <div class="selector-grid" id="talentSelectorGrid"></div>
+          <div class="selector-options-wrap" id="talentGroups"></div>
+        </div>
+      </section>
+
+      <section class="builder-panel">
+        <div class="panel-block">
+          <h2 class="panel-section-title">Acoes</h2>
+          <div class="action-list">
+            <button type="button" class="action-card" id="actionSaveBuild">Salvar build<small>Salva sua build atual</small></button>
+            <button type="button" class="action-card" id="actionLoadBuild">Carregar build<small>Carrega uma build salva</small></button>
+            <button type="button" class="action-card" id="actionExportBuild">Exportar build<small>Exportar para compartilhar</small></button>
+            <button type="button" class="action-card" id="actionImportBuild">Importar build<small>Importa de um arquivo</small></button>
+            <button type="button" class="action-card danger" id="actionClearBuild">Limpar tudo<small>Remove os talentos e campos</small></button>
+          </div>
+        </div>
+
+        <div class="panel-block field-stack">
+          <h2 class="panel-section-title">Informacoes da Build</h2>
+          <input id="buildName" class="builder-field" type="text" placeholder="Nome da Build" />
+          <textarea id="buildDescription" class="builder-field" rows="3" placeholder="Descricao (opcional)"></textarea>
+          <select id="buildTribe" class="builder-field">
+            <option value="">Classe</option>
+            <option value="filhos-sekhmet">Filhos de Sekhmet</option>
+            <option value="guardioes-floresta">Guardioes da Floresta</option>
+            <option value="povo-neblina">Povo da Neblina</option>
+            <option value="cacadores-selva">Cacadores da Selva</option>
+          </select>
+          <input id="talentSearch" class="builder-field" type="text" placeholder="Buscar talento..." aria-label="Buscar talento" />
+        </div>
+      </section>
+
+      <aside class="builder-panel">
+        <div class="panel-block">
+          <h2 class="panel-section-title">Builds Salvas</h2>
+        </div>
+        <div class="saved-builds-list" id="savedBuildsList"></div>
+      </aside>
+    </div>
+  </div>
+
+  <input id="buildImportInput" type="file" accept="application/json,.json" hidden />
 </section>

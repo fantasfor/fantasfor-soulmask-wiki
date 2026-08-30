@@ -1,0 +1,32 @@
+<section class="items-page">
+  <div class="items-header">
+    <h1>Itens</h1>
+    <p class="items-subtitle">Explore e filtre todos os itens disponíveis no Soulmask</p>
+  </div>
+
+  <div class="items-filters">
+    <input
+      type="text"
+      id="items-search"
+      class="items-search-input"
+      placeholder="Buscar itens..."
+      aria-label="Buscar itens"
+    />
+
+    <select id="items-category-filter" class="items-filter-select" aria-label="Filtrar por categoria">
+      <option value="">Todas as categorias</option>
+    </select>
+
+    <button id="items-lang-toggle" class="items-filter-btn" title="Alternar idioma dos itens">
+      EN
+    </button>
+
+    <div class="items-stats">
+      <span id="items-count">Carregando...</span>
+    </div>
+  </div>
+
+  <div id="items-container" class="items-grid">
+    <div class="items-loading">Carregando itens...</div>
+  </div>
+</section>

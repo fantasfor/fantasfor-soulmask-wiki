@@ -1,1 +1,414 @@
-.talents-page{padding:20px}
+.talents-page {
+  padding: 20px;
+  animation: fadeIn 300ms ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.talents-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.talents-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+}
+
+.talents-subtitle {
+  color: var(--muted);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.talents-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 30px;
+  align-items: center;
+  flex-wrap: wrap;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.1));
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.talents-search-input,
+.talents-filter-select {
+  flex: 1;
+  min-width: 150px;
+  padding: 10px 12px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: all var(--transition);
+}
+
+.talents-search-input::placeholder {
+  color: var(--muted);
+}
+
+.talents-search-input:focus,
+.talents-filter-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(144, 209, 238, 0.3);
+  background: linear-gradient(180deg, rgba(144, 209, 238, 0.05), transparent);
+}
+
+.talents-filter-select option {
+  background: var(--panel);
+  color: var(--text);
+}
+
+.talents-stats {
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-left: auto;
+}
+
+.talents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  animation: slideUp 400ms ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.talent-card {
+  --card-accent: rgba(144, 209, 238, 0.9);
+  --card-accent-soft: rgba(144, 209, 238, 0.08);
+  --card-accent-strong: rgba(144, 209, 238, 0.7);
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.2));
+  border: 1px solid #686e73;
+  border-radius: 4px;
+  padding: 44px 12px 12px 12px;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+  box-shadow: none !important;
+}
+
+.talent-card[style] {
+  box-shadow: none !important;
+}
+
+.talent-card.type-positivo {
+  --card-accent: #39d98a;
+  --card-accent-soft: rgba(57, 217, 138, 0.08);
+  --card-accent-strong: rgba(57, 217, 138, 0.7);
+}
+
+.talent-card.type-tribo {
+  --card-accent: #d4af37;
+  --card-accent-soft: rgba(212, 175, 55, 0.08);
+  --card-accent-strong: rgba(212, 175, 55, 0.7);
+}
+
+.talent-card.type-personalidade,
+.talent-card.type-origem,
+.talent-card.type-preferencias {
+  --card-accent: #b974ff;
+  --card-accent-soft: rgba(185, 116, 255, 0.08);
+  --card-accent-strong: rgba(185, 116, 255, 0.7);
+}
+
+.talent-card.type-titulo {
+  --card-accent: #d4af37;
+  --card-accent-soft: rgba(212, 175, 55, 0.08);
+  --card-accent-strong: rgba(212, 175, 55, 0.7);
+}
+
+.talent-card.type-normal {
+  --card-accent: #e63946;
+  --card-accent-soft: rgba(230, 57, 70, 0.08);
+  --card-accent-strong: rgba(230, 57, 70, 0.7);
+}
+
+.talent-card:hover {
+  border-color: var(--card-accent);
+}
+
+.talent-card-header {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.talent-card-icon {
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  object-fit: cover;
+  border: 1px solid #686e73;
+  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), transparent);
+  transition: all var(--transition);
+}
+
+.talent-card:hover .talent-card-icon {
+  border-color: var(--card-accent);
+}
+
+.talent-card-title-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.talent-card-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.5px;
+}
+
+.talent-card-type {
+  display: inline-block;
+  font-size: 0.75rem;
+  color: var(--card-accent);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 600;
+  width: fit-content;
+  text-shadow: 0 0 10px var(--card-accent-soft);
+}
+
+.talent-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.talent-card-description {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--muted);
+  font-family: 'Inter', sans-serif;
+}
+
+.talent-card-exclusive {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  background: linear-gradient(135deg, rgba(255, 200, 87, 0.1), transparent);
+  border: 1px solid rgba(255, 200, 87, 0.2);
+  border-radius: 3px;
+  font-size: 0.85rem;
+  color: #ffc857;
+  line-height: 1.4;
+}
+
+.talent-card-exclusive-label {
+  color: #fff;
+  font-weight: 700;
+}
+
+.talent-card-exclusive-value {
+  color: #ffc857;
+  font-weight: 600;
+}
+
+.talent-card-new {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--accent), rgba(144, 209, 238, 0.8));
+  color: var(--bg);
+  padding: 4px 8px;
+  border-radius: 2px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  align-self: flex-start;
+  box-shadow: 0 2px 8px rgba(144, 209, 238, 0.3);
+}
+
+.talents-loading {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+  font-size: 1.1rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.talents-no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.talents-error {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: #ff6b6b;
+  font-size: 1.1rem;
+}
+
+.talents-filter-btn {
+  padding: 10px 16px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.talents-filter-btn:hover {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, rgba(144, 209, 238, 0.1), transparent);
+}
+
+.talents-filter-btn.active {
+  background: linear-gradient(135deg, var(--accent), rgba(144, 209, 238, 0.8));
+  color: var(--bg);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(144, 209, 238, 0.4);
+}
+
+.talent-card-favorite {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--text);
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  transition: color var(--transition);
+  z-index: 10;
+}
+
+.talent-card-favorite:hover {
+  color: #d4af37;
+}
+
+.talent-card-favorite.favorited {
+  color: #d4af37;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .talents-page {
+    padding: 12px;
+  }
+
+  .talents-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .talents-filters {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .talents-search-input,
+  .talents-filter-select {
+    width: 100%;
+  }
+
+  .talents-filter-btn {
+    width: 100%;
+  }
+
+  .talents-stats {
+    margin-left: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .talents-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+
+  .talent-card-header {
+    gap: 10px;
+  }
+
+  .talent-card-icon {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+  }
+
+  .talent-card-title {
+    font-size: 0.95rem;
+  }
+
+  .talent-card-description {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .talents-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .talents-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .talent-card-header {
+    gap: 8px;
+  }
+
+  .talent-card-icon {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+  }
+}
