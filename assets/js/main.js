@@ -709,17 +709,21 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
   root.dataset.builderReady = 'true';
 
   const STORAGE_KEY = 'soulmask_builder_builds_v2';
-  const MAX_TALENT_SLOTS = 7;
+  const MAX_TALENT_SLOTS = 8;
+  const POSITIVE_TALENT_START_SLOT = 2;
 
-  const talentGroupsEl = root.querySelector('#talentGroups');
   const selectorGridEl = root.querySelector('#talentSelectorGrid');
-  const searchInput = root.querySelector('#talentSearch');
+  const talentPickerModalEl = root.querySelector('#talentPickerModal');
+  const talentPickerSearchEl = root.querySelector('#talentPickerSearch');
+  const talentPickerListEl = root.querySelector('#talentPickerList');
+  const talentPickerPreviewEl = root.querySelector('#talentPickerPreview');
   const buildNameInput = root.querySelector('#buildName');
   const buildDescriptionInput = root.querySelector('#buildDescription');
   const buildTribeInput = root.querySelector('#buildTribe');
   const builderHeaderNameEl = root.querySelector('#builderHeaderName');
   const builderHeaderTribeEl = root.querySelector('#builderHeaderTribe');
   const counterEl = root.querySelector('#positiveCounter');
+  const positiveLimitEl = root.querySelector('#positiveLimit');
   const equippedPreviewEl = root.querySelector('#equippedPreview');
   const savedBuildsListEl = root.querySelector('#savedBuildsList');
   const importInput = root.querySelector('#buildImportInput');
@@ -727,7 +731,10 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
   const state = {
     search: '',
     selectedPositive: Array(MAX_TALENT_SLOTS).fill(null),
+    optionalSlots: 0,
+    optionalTalentGroups: [],
     expandedSlot: null,
+    previewTalentId: null,
     currentBuildId: null
   };
 
@@ -771,17 +778,37 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
     return talentCatalog.find((item) => item.id === itemId) || null;
   }
 
-  function getVisiblePositiveTalents() {
+  function getTalentGroupForSlot(slotIndex) {
+    if (slotIndex === 0) return 'tribe';
+    if (slotIndex === 1) return 'title';
+    if (slotIndex >= MAX_TALENT_SLOTS) return state.optionalTalentGroups[slotIndex - MAX_TALENT_SLOTS] || null;
+    return 'positive';
+  }
+
+  function getSlotLabel(slotIndex) {
+    if (slotIndex === 0) return 'Tribo';
+    if (slotIndex === 1) return 'Titulo';
+    if (slotIndex >= MAX_TALENT_SLOTS) return 'Opcional';
+    return `Talento ${slotIndex - POSITIVE_TALENT_START_SLOT + 1}`;
+  }
+
+  function getVisibleTalentsForSlot(slotIndex) {
     const query = normalizeText(state.search);
     return talentCatalog.filter((item) => {
-      if (item.group !== 'positive') return false;
+      if (item.group !== getTalentGroupForSlot(slotIndex)) return false;
       return !query || normalizeText(item.name).includes(query);
     });
   }
 
   function updateCounter() {
-    const total = state.selectedPositive.filter(Boolean).length;
+    const total = state.selectedPositive
+      .map((itemId) => selectedTalentData(itemId))
+      .filter((item) => item?.group === 'positive').length;
     counterEl.textContent = String(total);
+    positiveLimitEl.textContent = String(
+      MAX_TALENT_SLOTS - POSITIVE_TALENT_START_SLOT
+      + state.optionalTalentGroups.filter((group) => group === 'positive').length
+    );
   }
 
   function renderEquippedPreview() {
@@ -789,7 +816,7 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
       .map((id) => selectedTalentData(id))
       .filter(Boolean);
 
-    const iconHtml = Array.from({ length: 8 }, (_, index) => {
+    const iconHtml = Array.from({ length: state.selectedPositive.length }, (_, index) => {
       const item = selectedTalents[index] || null;
       const style = item ? `--icon-image: url('${item.imageUrl}')` : '--icon-image: none';
       return `<div class="equipped-slot ${item ? '' : 'empty'}" style="${style}"></div>`;
@@ -799,72 +826,158 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
   }
 
   function renderSelectorGrid() {
-    selectorGridEl.innerHTML = Array.from({ length: MAX_TALENT_SLOTS }, (_, index) => {
+    const talentSlots = Array.from({ length: state.selectedPositive.length }, (_, index) => {
       const selectedItem = selectedTalentData(state.selectedPositive[index]);
       const isOpen = state.expandedSlot === index;
+      const isOptional = index >= MAX_TALENT_SLOTS;
       const style = selectedItem ? `--icon-image: url('${selectedItem.imageUrl}')` : '--icon-image: none';
 
       return `
-        <div class="selector-shell">
+        <div class="selector-shell ${isOptional ? 'optional-slot' : ''}">
           <button
             type="button"
             class="selector-tile-icon ${selectedItem ? 'selected' : 'empty'} ${isOpen ? 'selected' : ''}"
             data-slot-index="${index}"
             style="${style}"
-            aria-label="${selectedItem ? selectedItem.name : `Talento ${index + 1}`}">
+            aria-label="${selectedItem ? selectedItem.name : getSlotLabel(index)}">
           </button>
-          <span class="selector-label">${selectedItem ? selectedItem.name : `Talento ${index + 1}`}</span>
+          ${isOptional ? `<button type="button" class="remove-optional-slot" data-slot-index="${index}" aria-label="Remover talento opcional">-</button>` : ''}
+          <span class="selector-label">${selectedItem ? selectedItem.name : getSlotLabel(index)}</span>
         </div>
       `;
     }).join('');
 
+    const addOptionalSlot = `
+      <div class="selector-shell add-optional-shell">
+        <button type="button" class="add-optional-slot" aria-label="Adicionar talento opcional">+</button>
+        <span class="selector-label">Adicionar opcional</span>
+      </div>
+    `;
+    selectorGridEl.innerHTML = talentSlots + addOptionalSlot;
+
     selectorGridEl.querySelectorAll('.selector-tile-icon').forEach((button) => {
       button.addEventListener('click', () => {
         const slotIndex = Number(button.dataset.slotIndex);
-        state.expandedSlot = state.expandedSlot === slotIndex ? null : slotIndex;
+        state.expandedSlot = slotIndex;
+        state.previewTalentId = state.selectedPositive[slotIndex];
+        state.search = '';
+        talentPickerSearchEl.value = '';
         renderTalentOptions();
         renderSelectorGrid();
+        talentPickerModalEl.hidden = false;
+        if (getTalentGroupForSlot(slotIndex)) talentPickerSearchEl.focus();
+      });
+    });
+
+    selectorGridEl.querySelector('.add-optional-slot')?.addEventListener('click', () => {
+      state.optionalSlots += 1;
+      state.optionalTalentGroups.push(null);
+      state.selectedPositive.push(null);
+      renderAll();
+    });
+
+    selectorGridEl.querySelectorAll('.remove-optional-slot').forEach((button) => {
+      button.addEventListener('click', () => {
+        const slotIndex = Number(button.dataset.slotIndex);
+        const optionalIndex = slotIndex - MAX_TALENT_SLOTS;
+        state.selectedPositive.splice(slotIndex, 1);
+        state.optionalTalentGroups.splice(optionalIndex, 1);
+        state.optionalSlots -= 1;
+        renderAll();
       });
     });
   }
 
-  function renderTalentOptions() {
-    if (state.expandedSlot === null) {
-      talentGroupsEl.innerHTML = '<div class="empty-state">Clique em um slot de talento para escolher.</div>';
+  function closeTalentPicker() {
+    talentPickerModalEl.hidden = true;
+    state.expandedSlot = null;
+    state.previewTalentId = null;
+    state.search = '';
+    talentPickerSearchEl.value = '';
+    renderSelectorGrid();
+  }
+
+  function renderTalentPreview(itemId) {
+    const item = selectedTalentData(itemId);
+    if (!item) {
+      talentPickerPreviewEl.innerHTML = '<h3>Descricao</h3><p>Passe o mouse sobre um talento para ver seus detalhes.</p>';
       return;
     }
 
-    const items = getVisiblePositiveTalents();
+    talentPickerPreviewEl.innerHTML = `
+      <h3>${item.name}</h3>
+      <p>${item.description || 'Sem descricao disponivel.'}</p>
+    `;
+  }
+
+  function renderTalentOptions() {
+    if (state.expandedSlot === null) {
+      talentPickerListEl.innerHTML = '';
+      renderTalentPreview(null);
+      return;
+    }
+
+    const selectedGroup = getTalentGroupForSlot(state.expandedSlot);
+    if (!selectedGroup) {
+      talentPickerSearchEl.hidden = true;
+      talentPickerListEl.innerHTML = ['tribe', 'title', 'positive'].map((group) => `
+        <button type="button" class="selector-option talent-picker-option" data-talent-group="${group}">
+          <span class="selector-option-name">${group === 'tribe' ? 'Tribo' : group === 'title' ? 'Titulo' : 'Positivo'}</span>
+        </button>
+      `).join('');
+      talentPickerPreviewEl.innerHTML = '<h3>Tipo de talento</h3><p>Escolha o tipo para este slot opcional.</p>';
+      talentPickerListEl.querySelectorAll('[data-talent-group]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state.optionalTalentGroups[state.expandedSlot - MAX_TALENT_SLOTS] = button.dataset.talentGroup;
+          renderTalentOptions();
+          talentPickerSearchEl.focus();
+        });
+      });
+      return;
+    }
+
+    talentPickerSearchEl.hidden = false;
+    const items = getVisibleTalentsForSlot(state.expandedSlot);
     if (!items.length) {
-      talentGroupsEl.innerHTML = '<div class="empty-state">Nenhum talento encontrado para esta busca.</div>';
+      talentPickerListEl.innerHTML = '<div class="empty-state">Nenhum talento encontrado para esta busca.</div>';
+      renderTalentPreview(null);
       return;
     }
 
     const currentId = state.selectedPositive[state.expandedSlot];
-    talentGroupsEl.innerHTML = `
-      <div class="selector-options">
-        ${items.map((item) => {
-          const selected = item.id === currentId;
-          return `
-            <button
-              type="button"
-              class="selector-option ${selected ? 'selected' : ''}"
-              data-item-id="${item.id}">
-              <span class="selector-option-icon" style="--icon-image: url('${item.imageUrl}')"></span>
-              <span class="selector-option-name">${item.name}</span>
-            </button>
-          `;
-        }).join('')}
-      </div>
-    `;
+    if (!items.some((item) => item.id === state.previewTalentId)) {
+      state.previewTalentId = currentId || items[0].id;
+    }
 
-    talentGroupsEl.querySelectorAll('.selector-option').forEach((button) => {
+    talentPickerListEl.innerHTML = items.map((item) => {
+      const selected = item.id === currentId;
+      return `
+        <button
+          type="button"
+          class="selector-option talent-picker-option ${selected ? 'selected' : ''}"
+          data-item-id="${item.id}">
+          <span class="selector-option-icon" style="--icon-image: url('${item.imageUrl}')"></span>
+          <span class="selector-option-name">${item.name}</span>
+        </button>
+      `;
+    }).join('');
+
+    renderTalentPreview(state.previewTalentId);
+
+    talentPickerListEl.querySelectorAll('.selector-option').forEach((button) => {
+      const previewTalent = () => {
+        state.previewTalentId = button.dataset.itemId;
+        renderTalentPreview(state.previewTalentId);
+      };
+
+      button.addEventListener('mouseenter', previewTalent);
+      button.addEventListener('focus', previewTalent);
       button.addEventListener('click', () => {
         const selectedId = button.dataset.itemId;
         const slot = state.expandedSlot;
         if (slot === null) return;
         state.selectedPositive[slot] = state.selectedPositive[slot] === selectedId ? null : selectedId;
-        state.expandedSlot = null;
+        closeTalentPicker();
         renderAll();
       });
     });
@@ -877,14 +990,27 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
       description: buildDescriptionInput.value.trim(),
       tribe: buildTribeInput.value,
       selectedPositive: [...state.selectedPositive],
+      optionalTalentGroups: [...state.optionalTalentGroups],
       updatedAt: new Date().toISOString()
     };
   }
 
   function applyBuild(build) {
     state.currentBuildId = build.id || null;
-    state.selectedPositive = Array.from({ length: MAX_TALENT_SLOTS }, (_, index) => build.selectedPositive?.[index] || null);
+    const importedTalents = Array.isArray(build.selectedPositive) ? build.selectedPositive : [];
+    const importedGroups = Array.isArray(build.optionalTalentGroups) ? build.optionalTalentGroups : [];
+    state.optionalSlots = Math.max(importedTalents.length - MAX_TALENT_SLOTS, importedGroups.length, 0);
+    state.optionalTalentGroups = Array.from({ length: state.optionalSlots }, (_, index) => {
+      const group = importedGroups[index];
+      return ['tribe', 'title', 'positive'].includes(group) ? group : null;
+    });
+    state.selectedPositive = Array.from(
+      { length: MAX_TALENT_SLOTS + state.optionalSlots },
+      (_, index) => importedTalents[index] || null
+    );
     state.expandedSlot = null;
+    state.previewTalentId = null;
+    talentPickerModalEl.hidden = true;
 
     buildNameInput.value = build.name || '';
     buildDescriptionInput.value = build.description || '';
@@ -953,12 +1079,16 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
   function clearCurrentBuild() {
     state.currentBuildId = null;
     state.selectedPositive = Array(MAX_TALENT_SLOTS).fill(null);
+    state.optionalSlots = 0;
+    state.optionalTalentGroups = [];
     state.expandedSlot = null;
+    state.previewTalentId = null;
     buildNameInput.value = '';
     buildDescriptionInput.value = '';
     buildTribeInput.value = '';
-    searchInput.value = '';
+    talentPickerSearchEl.value = '';
     state.search = '';
+    talentPickerModalEl.hidden = true;
     renderAll();
   }
 
@@ -1021,21 +1151,34 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
       if (!response.ok) throw new Error('Falha ao carregar talentos.');
       const data = await response.json();
 
+      const groupByType = {
+        Tribo: 'tribe',
+        'Título': 'title',
+        Positivo: 'positive'
+      };
+
       talentCatalog = data
-        .filter((item) => item['Type PT'] === 'Positivo')
+        .filter((item) => groupByType[item['Type PT']])
         .map((item, index) => {
           const imageUrl = item['nome imagem'] ? `assets/img/talentos/${item['nome imagem']}` : item['Icon'];
           return {
-            id: `positive-${index}`,
+            id: `talent-${index}`,
             name: item['Title PT'] || item['Title EN'] || 'Talento',
             description: item['Description PT'] || item['Description EN'] || '',
-            group: 'positive',
+            group: groupByType[item['Type PT']],
             imageUrl: imageUrl
           };
         });
+
+      state.selectedPositive = state.selectedPositive.map((itemId, index) => {
+        const item = selectedTalentData(itemId);
+        return item?.group === getTalentGroupForSlot(index) ? itemId : null;
+      });
     } catch (error) {
       console.error('Erro ao carregar talentos:', error);
       talentCatalog = [
+        { id: 'tribe-1', name: 'Talento de Tribo', description: '', group: 'tribe', imageUrl: '' },
+        { id: 'title-1', name: 'Talento de Titulo', description: '', group: 'title', imageUrl: '' },
         { id: 'positive-1', name: 'Vigor', description: '', group: 'positive', imageUrl: '' },
         { id: 'positive-2', name: 'Constituicao', description: '', group: 'positive', imageUrl: '' },
         { id: 'positive-3', name: 'Furia', description: '', group: 'positive', imageUrl: '' }
@@ -1046,9 +1189,17 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
   }
 
   function bindActions() {
-    searchInput.addEventListener('input', (event) => {
+    talentPickerSearchEl.addEventListener('input', (event) => {
       state.search = event.target.value;
       renderTalentOptions();
+    });
+
+    root.querySelector('#talentPickerClose')?.addEventListener('click', closeTalentPicker);
+    talentPickerModalEl.addEventListener('click', (event) => {
+      if (event.target === talentPickerModalEl) closeTalentPicker();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !talentPickerModalEl.hidden) closeTalentPicker();
     });
 
     buildNameInput.addEventListener('input', syncHeaderBuildInfo);
@@ -1076,8 +1227,11 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
           description: imported.description || '',
           tribe: imported.tribe || '',
           selectedPositive: Array.isArray(imported.selectedPositive)
-            ? imported.selectedPositive.slice(0, MAX_TALENT_SLOTS)
+            ? imported.selectedPositive
             : Array(MAX_TALENT_SLOTS).fill(null),
+          optionalTalentGroups: Array.isArray(imported.optionalTalentGroups)
+            ? imported.optionalTalentGroups
+            : [],
           updatedAt: new Date().toISOString()
         };
 

@@ -239,20 +239,24 @@
 
     .selector-grid {
       display: grid;
-      grid-template-columns: repeat(7, minmax(0, 1fr));
-      gap: 8px;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 5px;
     }
 
     .selector-shell {
       display: grid;
-      gap: 8px;
+      gap: 18px;
       justify-items: center;
       min-width: 0;
     }
 
+    .selector-shell.optional-slot {
+      position: relative;
+    }
+
     .selector-tile-icon {
-      width: 56px;
-      height: 56px;
+      width: 46px;
+      height: 46px;
       display: grid;
       place-items: center;
       position: relative;
@@ -298,6 +302,42 @@
     .selector-tile-icon.selected {
       border-color: var(--builder-cyan);
       background: linear-gradient(180deg, rgba(144, 209, 238, 0.08), rgba(0, 0, 0, 0.08));
+    }
+
+    .add-optional-slot {
+      width: 46px;
+      height: 46px;
+      border: 2px dashed #686e73;
+      background: #191a1a;
+      color: #8ea2b5;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .add-optional-slot:hover {
+      border-color: var(--builder-cyan);
+      color: var(--builder-cyan);
+    }
+
+    .remove-optional-slot {
+      position: absolute;
+      top: -7px;
+      right: 0;
+      z-index: 2;
+      min-width: 16px;
+      height: 16px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #ff6a78;
+      font-size: 1.25rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .remove-optional-slot:hover {
+      color: #ff9aa4;
     }
 
     .selector-label {
@@ -367,6 +407,134 @@
       line-clamp: 2;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    .talent-picker-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.62);
+    }
+
+    .talent-picker-modal[hidden] {
+      display: none;
+    }
+
+    .talent-picker-dialog {
+      width: min(920px, 100%);
+      max-height: min(720px, calc(100vh - 40px));
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 14px;
+      padding: 18px;
+      overflow: hidden;
+      position: relative;
+      background: #1a1a1a;
+      border: 1px solid #686e73;
+      border-radius: 4px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+    }
+
+    .talent-picker-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--builder-line);
+    }
+
+    .talent-picker-title {
+      margin: 0;
+      font-family: "Cinzel", serif;
+      font-size: 1.05rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--builder-cyan);
+    }
+
+    .talent-picker-close {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border: 1px solid #686e73;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.2));
+      color: var(--builder-text);
+      font-size: 1.25rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .talent-picker-close:hover {
+      border-color: var(--builder-cyan);
+      color: var(--builder-cyan);
+    }
+
+    .talent-picker-search {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--builder-panel);
+      color: var(--builder-text);
+      padding: 10px 12px;
+      font-size: 0.77rem;
+      letter-spacing: 0.04em;
+      outline: none;
+    }
+
+    .talent-picker-search:focus {
+      border-color: var(--builder-cyan);
+      background: linear-gradient(180deg, rgba(144, 209, 238, 0.08), transparent);
+    }
+
+    .talent-picker-content {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 0.42fr);
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .talent-picker-list {
+      min-height: 0;
+      overflow: auto;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      align-content: start;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid #686e73;
+      background: #0e0e0e;
+    }
+
+    .talent-picker-option {
+      min-height: 92px;
+    }
+
+    .talent-picker-preview {
+      min-height: 0;
+      overflow: auto;
+      padding: 14px;
+      border: 1px solid #686e73;
+      background: #0e0e0e;
+    }
+
+    .talent-picker-preview h3 {
+      margin: 0 0 10px;
+      font-family: "Cinzel", serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      color: var(--builder-cyan);
+    }
+
+    .talent-picker-preview p {
+      margin: 0;
+      color: var(--builder-muted);
+      font-size: 0.82rem;
+      line-height: 1.5;
+      white-space: pre-line;
     }
 
     .empty-state {
@@ -546,6 +714,19 @@
       .selector-options {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
+
+      .talent-picker-content {
+        grid-template-columns: 1fr;
+      }
+
+      .talent-picker-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        max-height: 310px;
+      }
+
+      .talent-picker-preview {
+        min-height: 120px;
+      }
     }
   </style>
 
@@ -578,12 +759,11 @@
 
         <div class="talents-header">
           <h2 class="panel-section-title">Talentos</h2>
-          <div class="panel-counter"><span id="positiveCounter">0</span>/7</div>
+          <div class="panel-counter"><span id="positiveCounter">0</span>/<span id="positiveLimit">6</span></div>
         </div>
 
         <div class="talent-selector-list">
           <div class="selector-grid" id="talentSelectorGrid"></div>
-          <div class="selector-options-wrap" id="talentGroups"></div>
         </div>
       </section>
 
@@ -610,7 +790,6 @@
             <option value="povo-neblina">Povo da Neblina</option>
             <option value="cacadores-selva">Cacadores da Selva</option>
           </select>
-          <input id="talentSearch" class="builder-field" type="text" placeholder="Buscar talento..." aria-label="Buscar talento" />
         </div>
       </section>
 
@@ -624,4 +803,18 @@
   </div>
 
   <input id="buildImportInput" type="file" accept="application/json,.json" hidden />
+
+  <div class="talent-picker-modal" id="talentPickerModal" hidden>
+    <section class="talent-picker-dialog" role="dialog" aria-modal="true" aria-labelledby="talentPickerTitle">
+      <div class="talent-picker-header">
+        <h2 class="talent-picker-title" id="talentPickerTitle">Escolher talento</h2>
+        <button type="button" class="talent-picker-close" id="talentPickerClose" aria-label="Fechar seletor de talentos">&times;</button>
+      </div>
+      <input id="talentPickerSearch" class="talent-picker-search" type="search" placeholder="Buscar talento..." aria-label="Buscar talento" autocomplete="off" />
+      <div class="talent-picker-content">
+        <div class="talent-picker-list" id="talentPickerList"></div>
+        <aside class="talent-picker-preview" id="talentPickerPreview" aria-live="polite"></aside>
+      </div>
+    </section>
+  </div>
 </section>
