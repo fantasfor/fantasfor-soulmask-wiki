@@ -1,69 +1,54 @@
-# Soulmask Database
+# Soulmask Database — Fantasfor Wiki
 
-Base inicial para o site estático do Soulmask Database — rápido, acessível e preparado para crescer.
+Site estático da wiki Soulmask (SPA com roteamento por hash) — rápido, acessível e pronto para GitHub Pages.
 
 ## Estrutura do projeto
 
-- `index.html` — entrada principal do site
-- `assets/css/` — estilos
-- `assets/js/` — scripts (i18n, carregamento de componentes)
-- `assets/lang/` — arquivos de idioma (JSON)
-- `components/` — pedaços HTML reutilizáveis (header, footer, sidebar)
-- `pages/` — páginas do site (home, etc.)
-- `.github/workflows/` — workflows do CI/CD (deploy)
-
-Cada arquivo tem uma responsabilidade única para facilitar manutenção e reuso.
+- `index.html` — entrada principal do site (SPA)
+- `assets/css/` — estilos modulares (`style.css` importa base, layout, componentes e páginas)
+- `assets/js/` — scripts (`main.js` = roteador + páginas, `ui.js` = helpers de UI)
+- `assets/data/` — dados JSON (talentos, itens, armaduras)
+- `assets/img/` — imagens otimizadas (WebP)
+- `components/` — pedaços HTML reutilizáveis (header, sidebar)
+- `pages/` — páginas do site carregadas via hash (`#home`, `#talentos`, ...)
+- `.github/workflows/` — deploy automático no GitHub Pages
 
 ## Desenvolver localmente
 
 1. Abra um terminal na raiz do projeto.
-2. Sirva os arquivos estáticos com Python (recomendado):
+2. Sirva os arquivos estáticos com Python:
 
 ```bash
-# Python 3
 python -m http.server 8000
 # Acesse http://localhost:8000
 ```
 
-Obs: usar o servidor do Python evita dependências extras e é suficiente para testar o site estático.
+> Abrir `index.html` direto via `file://` não funciona (fetch de páginas/componentes é bloqueado).
 
 ## Publicação no GitHub Pages
 
-Recomenda-se publicar o conteúdo no branch `main`. O repositório já contém um workflow GitHub Actions que faz deploy automático para GitHub Pages sempre que houver um `push` na branch `main`.
+O workflow `.github/workflows/gh-pages.yml` faz deploy automático a cada `push` na branch `main`.
 
-Comandos mínimos para iniciar um repositório e subir o site:
+1. Suba o código:
 
 ```bash
-git init
 git add .
-git commit -m "Initial Soulmask Database scaffold"
-git branch -M main
-git remote add origin git@github.com:USERNAME/REPO.git
-git push -u origin main
+git commit -m "Site otimizado"
+git push origin main
 ```
 
-Após o push, o workflow `.github/workflows/gh-pages.yml` será executado e o site será publicado automaticamente em GitHub Pages.
+2. No GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+3. O site será publicado em `https://<usuario>.github.io/<repositorio>/`.
 
-### Observações sobre domínio
+> Todos os caminhos do site são relativos (`assets/...`, `pages/...`), então funciona tanto em domínio raiz quanto em subpasta de projeto.
+> O arquivo `.nojekyll` está incluído para evitar processamento Jekyll caso o deploy por branch seja usado.
 
-- Para usar um domínio customizado, adicione um arquivo `CNAME` na raiz contendo seu domínio.
-- O workflow preserva automaticamente arquivos e subpastas. O arquivo `.nojekyll` está incluído para evitar processamento por Jekyll.
+### Domínio customizado (opcional)
 
-## Internacionalização (i18n)
-
-Todos os textos são carregados a partir de arquivos JSON em `assets/lang/` e aplicados via `data-i18n` no HTML. Para adicionar um idioma, crie `assets/lang/xx.json` seguindo o formato existente.
+Adicione um arquivo `CNAME` na raiz contendo seu domínio e configure o DNS.
 
 ## Padrões de desenvolvimento
 
-- Evitar duplicação: componentes em `components/` devem ser reutilizados.
-- Todo texto visível deve estar em arquivos de idioma — não escrever textos fixos no HTML.
-- Arquivos devem ter responsabilidade única.
-- Priorizar performance e acessibilidade.
-
-## Próximos passos sugeridos
-
-- Adicionar traduções extras (`en`, `es`).
-- Criar componentes de UI adicionais (modais, tooltips, cards dinâmicos).
-- Automatizar checagens de lint (opcional).
-
-Se quiser, eu posso: adicionar traduções, configurar `CNAME`, ou ajustar o workflow para um subdiretório específico.
+- Cada arquivo tem uma responsabilidade única.
+- Novas páginas: crie `pages/<nome>.html`, adicione o link em `components/sidebar.html` e, se precisar de JS, registre o init no roteador em `assets/js/main.js` (`loadPageFromHash`).
+- Imagens novas devem ser WebP (use Pillow: `Image.open(png).save(webp, 'WEBP', quality=85)`).

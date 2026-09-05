@@ -1,4 +1,3 @@
-import { loadTranslations, translateDocument } from './i18n.js';
 import { initUI } from './ui.js';
 
 async function loadComponent(path, selector) {
@@ -1643,7 +1642,7 @@ window.initArmadurasPage = function initArmadurasPage() {
 
   function getImage(item) {
     return /rel[ií]quia divina/i.test(getName(item))
-      ? 'assets/img/armaduras/Ruina Divina.png'
+      ? 'assets/img/armaduras/Ruina Divina.webp'
       : item.image || '';
   }
 
@@ -1825,18 +1824,6 @@ async function init() {
   initUI();
   await loadPageFromHash();
 }
-
-export async function setLanguage(lang) {
-  try {
-    const translations = await loadTranslations(lang);
-    translateDocument(translations);
-    localStorage.setItem('sm_lang', lang);
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-window.setLanguage = setLanguage;
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
