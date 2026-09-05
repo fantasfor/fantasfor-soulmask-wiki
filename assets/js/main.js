@@ -365,6 +365,10 @@ async function loadPageFromHash() {
     initItensPage();
   }
 
+  if (document.querySelector('.armaduras-page')) {
+    initArmadurasPage();
+  }
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
   
   if (document.querySelector('.home-page')) {
@@ -717,20 +721,26 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
   const talentPickerSearchEl = root.querySelector('#talentPickerSearch');
   const talentPickerListEl = root.querySelector('#talentPickerList');
   const talentPickerPreviewEl = root.querySelector('#talentPickerPreview');
+  const armorSlotsEl = root.querySelector('#armorSlots');
+  const armorPickerInlineEl = root.querySelector('#armorPickerInline');
   const buildNameInput = root.querySelector('#buildName');
   const buildDescriptionInput = root.querySelector('#buildDescription');
   const buildTribeInput = root.querySelector('#buildTribe');
   const builderHeaderNameEl = root.querySelector('#builderHeaderName');
   const builderHeaderTribeEl = root.querySelector('#builderHeaderTribe');
+  const builderHeaderTitleEl = root.querySelector('#builderHeaderTitle');
+  const builderHeaderClassEl = root.querySelector('#builderHeaderClass');
+  const builderHeaderMasterEl = root.querySelector('#builderHeaderMaster');
   const counterEl = root.querySelector('#positiveCounter');
   const positiveLimitEl = root.querySelector('#positiveLimit');
-  const equippedPreviewEl = root.querySelector('#equippedPreview');
   const savedBuildsListEl = root.querySelector('#savedBuildsList');
+  const setBonusPanelEl = root.querySelector('#setBonusPanel');
   const importInput = root.querySelector('#buildImportInput');
 
   const state = {
     search: '',
     selectedPositive: Array(MAX_TALENT_SLOTS).fill(null),
+    selectedArmorPieces: Array(6).fill(null),
     optionalSlots: 0,
     optionalTalentGroups: [],
     expandedSlot: null,
@@ -739,7 +749,10 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
   };
 
   let talentCatalog = [];
+  let armorCatalog = [];
   let savedBuilds = [];
+  const armorSlotNames = ['Armadura', 'Luvas', 'Calça', 'Botas', 'Colar', 'Anel'];
+  const armorSlotCategories = ['Armadura', 'Luvas', 'Calças', 'Botas', 'Colar', 'Anel'];
 
   function normalizeText(value) {
     return (value || '')
@@ -769,9 +782,129 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
     return selectedOption.textContent || 'Nao selecionada';
   }
 
+  const CLASS_WEAPONS = {
+    warrior: {
+      label: 'Guerreiro',
+      weapons: [
+        { name: 'Lâmina de Duas Mãos', image: 'assets/img/itens/t13_img_0094_05_01.webp' },
+        { name: 'Martelo', image: 'assets/img/itens/t13_img_0098_05_01.webp' },
+        { name: 'Lâmina de Uma Mão', image: 'assets/img/itens/t13_img_0093_05_01.webp' },
+        { name: 'Espada Grande', image: 'assets/img/itens/t13_img_0097_05_01.webp' },
+        { name: 'Manoplas', image: 'assets/img/itens/t13_img_0095_05_01.webp' }
+      ]
+    },
+    hunter: {
+      label: 'Caçador',
+      weapons: [
+        { name: 'Arco Longo', image: 'assets/img/itens/t13_img_0099_05_01.webp' },
+        { name: 'Lâmina de Duas Mãos', image: 'assets/img/itens/t13_img_0094_05_01.webp' },
+        { name: 'Lâmina de Uma Mão', image: 'assets/img/itens/t13_img_0093_05_01.webp' },
+        { name: 'Lança', image: 'assets/img/itens/t13_img_0102_05_01.webp' },
+        { name: 'Manoplas', image: 'assets/img/itens/t13_img_0095_05_01.webp' },
+        { name: 'Chicote de Espinhos', image: 'assets/img/itens/t13_img_0103_05_01.webp' }
+      ]
+    },
+    guard: {
+      label: 'Guarda',
+      weapons: [
+        { name: 'Escudo', image: 'assets/img/itens/t13_img_0101_05_01.webp' },
+        { name: 'Arco', image: 'assets/img/itens/t13_img_0092_05_01.webp' },
+        { name: 'Lâmina de Uma Mão', image: 'assets/img/itens/t13_img_0093_05_01.webp' },
+        { name: 'Espada Grande', image: 'assets/img/itens/t13_img_0097_05_01.webp' },
+        { name: 'Lança', image: 'assets/img/itens/t13_img_0102_05_01.webp' }
+      ]
+    }
+  };
+
+  const ALL_WEAPONS = Object.values(CLASS_WEAPONS).flatMap((classData) => classData.weapons)
+    .filter((weapon, index, weapons) => weapons.findIndex((item) => item.name === weapon.name) === index);
+
+  function renderClassWeapons() {
+    const classWeaponsListEl = root.querySelector('#classWeaponsList');
+    if (!classWeaponsListEl) return;
+
+    const val = buildTribeInput ? buildTribeInput.value : '';
+    const classData = CLASS_WEAPONS[val];
+    const learnedWeapons = new Set(classData?.weapons.map((weapon) => weapon.name) || []);
+
+    classWeaponsListEl.innerHTML = ALL_WEAPONS.map((weapon) => `
+        <div class="class-weapon-item ${learnedWeapons.has(weapon.name) ? 'learned' : ''}" title="${weapon.name}">
+          <img class="class-weapon-icon" src="${weapon.image}" alt="${weapon.name}" />
+          <span class="class-weapon-level">${learnedWeapons.has(weapon.name) ? 120 : 100}</span>
+        </div>
+    `).join('');
+  }
+
+  function renderArmorSlots() {
+    if (!armorSlotsEl) return;
+
+    armorSlotsEl.innerHTML = state.selectedArmorPieces.map((itemId, index) => {
+      const item = armorCatalog.find((armor) => String(armor.id) === String(itemId));
+      return `
+        <button type="button" class="armor-slot ${item ? 'selected' : 'empty'}" data-armor-slot="${index}" title="${item?.name_pt || armorSlotNames[index]}" aria-label="${armorSlotNames[index]}">
+          ${item ? `<img src="${item.image || ''}" alt="${item.name_pt || item.name || 'Peça de armadura'}" />` : ''}
+        </button>
+      `;
+    }).join('') + `
+      <button type="button" class="complete-armor-set-button" id="completeArmorSetButton" title="Completar conjunto da armadura" aria-label="Completar conjunto da armadura" ${state.selectedArmorPieces.some(Boolean) ? '' : 'disabled'}>Completar</button>
+    `;
+
+    armorSlotsEl.querySelectorAll('.armor-slot').forEach((button) => {
+      button.addEventListener('click', () => openArmorPicker(Number(button.dataset.armorSlot)));
+    });
+    armorSlotsEl.querySelector('#completeArmorSetButton')?.addEventListener('click', completeArmorSet);
+  }
+
+  function completeArmorSet() {
+    const referenceItemId = state.selectedArmorPieces[0] || state.selectedArmorPieces.find(Boolean);
+    const referenceItem = armorCatalog.find((item) => String(item.id) === String(referenceItemId));
+    if (!referenceItem?.efeito_conjunto) return;
+
+    armorSlotCategories.forEach((category, slotIndex) => {
+      const matchingPiece = armorCatalog.find((item) => (
+        item.categoria === category && item.efeito_conjunto === referenceItem.efeito_conjunto
+      ));
+      state.selectedArmorPieces[slotIndex] = matchingPiece?.id || null;
+    });
+
+    renderArmorSlots();
+    renderSetBonuses();
+  }
+
+  function openArmorPicker(slotIndex) {
+    if (!armorPickerInlineEl) return;
+    const slotCategory = armorSlotCategories[slotIndex];
+    const availableArmor = armorCatalog.filter((item) => item.categoria === slotCategory);
+    armorPickerInlineEl.innerHTML = [
+      '<button type="button" class="armor-picker-option" data-armor-id="" title="Remover peça" aria-label="Remover peça">&times;</button>',
+      ...availableArmor.map((item) => `
+        <button type="button" class="armor-picker-option" data-armor-id="${item.id}" title="${item.name_pt || item.name || 'Peça de armadura'}" aria-label="${item.name_pt || item.name || 'Peça de armadura'}">
+          <img src="${item.image || ''}" alt="" />
+        </button>
+      `)
+    ].join('');
+
+    armorPickerInlineEl.querySelectorAll('[data-armor-id]').forEach((button) => {
+      button.addEventListener('click', () => {
+        state.selectedArmorPieces[slotIndex] = button.dataset.armorId || null;
+        armorPickerInlineEl.hidden = true;
+        renderArmorSlots();
+        renderSetBonuses();
+      });
+    });
+    armorPickerInlineEl.hidden = false;
+  }
+
   function syncHeaderBuildInfo() {
     builderHeaderNameEl.textContent = buildNameInput.value.trim() || 'Build sem nome';
-    builderHeaderTribeEl.textContent = getSelectedTribeLabel();
+    const hasClass = Boolean(buildTribeInput?.value);
+    if (builderHeaderClassEl) builderHeaderClassEl.textContent = getSelectedTribeLabel();
+    if (builderHeaderMasterEl) builderHeaderMasterEl.style.display = hasClass ? 'inline' : 'none';
+    const tribeTalent = selectedTalentData(state.selectedPositive[0]);
+    const titleTalent = selectedTalentData(state.selectedPositive[1]);
+    if (builderHeaderTribeEl) builderHeaderTribeEl.textContent = tribeTalent?.exclusive || 'Nao selecionada';
+    if (builderHeaderTitleEl) builderHeaderTitleEl.textContent = titleTalent?.name || 'Nao selecionado';
+    renderClassWeapons();
   }
 
   function selectedTalentData(itemId) {
@@ -804,25 +937,13 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
     const total = state.selectedPositive
       .map((itemId) => selectedTalentData(itemId))
       .filter((item) => item?.group === 'positive').length;
-    counterEl.textContent = String(total);
-    positiveLimitEl.textContent = String(
-      MAX_TALENT_SLOTS - POSITIVE_TALENT_START_SLOT
-      + state.optionalTalentGroups.filter((group) => group === 'positive').length
-    );
-  }
-
-  function renderEquippedPreview() {
-    const selectedTalents = state.selectedPositive
-      .map((id) => selectedTalentData(id))
-      .filter(Boolean);
-
-    const iconHtml = Array.from({ length: state.selectedPositive.length }, (_, index) => {
-      const item = selectedTalents[index] || null;
-      const style = item ? `--icon-image: url('${item.imageUrl}')` : '--icon-image: none';
-      return `<div class="equipped-slot ${item ? '' : 'empty'}" style="${style}"></div>`;
-    }).join('');
-
-    equippedPreviewEl.innerHTML = iconHtml;
+    if (counterEl) counterEl.textContent = String(total);
+    if (positiveLimitEl) {
+      positiveLimitEl.textContent = String(
+        MAX_TALENT_SLOTS - POSITIVE_TALENT_START_SLOT
+        + state.optionalTalentGroups.filter((group) => group === 'positive').length
+      );
+    }
   }
 
   function renderSelectorGrid() {
@@ -830,13 +951,15 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
       const selectedItem = selectedTalentData(state.selectedPositive[index]);
       const isOpen = state.expandedSlot === index;
       const isOptional = index >= MAX_TALENT_SLOTS;
+      const talentTypeClass = index < POSITIVE_TALENT_START_SLOT ? 'talent-type-gold'
+        : index < MAX_TALENT_SLOTS ? 'talent-type-green' : '';
       const style = selectedItem ? `--icon-image: url('${selectedItem.imageUrl}')` : '--icon-image: none';
 
       return `
         <div class="selector-shell ${isOptional ? 'optional-slot' : ''}">
           <button
             type="button"
-            class="selector-tile-icon ${selectedItem ? 'selected' : 'empty'} ${isOpen ? 'selected' : ''}"
+            class="selector-tile-icon ${talentTypeClass} ${selectedItem ? 'selected' : 'empty'} ${isOpen ? 'selected' : ''}"
             data-slot-index="${index}"
             style="${style}"
             aria-label="${selectedItem ? selectedItem.name : getSlotLabel(index)}">
@@ -991,6 +1114,7 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
       tribe: buildTribeInput.value,
       selectedPositive: [...state.selectedPositive],
       optionalTalentGroups: [...state.optionalTalentGroups],
+      selectedArmorPieces: [...state.selectedArmorPieces],
       updatedAt: new Date().toISOString()
     };
   }
@@ -999,6 +1123,9 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
     state.currentBuildId = build.id || null;
     const importedTalents = Array.isArray(build.selectedPositive) ? build.selectedPositive : [];
     const importedGroups = Array.isArray(build.optionalTalentGroups) ? build.optionalTalentGroups : [];
+    state.selectedArmorPieces = Array.isArray(build.selectedArmorPieces)
+      ? Array.from({ length: 6 }, (_, index) => build.selectedArmorPieces[index] || null)
+      : Array(6).fill(null);
     state.optionalSlots = Math.max(importedTalents.length - MAX_TALENT_SLOTS, importedGroups.length, 0);
     state.optionalTalentGroups = Array.from({ length: state.optionalSlots }, (_, index) => {
       const group = importedGroups[index];
@@ -1079,6 +1206,7 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
   function clearCurrentBuild() {
     state.currentBuildId = null;
     state.selectedPositive = Array(MAX_TALENT_SLOTS).fill(null);
+    state.selectedArmorPieces = Array(6).fill(null);
     state.optionalSlots = 0;
     state.optionalTalentGroups = [];
     state.expandedSlot = null;
@@ -1136,12 +1264,66 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
     });
   }
 
+  function renderSetBonuses() {
+    if (!setBonusPanelEl) return;
+
+    const equippedItems = state.selectedArmorPieces
+      .map((itemId) => armorCatalog.find((armor) => String(armor.id) === String(itemId)))
+      .filter(Boolean);
+
+    if (!equippedItems.length) {
+      setBonusPanelEl.innerHTML = '<p class="set-bonus-empty">Equipe peças para ver os bônus.</p>';
+      return;
+    }
+
+    const sets = new Map();
+    equippedItems.forEach((item) => {
+      const setKey = item.efeito_conjunto || `item-${item.id}`;
+      const setItems = sets.get(setKey) || [];
+      setItems.push(item);
+      sets.set(setKey, setItems);
+    });
+
+    setBonusPanelEl.innerHTML = Array.from(sets.values())
+      .sort((firstSet, secondSet) => secondSet.length - firstSet.length)
+      .map((setItems) => {
+        const representative = setItems[0];
+        const count = setItems.length;
+        const bonuses = [
+          [2, representative.atributo_conjunto_2pc],
+          [4, representative.atributo_conjunto_4pc],
+          [6, representative.atributo_conjunto_6pc]
+        ].filter(([pieces, value]) => value && count >= pieces);
+
+        const bonusMarkup = bonuses.flatMap(([pieces, value]) => value
+          .split(/,\s*/)
+          .map((attribute) => attribute.trim())
+          .filter(Boolean)
+          .map((attribute) => `
+            <p class="set-bonus-tier"><strong>${pieces} peças:</strong> ${attribute}</p>
+          `)
+        ).join('');
+        const descriptionMarkup = count === 6 && representative.efeito_conjunto
+          ? `<p class="set-bonus-description">${representative.efeito_conjunto}</p>`
+          : '';
+
+        return `
+          <article class="set-bonus-card">
+            <h3 class="set-bonus-title">${representative.name_pt || representative.name || 'Conjunto'} (${count}/6)</h3>
+            ${bonusMarkup || '<p class="set-bonus-locked">Complete 2 peças para liberar o primeiro bônus.</p>'}
+            ${descriptionMarkup}
+          </article>
+        `;
+      }).join('');
+  }
+
   function renderAll() {
     syncHeaderBuildInfo();
     updateCounter();
+    renderArmorSlots();
+    renderSetBonuses();
     renderSelectorGrid();
     renderTalentOptions();
-    renderEquippedPreview();
     renderSavedBuilds();
   }
 
@@ -1166,6 +1348,7 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
             name: item['Title PT'] || item['Title EN'] || 'Talento',
             description: item['Description PT'] || item['Description EN'] || '',
             group: groupByType[item['Type PT']],
+            exclusive: item['Exclusive PT'] || item['Exclusive EN'] || '',
             imageUrl: imageUrl
           };
         });
@@ -1188,6 +1371,24 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
     renderAll();
   }
 
+  async function loadArmorData() {
+    try {
+      const response = await fetch('assets/data/Armaduras.json');
+      if (!response.ok) throw new Error('Falha ao carregar armaduras.');
+      const data = await response.json();
+      armorCatalog = (Array.isArray(data) ? data : [])
+        .filter((item) => armorSlotCategories.includes(item.categoria))
+        .filter((item) => item.atributo_conjunto_2pc || item.atributo_conjunto_4pc || item.atributo_conjunto_6pc)
+        .filter((item) => !/traje feito pelos antigos com materiais de feras selvagens/i.test(item.efeito_conjunto || ''))
+        .filter((item) => item.image);
+    } catch (error) {
+      console.error('Erro ao carregar peças de armadura:', error);
+      armorCatalog = [];
+    }
+    renderArmorSlots();
+    renderSetBonuses();
+  }
+
   function bindActions() {
     talentPickerSearchEl.addEventListener('input', (event) => {
       state.search = event.target.value;
@@ -1204,7 +1405,6 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
 
     buildNameInput.addEventListener('input', syncHeaderBuildInfo);
     buildTribeInput.addEventListener('change', syncHeaderBuildInfo);
-
     root.querySelector('#actionSaveBuild')?.addEventListener('click', saveCurrentBuild);
     root.querySelector('#actionLoadBuild')?.addEventListener('click', loadActiveBuild);
     root.querySelector('#actionExportBuild')?.addEventListener('click', exportCurrentBuild);
@@ -1256,6 +1456,7 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
   bindActions();
   renderAll();
   loadTalentData();
+  loadArmorData();
 };
 
 window.addEventListener('hashchange', () => {
@@ -1263,6 +1464,7 @@ window.addEventListener('hashchange', () => {
   if (page === 'builder-maker') initBuilderMakerPage();
   if (page === 'talentos') initTalentsPage();
   if (page === 'itens') initItensPage();
+  if (page === 'armaduras') initArmadurasPage();
 });
 
 window.initItensPage = function initItensPage() {
@@ -1411,6 +1613,190 @@ window.initItensPage = function initItensPage() {
   }
 
   loadItems();
+};
+
+window.initArmadurasPage = function initArmadurasPage() {
+  const root = document.querySelector('.armaduras-page');
+  if (!root || root.dataset.armadurasReady === 'true') return;
+  root.dataset.armadurasReady = 'true';
+
+  const detailImage = root.querySelector('#armaduras-detail-image');
+  const detailName = root.querySelector('#armaduras-detail-name');
+  const detailDescription = root.querySelector('#armaduras-detail-description');
+  const detailSet = root.querySelector('#armaduras-detail-set');
+  const list = root.querySelector('#armaduras-list');
+  const comparisonPanel = root.querySelector('#armaduras-comparison');
+  const comparisonGrid = root.querySelector('#armaduras-comparison-grid');
+  const comparisonClear = root.querySelector('#armaduras-comparison-clear');
+  const comparisonToggle = root.querySelector('#armaduras-compare-toggle');
+  const detailPanel = root.querySelector('#armaduras-detail');
+  let comparisonItems = [];
+  let comparisonMode = false;
+
+  function getName(item) {
+    return item.name_pt || item.name || 'Armadura sem nome';
+  }
+
+  function getDescription(item) {
+    return item.description_pt || item.description || item.efeito_conjunto || 'Descrição não disponível.';
+  }
+
+  function getImage(item) {
+    return /rel[ií]quia divina/i.test(getName(item))
+      ? 'assets/img/armaduras/Ruina Divina.png'
+      : item.image || '';
+  }
+
+  function renderSetAttribute(label, value) {
+    if (!value) return '';
+    return value
+      .split(/,\s*/)
+      .map((attribute) => attribute.trim())
+      .filter(Boolean)
+      .map((attribute) => `<li>${label}: ${attribute}</li>`)
+      .join('');
+  }
+
+  function renderComparisonValue(value) {
+    if (!value) return 'Sem informação';
+    return value.split(/,\s*/).filter(Boolean).join('<br>');
+  }
+
+  function renderComparison() {
+    if (!comparisonPanel || !comparisonGrid) return;
+    comparisonPanel.hidden = !comparisonMode;
+    comparisonGrid.innerHTML = comparisonItems.map((item) => `
+      <article class="armadura-comparison-card">
+        <img src="${getImage(item)}" alt="" />
+        <h3>${getName(item)}</h3>
+        <div class="armadura-comparison-row">
+          <strong>Descrição</strong>
+          <span>${getDescription(item)}</span>
+        </div>
+        <div class="armadura-comparison-row">
+          <strong>2 peças</strong>
+          <span>${renderComparisonValue(item.atributo_conjunto_2pc)}</span>
+        </div>
+        <div class="armadura-comparison-row">
+          <strong>4 peças</strong>
+          <span>${renderComparisonValue(item.atributo_conjunto_4pc)}</span>
+        </div>
+        <div class="armadura-comparison-row">
+          <strong>6 peças</strong>
+          <span>${renderComparisonValue(item.atributo_conjunto_6pc)}</span>
+        </div>
+      </article>
+    `).join('');
+
+    list.querySelectorAll('.armadura-card').forEach((card) => {
+      card.classList.toggle(
+        'is-comparison-selected',
+        comparisonItems.some((item) => String(item.id) === card.dataset.itemId)
+      );
+    });
+  }
+
+  function toggleComparison(item) {
+    const existingIndex = comparisonItems.findIndex((selected) => String(selected.id) === String(item.id));
+    if (existingIndex >= 0) {
+      comparisonItems.splice(existingIndex, 1);
+    } else {
+      if (comparisonItems.length >= 2) comparisonItems.shift();
+      comparisonItems.push(item);
+    }
+    renderComparison();
+  }
+
+  function renderComparisonMode() {
+    if (detailPanel) detailPanel.hidden = comparisonMode;
+    if (comparisonPanel) comparisonPanel.hidden = !comparisonMode;
+    if (comparisonMode) {
+      list.querySelectorAll('.armadura-card').forEach((card) => {
+        card.classList.remove('is-selected');
+      });
+    }
+    if (comparisonToggle) {
+      comparisonToggle.setAttribute('aria-checked', String(comparisonMode));
+      comparisonToggle.setAttribute('aria-label', comparisonMode ? 'Voltar ao detalhe' : 'Ativar comparação');
+    }
+    renderComparison();
+  }
+
+  function selectArmor(item) {
+    detailImage.src = getImage(item);
+    detailImage.alt = getName(item);
+    detailName.textContent = getName(item);
+    detailDescription.textContent = getDescription(item);
+    detailSet.innerHTML = [
+      renderSetAttribute('2 peças', item.atributo_conjunto_2pc),
+      renderSetAttribute('4 peças', item.atributo_conjunto_4pc),
+      renderSetAttribute('6 peças', item.atributo_conjunto_6pc)
+    ].join('') || '<li>Atributos não informados.</li>';
+
+    list.querySelectorAll('.armadura-card').forEach((card) => {
+      card.classList.toggle('is-selected', card.dataset.itemId === String(item.id));
+    });
+    renderComparison();
+  }
+
+  async function loadArmors() {
+    try {
+      const response = await fetch('assets/data/Armaduras.json');
+      if (!response.ok) throw new Error('Falha ao carregar os dados de armaduras.');
+
+      const items = await response.json();
+      const armors = (Array.isArray(items) ? items : [])
+        .filter((item) => /^armadura\b/i.test(getName(item)))
+        .filter((item) => item.efeito_conjunto
+          || item.atributo_conjunto_2pc
+          || item.atributo_conjunto_4pc
+          || item.atributo_conjunto_6pc);
+      const uniqueArmors = Array.from(
+        new Map(armors.map((item) => [item.efeito_conjunto || item.id, item])).values()
+      );
+
+      if (!uniqueArmors.length) {
+        list.innerHTML = '<div class="armaduras-empty">Nenhuma armadura encontrada.</div>';
+        return;
+      }
+
+      list.innerHTML = uniqueArmors.map((item) => `
+        <button type="button" class="armadura-card" data-item-id="${item.id}" title="${getName(item)}">
+          <img src="${item.image || ''}" alt="" loading="lazy" />
+          <span class="armadura-name">${getName(item)}</span>
+        </button>
+      `).join('');
+
+      list.querySelectorAll('.armadura-card').forEach((card) => {
+        card.querySelector('img').addEventListener('error', () => card.remove());
+        card.addEventListener('click', () => {
+          const selected = uniqueArmors.find((item) => String(item.id) === card.dataset.itemId);
+            if (selected) {
+              if (comparisonMode) {
+                toggleComparison(selected);
+              } else {
+                selectArmor(selected);
+              }
+            }
+        });
+      });
+
+      selectArmor(uniqueArmors[0]);
+        comparisonToggle?.addEventListener('click', () => {
+          comparisonMode = !comparisonMode;
+          renderComparisonMode();
+        });
+        comparisonClear?.addEventListener('click', () => {
+          comparisonItems = [];
+          renderComparison();
+        });
+    } catch (error) {
+      console.error('Erro ao carregar armaduras:', error);
+      list.innerHTML = `<div class="armaduras-error">Erro ao carregar armaduras: ${error.message}</div>`;
+    }
+  }
+
+  loadArmors();
 };
 
 async function init() {

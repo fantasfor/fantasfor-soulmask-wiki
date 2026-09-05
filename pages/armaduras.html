@@ -1,4 +1,48 @@
-<section>
-  <h2>Armaduras</h2>
-  <p>Tipos de armaduras e atributos.</p>
+<section class="armaduras-page">
+  <header class="armaduras-header">
+    <div class="armaduras-header-row">
+      <button type="button" class="armaduras-compare-toggle" id="armaduras-compare-toggle" role="switch" aria-checked="false" aria-label="Ativar comparação">
+        <span class="armaduras-compare-knob"></span>
+      </button>
+      <span class="armaduras-compare-text">Comparar armaduras</span>
+      <h1>Armaduras</h1>
+    </div>
+  </header>
+
+  <div class="armaduras-detail" id="armaduras-detail">
+    <div class="armaduras-detail-card armaduras-detail-image-card">
+      <div class="armaduras-detail-image-wrap">
+        <img id="armaduras-detail-image" class="armaduras-detail-image" src="" alt="" />
+      </div>
+    </div>
+    <div class="armaduras-detail-card armaduras-detail-info">
+      <div class="armaduras-detail-info-content">
+        <h2 id="armaduras-detail-name">Carregando...</h2>
+        <p id="armaduras-detail-description"></p>
+        <div class="armaduras-set-attribute">
+          <span>Atributos do conjunto</span>
+          <ul id="armaduras-detail-set"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="armaduras-comparison" id="armaduras-comparison" hidden>
+    <div class="armaduras-comparison-header">
+      <div>
+        <span class="armaduras-comparison-label">Comparação</span>
+        <h2>Armaduras selecionadas</h2>
+      </div>
+      <button type="button" class="armaduras-comparison-clear" id="armaduras-comparison-clear">Limpar</button>
+    </div>
+    <div class="armaduras-comparison-grid" id="armaduras-comparison-grid"></div>
+  </section>
+
+  <div class="armaduras-list-section">
+    <h2>Todas as armaduras</h2>
+    <p class="armaduras-list-hint">Clique em até duas armaduras para comparar.</p>
+    <div id="armaduras-list" class="armaduras-list">
+      <div class="armaduras-loading">Carregando armaduras...</div>
+    </div>
+  </div>
 </section>

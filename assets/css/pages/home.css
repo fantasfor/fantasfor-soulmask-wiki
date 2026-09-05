@@ -1,2 +1,14 @@
+.home-page {
+	width: min(100%, 1180px);
+	margin: 0 auto;
+	padding: 24px 32px 48px;
+}
+
 .home-intro{padding:28px}
 .home .page-content p{max-width:860px}
+
+@media (max-width: 720px) {
+	.home-page {
+		padding: 16px 14px 32px;
+	}
+}
