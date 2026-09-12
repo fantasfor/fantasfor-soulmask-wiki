@@ -19,6 +19,79 @@ async function fetchHTML(path) {
 }
 
 async function swapContent(html) {
+  function normalizeGlobalSearch(value) {
+    return (value || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+  function setupSidebarSearch() {
+    const input = document.querySelector('.sidebar-search');
+    const wrapper = document.querySelector('.sidebar-search-wrapper');
+    if (!input || !wrapper || wrapper.dataset.searchReady === 'true') return;
+    wrapper.dataset.searchReady = 'true';
+    const results = document.createElement('div');
+    results.className = 'sidebar-search-results';
+    results.hidden = true;
+    wrapper.appendChild(results);
+    let catalog = [];
+    const sources = [
+      { page: 'talentos', label: 'Talento', url: 'assets/data/talentos.json', name: (item) => item['Title PT'] || item['Title EN'], text: (item) => item['Description PT'] || item['Description EN'] },
+      { page: 'itens', label: 'Item', url: 'assets/data/itens.json', name: (item) => item.name_pt || item.name, text: (item) => item.description_pt || item.description },
+      { page: 'alimentos', label: 'Alimento', url: 'assets/data/alimentos.json', name: (item) => item.name_pt || item.name_en, text: (item) => `${item.description_pt || item.description_en || ''} ${item.bonus || ''}` },
+      { page: 'armaduras', label: 'Armadura', url: 'assets/data/Armaduras.json', name: (item) => item.name_pt || item.name, text: (item) => `${item.description_pt || item.description || ''} ${item.efeito_conjunto || ''}` }
+    ];
+    async function loadCatalog() {
+      const loaded = await Promise.all(sources.map(async (source) => {
+        try {
+          const response = await fetch(source.url);
+          if (!response.ok) return [];
+          const data = await response.json();
+          return (Array.isArray(data) ? data : []).map((item) => ({
+            page: source.page,
+            label: source.label,
+            name: source.name(item) || source.label,
+            text: source.text(item) || ''
+          }));
+        } catch {
+          return [];
+        }
+      }));
+      catalog = loaded.flat();
+    }
+    function clearResults() {
+      results.innerHTML = '';
+      results.hidden = true;
+    }
+    function renderResults(query) {
+      const normalized = normalizeGlobalSearch(query);
+      if (!normalized) {
+        clearResults();
+        return;
+      }
+      const matches = catalog.filter((item) => normalizeGlobalSearch(`${item.name} ${item.text}`).includes(normalized)).slice(0, 8);
+      results.innerHTML = matches.length
+        ? matches.map((item) => `<button type="button" class="sidebar-search-result" data-page="${item.page}"><strong>${item.name}</strong><span>${item.label}</span></button>`).join('')
+        : '<div class="sidebar-search-empty">Nenhum resultado</div>';
+      results.hidden = false;
+    }
+    input.addEventListener('input', () => renderResults(input.value));
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        input.value = '';
+        clearResults();
+      }
+    });
+    results.addEventListener('click', (event) => {
+      const result = event.target.closest('.sidebar-search-result');
+      if (!result) return;
+      input.value = '';
+      clearResults();
+      window.navigateTo(result.dataset.page);
+    });
+    document.addEventListener('click', (event) => {
+      if (!wrapper.contains(event.target)) clearResults();
+    });
+    loadCatalog();
+  }
+    setupSidebarSearch();
   const container = document.querySelector('#page-content');
   if (!container) return;
 
@@ -362,6 +435,10 @@ async function loadPageFromHash() {
 
   if (document.querySelector('.items-page')) {
     initItensPage();
+  }
+
+  if (document.querySelector('.foods-page')) {
+    initAlimentosPage();
   }
 
   if (document.querySelector('.armaduras-page')) {
@@ -1295,7 +1372,7 @@ window.initBuilderMakerPage = function initBuilderMakerPage() {
         ].filter(([pieces, value]) => value && count >= pieces);
 
         const bonusMarkup = bonuses.flatMap(([pieces, value]) => value
-          .split(/,\s*/)
+          .split(/,\s+(?=[A-Za-zÀ-ÿ])/)
           .map((attribute) => attribute.trim())
           .filter(Boolean)
           .map((attribute) => `
@@ -1463,8 +1540,96 @@ window.addEventListener('hashchange', () => {
   if (page === 'builder-maker') initBuilderMakerPage();
   if (page === 'talentos') initTalentsPage();
   if (page === 'itens') initItensPage();
+  if (page === 'alimentos') initAlimentosPage();
   if (page === 'armaduras') initArmadurasPage();
 });
+
+window.initAlimentosPage = function initAlimentosPage() {
+  const root = document.querySelector('.foods-page');
+  if (!root || root.dataset.foodsReady === 'true') return;
+  root.dataset.foodsReady = 'true';
+
+  let allFoods = [];
+  let filteredFoods = [];
+
+  function populateFilter(selector, values, emptyLabel) {
+    const select = root.querySelector(selector);
+    if (!select) return;
+    select.innerHTML = `<option value="">${emptyLabel}</option>`;
+    values.filter(Boolean).sort((a, b) => a.localeCompare(b, 'pt-BR')).forEach((value) => {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = value;
+      select.appendChild(option);
+    });
+  }
+
+  function renderFoods() {
+    const container = root.querySelector('#foods-container');
+    if (!container) return;
+    if (!filteredFoods.length) {
+      container.innerHTML = '<div class="foods-empty">Nenhum alimento encontrado.</div>';
+      updateCount(0);
+      return;
+    }
+
+    container.innerHTML = filteredFoods.map((food) => `
+      <article class="food-card">
+        <div class="food-card-header">
+          <img class="food-card-image" src="${food.image_path || ''}" alt="" loading="lazy" />
+          <div>
+            <h2 class="food-card-title">${food.name_pt || food.name_en || 'Alimento'}</h2>
+            <span class="food-card-category">${food.category || ''}</span>
+            <span class="food-card-subcategory">${food.subcategory || ''}</span>
+          </div>
+        </div>
+        <p class="food-card-description">${food.description_pt || food.description_en || ''}</p>
+        ${food.bonus ? `<div class="food-card-bonus"><strong>Bônus:</strong><ul class="food-card-bonus-list">${food.bonus.split(',').map((b) => b.trim()).filter(Boolean).map((b) => `<li>${b}</li>`).join('')}</ul></div>` : ''}
+        ${food.duracao ? `<div class="food-card-duration"><strong>Duração:</strong> ${food.duracao}</div>` : ''}
+      </article>
+    `).join('');
+    updateCount(filteredFoods.length);
+  }
+
+  function filterFoods() {
+    const search = (root.querySelector('#foods-search')?.value || '').toLocaleLowerCase('pt-BR');
+    const category = root.querySelector('#foods-category-filter')?.value || '';
+    const subcategory = root.querySelector('#foods-subcategory-filter')?.value || '';
+    filteredFoods = allFoods.filter((food) => {
+      const searchable = [food.name_pt, food.name_en, food.description_pt, food.bonus].filter(Boolean).join(' ').toLocaleLowerCase('pt-BR');
+      return (!search || searchable.includes(search))
+        && (!category || food.category === category)
+        && (!subcategory || food.subcategory === subcategory);
+    });
+    renderFoods();
+  }
+
+  function updateCount(count) {
+    const element = root.querySelector('#foods-count');
+    if (element) element.textContent = `${count} ${count === 1 ? 'alimento encontrado' : 'alimentos encontrados'}`;
+  }
+
+  async function loadFoods() {
+    try {
+      const response = await fetch('assets/data/alimentos.json');
+      if (!response.ok) throw new Error('Falha ao carregar os alimentos.');
+      allFoods = await response.json();
+      if (!Array.isArray(allFoods)) throw new Error('Formato inválido.');
+      populateFilter('#foods-category-filter', [...new Set(allFoods.map((food) => food.category))], 'Todas as categorias');
+      populateFilter('#foods-subcategory-filter', [...new Set(allFoods.map((food) => food.subcategory))], 'Todas as subcategorias');
+      filteredFoods = [...allFoods];
+      root.querySelector('#foods-search')?.addEventListener('input', filterFoods);
+      root.querySelector('#foods-category-filter')?.addEventListener('change', filterFoods);
+      root.querySelector('#foods-subcategory-filter')?.addEventListener('change', filterFoods);
+      renderFoods();
+    } catch (error) {
+      console.error('Erro ao carregar alimentos:', error);
+      root.querySelector('#foods-container').innerHTML = `<div class="foods-error">Erro ao carregar os alimentos: ${error.message}</div>`;
+    }
+  }
+
+  loadFoods();
+};
 
 window.initItensPage = function initItensPage() {
   const root = document.querySelector('.items-page');
@@ -1649,7 +1814,7 @@ window.initArmadurasPage = function initArmadurasPage() {
   function renderSetAttribute(label, value) {
     if (!value) return '';
     return value
-      .split(/,\s*/)
+      .split(/,\s+(?=[A-Za-zÀ-ÿ])/)
       .map((attribute) => attribute.trim())
       .filter(Boolean)
       .map((attribute) => `<li>${label}: ${attribute}</li>`)
@@ -1658,7 +1823,7 @@ window.initArmadurasPage = function initArmadurasPage() {
 
   function renderComparisonValue(value) {
     if (!value) return 'Sem informação';
-    return value.split(/,\s*/).filter(Boolean).join('<br>');
+    return value.split(/,\s+(?=[A-Za-zÀ-ÿ])/).filter(Boolean).join('<br>');
   }
 
   function renderComparison() {

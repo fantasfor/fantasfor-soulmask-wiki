@@ -1,4 +1,21 @@
-<section>
-  <h2>Alimentos</h2>
-  <p>Lista e receitas de alimentos.</p>
+<section class="foods-page">
+  <header class="foods-header">
+    <h1>Alimentos</h1>
+    <p class="foods-subtitle">Consulte efeitos, categorias e subcategorias dos alimentos.</p>
+  </header>
+
+  <div class="foods-filters">
+    <input id="foods-search" class="foods-search-input" type="search" placeholder="Buscar alimentos..." aria-label="Buscar alimentos" />
+    <select id="foods-category-filter" class="foods-filter-select" aria-label="Filtrar por categoria">
+      <option value="">Todas as categorias</option>
+    </select>
+    <select id="foods-subcategory-filter" class="foods-filter-select" aria-label="Filtrar por subcategoria">
+      <option value="">Todas as subcategorias</option>
+    </select>
+    <span id="foods-count" class="foods-count">Carregando...</span>
+  </div>
+
+  <div id="foods-container" class="foods-grid">
+    <div class="foods-loading">Carregando alimentos...</div>
+  </div>
 </section>
