@@ -1,4 +1,53 @@
-<section>
-  <h2>Apoie</h2>
-  <p>Informações sobre como apoiar o projeto (doações, patreon, etc.).</p>
+<section class="support-page">
+  <!--
+    CONFIGURAÇÃO DO APOIO — edite só este bloco.
+    apiBase:  servidor da loja no Netlify (o mesmo do GDMbot).
+    pixKey:   sua chave Pix (CPF, e-mail, telefone +55... ou chave aleatória). Vazio = esconde o Pix direto.
+    pixName:  nome do recebedor (até 25 letras, sem acento de preferência) e pixCity: cidade (até 15 letras).
+  -->
+  <script type="application/json" id="supportConfig">
+    {
+      "apiBase": "https://gdmbot-loja.netlify.app/api",
+      "amounts": [5, 10, 20, 50],
+      "pixKey": "",
+      "pixName": "FANTASFOR",
+      "pixCity": "SAO PAULO"
+    }
+  </script>
+
+  <header class="support-hero">
+    <h1 data-i18n="support.title">Apoie o Fantasfor Wiki</h1>
+    <p class="support-lead" data-i18n="support.lead">O site é gratuito e sem anúncios. Sua ajuda paga o tempo de atualização a cada patch do Soulmask e mantém tudo no ar.</p>
+  </header>
+
+  <div class="gb-message support-message" id="support-message" hidden></div>
+
+  <div class="support-grid">
+    <form class="support-card" id="support-form">
+      <h2 data-i18n="support.donateTitle">Apoiar pelo Mercado Pago</h2>
+      <p class="support-note" data-i18n="support.donateHint">Pix, cartão ou boleto. Você escolhe o valor.</p>
+      <div class="support-amounts" id="support-amounts" role="radiogroup" aria-label="Valor" data-i18n-aria="support.amount"></div>
+      <label class="support-field"><span data-i18n="support.other">Outro valor (R$)</span>
+        <input type="number" id="support-custom" class="items-search-input" min="2" max="1000" step="1" inputmode="numeric" /></label>
+      <label class="support-field"><span data-i18n="support.name">Seu nome no mural (opcional)</span>
+        <input type="text" id="support-name" class="items-search-input" maxlength="40" /></label>
+      <label class="support-field"><span data-i18n="support.msg">Mensagem (opcional)</span>
+        <input type="text" id="support-msg" class="items-search-input" maxlength="140" /></label>
+      <label class="support-check"><input type="checkbox" id="support-show" checked /> <span data-i18n="support.show">Mostrar meu nome no mural de apoiadores</span></label>
+      <button type="submit" class="gb-btn buy support-submit" id="support-submit" data-i18n="support.button">💛 Apoiar agora</button>
+    </form>
+
+    <section class="support-card" id="support-pix" hidden>
+      <h2 data-i18n="support.pixTitle">Pix direto</h2>
+      <p class="support-note" data-i18n="support.pixHint">Escaneie o QR code no app do banco ou copie o código.</p>
+      <div class="support-qr" id="support-qr"></div>
+      <textarea class="items-search-input support-pix-code" id="support-pix-code" rows="3" readonly aria-label="Pix copia e cola"></textarea>
+      <button type="button" class="gb-btn" id="support-pix-copy" data-i18n="support.pixCopy">Copiar código Pix</button>
+    </section>
+  </div>
+
+  <section class="support-card support-wall">
+    <h2 data-i18n="support.wall">💛 Mural de apoiadores</h2>
+    <ul class="support-list" id="support-list"><li class="support-note" data-i18n="site.loading">Carregando...</li></ul>
+  </section>
 </section>

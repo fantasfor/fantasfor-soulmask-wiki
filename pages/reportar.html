@@ -1,4 +1,23 @@
-<section>
-  <h2>Reportar / Sugestão</h2>
-  <p>Formulário e instruções para reportar problemas e enviar sugestões.</p>
+<section class="report-page">
+  <header class="report-header">
+    <h1 data-i18n="nav.report">Reportar / Sugestão</h1>
+    <p data-i18n="report.intro">Achou um erro, uma informação errada ou tem uma ideia para o site? Escolha abaixo e envie — leva menos de um minuto.</p>
+  </header>
+
+  <div class="report-tabs" role="tablist">
+    <button type="button" class="report-tab" role="tab" aria-selected="true" data-form="bug" data-i18n="report.bug">🐞 Reportar problema</button>
+    <button type="button" class="report-tab" role="tab" aria-selected="false" data-form="idea" data-i18n="report.idea">💡 Enviar sugestão</button>
+  </div>
+
+  <div class="report-frame-wrap">
+    <iframe id="report-frame" title="Formulário" src="https://docs.google.com/forms/d/e/1FAIpQLSetmN6JzKW_QGaT-58yfG5vqd8aP5ZwnQk_8qipqITgFu1vxw/viewform?embedded=true" loading="lazy">Carregando…</iframe>
+  </div>
+  <p class="report-hint"><span data-i18n="report.openNew">Não carregou?</span> <a id="report-link" href="https://docs.google.com/forms/d/e/1FAIpQLSetmN6JzKW_QGaT-58yfG5vqd8aP5ZwnQk_8qipqITgFu1vxw/viewform" target="_blank" rel="noopener noreferrer" data-i18n="report.openLink">Abrir o formulário em outra aba</a></p>
+
+  <script type="application/json" id="report-forms">
+    {
+      "bug": "https://docs.google.com/forms/d/e/1FAIpQLSetmN6JzKW_QGaT-58yfG5vqd8aP5ZwnQk_8qipqITgFu1vxw/viewform",
+      "idea": "https://docs.google.com/forms/d/e/1FAIpQLSdfMCP_VzPa6iM5IeXVE8JQnfLQYyi6EXPoRt-rCz-zfvLojA/viewform"
+    }
+  </script>
 </section>

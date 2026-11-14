@@ -6,12 +6,31 @@ Site estático da wiki Soulmask (SPA com roteamento por hash) — rápido, acess
 
 - `index.html` — entrada principal do site (SPA)
 - `assets/css/` — estilos modulares (`style.css` importa base, layout, componentes e páginas)
-- `assets/js/` — scripts (`main.js` = roteador + páginas, `ui.js` = helpers de UI)
-- `assets/data/` — dados JSON (talentos, itens, armaduras)
-- `assets/img/` — imagens otimizadas (WebP)
+- `assets/js/` — scripts:
+  - `main.js` — roteador, busca global, troca de idioma e home
+  - `i18n.js` — textos da interface em português e inglês
+  - `data.js` — carregamento dos dados, formatação de atributos e janela de detalhes do item
+  - `pages/*.js` — uma página por arquivo (itens, talentos, Builder Maker, tier list...)
+- `assets/data/` — dados do jogo em JSON, gerados por `tools/build_data.py` (PT + EN)
+- `assets/img/game/` — ícones oficiais do jogo (WebP), gerados pelo mesmo script
 - `components/` — pedaços HTML reutilizáveis (header, sidebar)
 - `pages/` — páginas do site carregadas via hash (`#home`, `#talentos`, ...)
+- `tools/` — extração dos dados do Soulmask Modkit (veja `tools/COMO_ATUALIZAR.md`)
 - `.github/workflows/` — deploy automático no GitHub Pages
+
+## Idiomas
+
+O site tem português e inglês (botões PT/EN na barra lateral, ou `?lang=en` na URL).
+Textos fixos usam `data-i18n="chave"` no HTML; as chaves ficam em `assets/js/i18n.js`.
+Os dados do jogo já vêm com `name_pt`/`name_en`, `desc_pt`/`desc_en` etc.
+
+## Atualizar os dados do jogo
+
+```bash
+python tools/build_data.py
+```
+
+Detalhes em [tools/COMO_ATUALIZAR.md](tools/COMO_ATUALIZAR.md).
 
 ## Desenvolver localmente
 
@@ -19,8 +38,8 @@ Site estático da wiki Soulmask (SPA com roteamento por hash) — rápido, acess
 2. Sirva os arquivos estáticos com Python:
 
 ```bash
-python -m http.server 8000
-# Acesse http://localhost:8000
+python tools/dev_server.py 8000
+# Acesse http://localhost:8000  (servidor sem cache, sempre mostra a versão mais nova)
 ```
 
 > Abrir `index.html` direto via `file://` não funciona (fetch de páginas/componentes é bloqueado).
@@ -50,5 +69,5 @@ Adicione um arquivo `CNAME` na raiz contendo seu domínio e configure o DNS.
 ## Padrões de desenvolvimento
 
 - Cada arquivo tem uma responsabilidade única.
-- Novas páginas: crie `pages/<nome>.html`, adicione o link em `components/sidebar.html` e, se precisar de JS, registre o init no roteador em `assets/js/main.js` (`loadPageFromHash`).
+- Novas páginas: crie `pages/<nome>.html`, adicione o link em `components/sidebar.html` (com `data-i18n`) e, se precisar de JS, crie `assets/js/pages/<nome>.js` e registre em `PAGE_INIT` no `assets/js/main.js`.
 - Imagens novas devem ser WebP (use Pillow: `Image.open(png).save(webp, 'WEBP', quality=85)`).

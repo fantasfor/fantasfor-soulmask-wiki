@@ -1,4 +1,11 @@
-<section>
-  <h2>Máscaras</h2>
-  <p>Catálogo de máscaras e seus efeitos.</p>
+<section class="items-page db-page masks-page">
+  <div class="items-header">
+    <h1 data-i18n="masks.title">Máscaras</h1>
+    <p class="items-subtitle" data-i18n="masks.subtitle">Máscaras, seus efeitos e habilidades.</p>
+  </div>
+  <div class="items-filters">
+    <input type="search" id="db-search" class="items-search-input" placeholder="Buscar máscaras..." data-i18n-placeholder="masks.search" aria-label="Buscar máscaras" data-i18n-aria="masks.search" />
+    <div class="items-stats"><span id="db-count" data-i18n="site.loading">Carregando...</span></div>
+  </div>
+  <div id="db-container" class="items-grid masks-grid"></div>
 </section>

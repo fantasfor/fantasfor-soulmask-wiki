@@ -1,0 +1,14 @@
+<section class="items-page db-page weapons-page">
+  <div class="items-header">
+    <h1 data-i18n="weapons.title">Armas</h1>
+    <p class="items-subtitle" data-i18n="weapons.subtitle">Todas as armas do jogo com dano, durabilidade e atributos.</p>
+  </div>
+  <div class="items-filters">
+    <input type="search" id="db-search" class="items-search-input" placeholder="Buscar armas..." data-i18n-placeholder="weapons.search" aria-label="Buscar armas" data-i18n-aria="weapons.search" />
+    <select id="db-filter" class="items-filter-select" aria-label="Tipo de arma" data-i18n-aria="weapons.allTypes">
+      <option value="" data-i18n="weapons.allTypes">Todos os tipos de arma</option>
+    </select>
+    <div class="items-stats"><span id="db-count" data-i18n="site.loading">Carregando...</span></div>
+  </div>
+  <div id="db-container" class="items-grid"></div>
+</section>

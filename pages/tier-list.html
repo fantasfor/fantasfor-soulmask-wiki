@@ -1,19 +1,56 @@
 <section class="tier-list-page">
   <header class="tier-list-header">
-    <span class="tier-list-eyebrow">Soulmask Database</span>
-    <h1>Tier List</h1>
-    <p>Organize seus equipamentos e talentos por nível.</p>
+    <span class="tier-list-eyebrow" data-i18n="tier.eyebrow">Soulmask Database</span>
+    <h1 data-i18n="tier.title">Tier List</h1>
+    <p data-i18n="tier.subtitle">Organize seus equipamentos e talentos por nível.</p>
   </header>
 
-  <div class="tier-list-categories" aria-label="Categoria da tier list">
-    <button type="button" class="tier-category is-active" data-category="armadura" aria-pressed="true">Armadura</button>
-    <button type="button" class="tier-category" data-category="arma" aria-pressed="false">Arma</button>
-    <button type="button" class="tier-category" data-category="mascaras" aria-pressed="false">Máscaras</button>
-    <button type="button" class="tier-category" data-category="talentos" aria-pressed="false">Talentos</button>
+  <div class="tier-tabs" role="tablist" aria-label="Tier list">
+    <button type="button" class="tier-tab" role="tab" id="tier-tab-mine" aria-controls="tier-mine" aria-selected="true" data-view="mine" data-i18n="tier.mine">Minha tier list</button>
+    <button type="button" class="tier-tab" role="tab" id="tier-tab-community" aria-controls="tier-community" aria-selected="false" data-view="community" data-i18n="tier.community">Comunidade</button>
   </div>
 
-  <section class="tier-list-armor-pool" id="tier-list-armor-pool" aria-label="Armaduras disponíveis" hidden></section>
-  <section class="tier-list-weapon-pool" id="tier-list-weapon-pool" aria-label="Armas disponíveis" hidden></section>
-  <section class="tier-list-mask-pool" id="tier-list-mask-pool" aria-label="Máscaras disponíveis" hidden></section>
-  <div class="tier-list-board" id="tier-list-board" aria-live="polite"></div>
+  <div class="tier-list-categories" aria-label="Categoria da tier list">
+    <button type="button" class="tier-category is-active" data-category="armadura" aria-pressed="true" data-i18n="tier.armor">Armadura</button>
+    <button type="button" class="tier-category" data-category="arma" aria-pressed="false" data-i18n="tier.weapon">Arma</button>
+    <button type="button" class="tier-category" data-category="mascaras" aria-pressed="false" data-i18n="tier.masks">Máscaras</button>
+    <button type="button" class="tier-category" data-category="talentos" aria-pressed="false" data-i18n="tier.talents">Talentos</button>
+  </div>
+
+  <div id="tier-mine" role="tabpanel" aria-labelledby="tier-tab-mine">
+    <section class="tier-list-armor-pool" id="tier-list-armor-pool" aria-label="Armaduras disponíveis" hidden></section>
+    <section class="tier-list-weapon-pool" id="tier-list-weapon-pool" aria-label="Armas disponíveis" hidden></section>
+    <section class="tier-list-mask-pool" id="tier-list-mask-pool" aria-label="Máscaras disponíveis" hidden></section>
+    <div class="tier-list-board" id="tier-list-board" aria-live="polite"></div>
+
+    <form class="tier-publish" id="tier-publish">
+      <h2 data-i18n="tier.publishTitle">Publicar na comunidade</h2>
+      <p class="tier-muted" data-i18n="tier.publishHint">Outros jogadores poderão ver, avaliar com estrelas e comentar. Publicar de novo atualiza a sua lista desta categoria.</p>
+      <input class="tier-entry-input" id="tier-publish-title" maxlength="80" required placeholder="Título (ex.: Melhores armaduras para PvE)" data-i18n-placeholder="tier.publishName" />
+      <textarea class="tier-entry-input tier-textarea" id="tier-publish-note" maxlength="1000" rows="3" placeholder="Observações: por que essa ordem? Para qual estilo de jogo?" data-i18n-placeholder="tier.publishNote"></textarea>
+      <div class="tier-publish-actions">
+        <button type="submit" class="tier-btn primary" data-i18n="tier.publish">Publicar</button>
+        <span class="tier-muted" id="tier-publish-status" aria-live="polite"></span>
+      </div>
+    </form>
+  </div>
+
+  <div id="tier-community" role="tabpanel" aria-labelledby="tier-tab-community" hidden>
+    <div class="tier-community-bar">
+      <input type="search" class="tier-entry-input" id="tier-community-search" placeholder="Buscar por título ou autor..." data-i18n-placeholder="tier.searchCommunity" />
+      <select class="tier-entry-input" id="tier-community-sort" aria-label="Ordenar" data-i18n-aria="tier.sort">
+        <option value="rating" data-i18n="tier.sortRating">Melhor avaliadas</option>
+        <option value="recent" data-i18n="tier.sortRecent">Mais recentes</option>
+        <option value="votes" data-i18n="tier.sortVotes">Mais avaliadas</option>
+      </select>
+    </div>
+    <div class="tier-community-grid" id="tier-community-grid"></div>
+  </div>
+
+  <div class="tier-viewer" id="tier-viewer" hidden>
+    <section class="tier-viewer-dialog" role="dialog" aria-modal="true" aria-labelledby="tier-viewer-title">
+      <button type="button" class="tier-viewer-close" data-close aria-label="Fechar" data-i18n-aria="common.close">&times;</button>
+      <div id="tier-viewer-body"></div>
+    </section>
+  </div>
 </section>

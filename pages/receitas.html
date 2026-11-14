@@ -1,0 +1,14 @@
+<section class="items-page db-page recipes-page">
+  <div class="items-header">
+    <h1 data-i18n="recipes.title">Receitas</h1>
+    <p class="items-subtitle" data-i18n="recipes.subtitle">O que cada bancada fabrica e quais materiais são necessários.</p>
+  </div>
+  <div class="items-filters">
+    <input type="search" id="db-search" class="items-search-input" placeholder="Buscar receitas ou materiais..." data-i18n-placeholder="recipes.search" aria-label="Buscar receitas" data-i18n-aria="recipes.search" />
+    <select id="db-filter" class="items-filter-select" aria-label="Bancada" data-i18n-aria="recipes.allBenches">
+      <option value="" data-i18n="recipes.allBenches">Todas as bancadas</option>
+    </select>
+    <div class="items-stats"><span id="db-count" data-i18n="site.loading">Carregando...</span></div>
+  </div>
+  <div id="db-container" class="items-grid recipes-grid"></div>
+</section>

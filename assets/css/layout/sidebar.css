@@ -98,6 +98,94 @@
   line-height: 1.2;
 }
 
+/* Conta (login Google) */
+.account-box:empty {
+  display: none;
+}
+
+.account-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 36px;
+  border: 1px solid #686e73;
+  background: #191a1a;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.account-login:hover,
+.account-login:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.account-g {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: conic-gradient(#ea4335 0 25%, #fbbc05 0 50%, #34a853 0 75%, #4285f4 0);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.account-user {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.account-user img,
+.account-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #333;
+}
+
+.account-text {
+  display: grid;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.account-text strong {
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-status {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.account-status-ok { color: #39d98a; }
+.account-status-error { color: #ff8a93; }
+
+.account-logout {
+  padding: 2px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.account-logout:hover {
+  color: var(--text);
+}
+
 /* Search input */
 .sidebar-search-wrapper {
   margin-top: 0;
@@ -291,3 +379,37 @@
   transform: translateY(-1px);
 }
 
+
+/* Seletor de idioma PT/EN */
+.lang-switch {
+  display: inline-flex;
+  align-self: flex-start;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.lang-switch-btn {
+  min-width: 40px;
+  padding: 4px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.lang-switch-btn + .lang-switch-btn {
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.lang-switch-btn:hover,
+.lang-switch-btn:focus-visible {
+  color: var(--accent);
+  outline: none;
+}
+
+.lang-switch-btn[aria-pressed="true"] {
+  background: rgba(144, 209, 238, 0.14);
+  color: var(--accent);
+}

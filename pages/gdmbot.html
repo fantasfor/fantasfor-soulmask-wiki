@@ -3,15 +3,18 @@
     CONFIGURAÇÃO DA LOJA — edite só este bloco (veja GDMbot/servidor/CONFIGURAR_VENDAS.md).
     firebase:     "Configuração do SDK" do app Web no console do Firebase (é público, pode ficar no site).
     apiBase:      endereço do servidor no Netlify + "/api", ex.: "https://gdmbot-loja.netlify.app/api".
-    price:        só o texto exibido; o valor cobrado de verdade é GDMBOT_PRICE no servidor.
+    price:        só o texto exibido; o valor cobrado de verdade é GDMBOT_PRICE no servidor (tem que ser igual).
+    priceFrom:    preço cheio mostrado riscado; discount: valor do desconto. Deixe "" para não mostrar promoção.
     downloadUrl:  link do GDMbot.exe (ex.: página de Releases do GitHub).
     Enquanto "firebase" estiver vazio, os botões de compra aparecem como "em breve".
   -->
   <script type="application/json" id="gdmbotStoreConfig">
     {
-      "price": "49,90",
+      "price": "19,00",
+      "priceFrom": "29,99",
+      "discount": "10,99",
       "priceNote": "pagamento único · licença vitalícia",
-      "downloadUrl": "",
+      "downloadUrl": "https://github.com/fantasfor/GDMbot/raw/main/GDMbot-v2.0.0.zip",
       "supportEmail": "",
       "deliveryTime": "segundos após a aprovação",
       "apiBase": "https://gdmbot-loja.netlify.app/api",
@@ -148,6 +151,12 @@
     .gb-plan h3 { margin: 0; font-family: "Cinzel", serif; letter-spacing: 0.06em; }
     .gb-plan.pro h3 { color: var(--gb-gold); }
     .gb-price { font-size: 2rem; font-weight: 800; }
+    .gb-price-from { display: block; color: var(--muted); font-size: 1rem; font-weight: 400; text-decoration: line-through; }
+    .gb-discount {
+      display: inline-block; margin-left: 8px; padding: 2px 8px; vertical-align: middle;
+      background: var(--gb-green); color: #0b0a09; font-size: 0.78rem; font-weight: 800;
+    }
+    [data-gb="promo"][hidden] { display: none; }
     .gb-price small { font-size: 0.8rem; font-weight: 400; color: var(--muted); display: block; }
     .gb-plan ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; font-size: 0.88rem; }
     .gb-plan li::before { content: "✓  "; color: var(--gb-green); font-weight: 700; }
@@ -277,8 +286,9 @@
       </p>
       <div class="gb-cta">
         <a class="gb-btn" data-gb="download" href="#">⬇ Baixar grátis</a>
-        <a class="gb-btn buy" data-gb="buy" href="#">⭐ Comprar Pro — R$ <span data-gb="price">49,90</span></a>
+        <a class="gb-btn buy" data-gb="buy" href="#">⭐ Comprar Pro — R$ <span data-gb="price">19,00</span></a>
       </div>
+      <p class="gb-note" data-gb="promo" style="margin-top:8px" hidden>De <s>R$ <span data-gb="priceFrom">29,99</span></s> por R$ <span data-gb="price">19,00</span> — desconto de R$ <span data-gb="discount">10,99</span></p>
       <p class="gb-note" style="margin-top:10px"><span data-gb="priceNote"></span> · Windows 10/11</p>
     </div>
     <img class="gb-shot" src="assets/img/gdmbot/app.webp" alt="Tela do GDMbot com uma macro de talentos" loading="lazy" />
@@ -304,10 +314,9 @@
         <h3>Grátis</h3>
         <div class="gb-price">R$ 0<small>para sempre</small></div>
         <ul>
-          <li>Todos os comandos de teclado, mouse e imagem</li>
-          <li>SE / SENÃO, gravação e atalhos globais</li>
-          <li>Código do Builder Maker</li>
-          <li>Macros de até 25 comandos</li>
+          <li>Rodar o código do Builder Maker (talentos da build)</li>
+          <li>Até 21 comandos por macro (o tamanho do código do Builder Maker), uma vez por execução</li>
+          <li class="no">Macros maiores que isso</li>
           <li class="no">Repetição infinita / X vezes</li>
           <li class="no">Leitura de texto na tela (OCR)</li>
         </ul>
@@ -315,10 +324,14 @@
       </div>
       <div class="gb-plan pro">
         <h3>⭐ Pro</h3>
-        <div class="gb-price">R$ <span data-gb="price">49,90</span><small data-gb="priceNote"></small></div>
+        <div class="gb-price">
+          <span class="gb-price-from" data-gb="promo" hidden>R$ <span data-gb="priceFrom">29,99</span></span>
+          R$ <span data-gb="price">19,00</span><span class="gb-discount" data-gb="promo" hidden>−R$ <span data-gb="discount">10,99</span></span>
+          <small data-gb="priceNote"></small>
+        </div>
         <ul>
           <li>Tudo da versão Grátis</li>
-          <li>Macros ilimitados</li>
+          <li>Macros sem limite de tamanho</li>
           <li>Repetição infinita e X vezes</li>
           <li>Leitura de texto na tela (OCR)</li>
           <li>Atualizações e suporte</li>

@@ -1,4 +1,31 @@
-<section>
-  <h2>Plantio</h2>
-  <p>Guias e tabelas sobre plantio e recursos.</p>
+<section class="items-page db-page farming-page">
+  <div class="items-header">
+    <h1 data-i18n="farming.title">Plantio</h1>
+    <p class="items-subtitle" data-i18n="farming.subtitle">Sementes, tempo de crescimento, temperatura ideal e o que cada plantação rende.</p>
+  </div>
+  <section class="farm-sim" aria-labelledby="farm-sim-title">
+    <h2 id="farm-sim-title" data-i18n="farming.simTitle">Simulador de plantio</h2>
+    <div class="farm-sim-form">
+      <label><span data-i18n="farming.simCrop">Plantação</span><select id="sim-crop" class="items-search-input"></select></label>
+      <label><span data-i18n="farming.simTemp">Temperatura do local (°C)</span>
+        <span class="farm-sim-temp"><input type="range" id="sim-temp" min="-10" max="50" step="1" value="25" /><output id="sim-temp-out">25 °C</output></span></label>
+      <label><span data-i18n="farming.simPlots">Quantidade de canteiros</span><input type="number" id="sim-plots" class="items-search-input" min="1" max="500" value="10" /></label>
+      <label><span data-i18n="farming.simCycles">Colheitas seguidas</span><input type="number" id="sim-cycles" class="items-search-input" min="1" max="50" value="1" /></label>
+    </div>
+    <div class="farm-sim-result" id="sim-result" aria-live="polite"></div>
+    <details class="farm-sim-best">
+      <summary data-i18n="farming.simBest">Quais plantações crescem bem nesta temperatura?</summary>
+      <div id="sim-best"></div>
+    </details>
+  </section>
+
+  <div class="items-filters">
+    <input type="search" id="db-search" class="items-search-input" placeholder="Buscar plantações..." data-i18n-placeholder="farming.search" aria-label="Buscar plantações" data-i18n-aria="farming.search" />
+    <select id="farming-sort" class="items-search-input farming-sort" aria-label="Ordenar" data-i18n-aria="tier.sort">
+      <option value="name" data-i18n="talents.sortName">Ordem alfabética</option>
+      <option value="fast" data-i18n="farming.sortFast">Mais rápidas</option>
+    </select>
+    <div class="items-stats"><span id="db-count" data-i18n="site.loading">Carregando...</span></div>
+  </div>
+  <div id="db-container" class="items-grid farming-grid"></div>
 </section>

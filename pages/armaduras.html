@@ -1,48 +1,36 @@
 <section class="armaduras-page">
-  <header class="armaduras-header">
-    <div class="armaduras-header-row">
-      <button type="button" class="armaduras-compare-toggle" id="armaduras-compare-toggle" role="switch" aria-checked="false" aria-label="Ativar comparação">
-        <span class="armaduras-compare-knob"></span>
+  <header class="arm-header">
+    <div>
+      <h1 data-i18n="armors.title">Armaduras</h1>
+      <p class="arm-subtitle" data-i18n="armors.subtitle">Conjuntos de armadura, peças e bônus de conjunto.</p>
+    </div>
+    <div class="arm-controls">
+      <div class="arm-segmented" role="group" aria-label="Versão da armadura" data-i18n-aria="armors.variant">
+        <button type="button" class="arm-seg-btn" data-variant="normal" aria-pressed="false" data-i18n="armors.normal">Normal</button>
+        <button type="button" class="arm-seg-btn" data-variant="advanced" aria-pressed="true" data-i18n="armors.advanced">Avançada</button>
+      </div>
+      <button type="button" class="arm-compare-btn" id="armaduras-compare-toggle" aria-pressed="false">
+        <span aria-hidden="true">⇄</span> <span data-i18n="armors.compare">Comparar armaduras</span>
       </button>
-      <span class="armaduras-compare-text">Comparar armaduras</span>
-      <h1>Armaduras</h1>
     </div>
   </header>
 
-  <div class="armaduras-detail" id="armaduras-detail">
-    <div class="armaduras-detail-card armaduras-detail-image-card">
-      <div class="armaduras-detail-image-wrap">
-        <img id="armaduras-detail-image" class="armaduras-detail-image" src="" alt="" />
-      </div>
-    </div>
-    <div class="armaduras-detail-card armaduras-detail-info">
-      <div class="armaduras-detail-info-content">
-        <h2 id="armaduras-detail-name">Carregando...</h2>
-        <p id="armaduras-detail-description"></p>
-        <div class="armaduras-set-attribute">
-          <span>Atributos do conjunto</span>
-          <ul id="armaduras-detail-set"></ul>
+  <div class="arm-layout">
+    <nav class="arm-list" id="armaduras-list" aria-label="Conjuntos de armadura" data-i18n-aria="armors.all">
+      <div class="armaduras-loading" data-i18n="armors.loading">Carregando armaduras...</div>
+    </nav>
+
+    <section class="arm-detail" id="armaduras-detail" aria-live="polite"></section>
+
+    <section class="arm-detail arm-comparison" id="armaduras-comparison" hidden>
+      <div class="arm-comparison-head">
+        <div>
+          <h2 data-i18n="armors.comparison">Comparação</h2>
+          <p class="arm-subtitle" data-i18n="armors.hint">Clique em até duas armaduras para comparar.</p>
         </div>
+        <button type="button" class="arm-small-btn" id="armaduras-comparison-clear" data-i18n="common.clear">Limpar</button>
       </div>
-    </div>
-  </div>
-
-  <section class="armaduras-comparison" id="armaduras-comparison" hidden>
-    <div class="armaduras-comparison-header">
-      <div>
-        <span class="armaduras-comparison-label">Comparação</span>
-        <h2>Armaduras selecionadas</h2>
-      </div>
-      <button type="button" class="armaduras-comparison-clear" id="armaduras-comparison-clear">Limpar</button>
-    </div>
-    <div class="armaduras-comparison-grid" id="armaduras-comparison-grid"></div>
-  </section>
-
-  <div class="armaduras-list-section">
-    <h2>Todas as armaduras</h2>
-    <p class="armaduras-list-hint">Clique em até duas armaduras para comparar.</p>
-    <div id="armaduras-list" class="armaduras-list">
-      <div class="armaduras-loading">Carregando armaduras...</div>
-    </div>
+      <div class="arm-comparison-grid" id="armaduras-comparison-grid"></div>
+    </section>
   </div>
 </section>

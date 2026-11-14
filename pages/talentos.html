@@ -1,40 +1,44 @@
 <section class="talents-page">
   <div class="talents-header">
-    <h1>Talentos</h1>
-    <p class="talents-subtitle">Explore e filtre todos os talentos disponíveis no Soulmask</p>
+    <h1 data-i18n="talents.title">Talentos</h1>
+    <p class="talents-subtitle" data-i18n="talents.subtitle">Explore e filtre todos os talentos disponíveis no Soulmask</p>
   </div>
 
   <div class="talents-filters">
-    <input 
-      type="text" 
-      id="talents-search" 
-      class="talents-search-input" 
+    <input
+      type="text"
+      id="talents-search"
+      class="talents-search-input"
       placeholder="Buscar talentos..."
+      data-i18n-placeholder="talents.search"
       aria-label="Buscar talentos"
+      data-i18n-aria="talents.search"
     />
-    
+
     <select id="talents-type-filter" class="talents-filter-select" aria-label="Filtrar por tipo">
-      <option value="">Todos os tipos</option>
+      <option value="" data-i18n="common.allTypes">Todos os tipos</option>
     </select>
 
     <select id="talents-exclusive-filter" class="talents-filter-select" aria-label="Filtrar por exclusivo">
-      <option value="">Todos os exclusivos</option>
+      <option value="" data-i18n="talents.allExclusive">Todos os exclusivos</option>
     </select>
 
-    <button id="talents-favorites-btn" class="talents-filter-btn" title="Mostrar apenas favoritos">
+    <select id="talents-sort" class="talents-filter-select" aria-label="Ordenar" data-i18n-aria="tier.sort">
+      <option value="name" data-i18n="talents.sortName">Ordem alfabética</option>
+      <option value="rating" data-i18n="talents.sortRating">Melhor avaliados</option>
+      <option value="votes" data-i18n="talents.sortVotes">Mais avaliados</option>
+    </select>
+
+    <button id="talents-favorites-btn" class="talents-filter-btn" title="Mostrar apenas favoritos" data-i18n-title="talents.favoritesTitle" data-i18n="talents.favorites">
       ★ Favoritos
     </button>
 
-    <button id="talents-lang-toggle" class="talents-filter-btn" title="Alternar idioma dos talentos">
-      EN
-    </button>
-
     <div class="talents-stats">
-      <span id="talents-count">Carregando...</span>
+      <span id="talents-count" data-i18n="site.loading">Carregando...</span>
     </div>
   </div>
 
   <div id="talents-container" class="talents-grid">
-    <div class="talents-loading">Carregando talentos...</div>
+    <div class="talents-loading" data-i18n="talents.loading">Carregando talentos...</div>
   </div>
 </section>

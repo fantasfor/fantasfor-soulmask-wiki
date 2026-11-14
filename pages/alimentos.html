@@ -1,32 +1,29 @@
 <section class="foods-page">
   <header class="foods-header">
-    <h1>Alimentos</h1>
-    <p class="foods-subtitle">Consulte efeitos, categorias e subcategorias dos alimentos.</p>
+    <h1 data-i18n="foods.title">Alimentos</h1>
+    <p class="foods-subtitle" data-i18n="foods.subtitle">Consulte efeitos, categorias e subcategorias dos alimentos.</p>
   </header>
 
   <div class="foods-filters">
-    <input id="foods-search" class="foods-search-input" type="search" placeholder="Buscar alimentos..." aria-label="Buscar alimentos" />
-    <select id="foods-category-filter" class="foods-filter-select" aria-label="Filtrar por categoria">
-      <option value="">Todas as categorias</option>
-    </select>
+    <input id="foods-search" class="foods-search-input" type="search" placeholder="Buscar alimentos..." data-i18n-placeholder="foods.search" aria-label="Buscar alimentos" data-i18n-aria="foods.search" />
     <select id="foods-subcategory-filter" class="foods-filter-select" aria-label="Filtrar por subcategoria">
-      <option value="">Todas as subcategorias</option>
+      <option value="" data-i18n="common.allSubcategories">Todas as subcategorias</option>
     </select>
     <div class="foods-columns-picker" hidden>
-      <button id="foods-columns-button" class="foods-columns-button" type="button" aria-expanded="false" aria-controls="foods-columns-panel">Escolher colunas</button>
+      <button id="foods-columns-button" class="foods-columns-button" type="button" aria-expanded="false" aria-controls="foods-columns-panel" data-i18n="foods.columns">Escolher colunas</button>
       <div id="foods-columns-panel" class="foods-columns-panel" hidden>
-        <div class="foods-columns-panel-title">Colunas da subcategoria</div>
+        <div class="foods-columns-panel-title" data-i18n="foods.columnsTitle">Colunas da subcategoria</div>
         <div id="foods-columns-options" class="foods-columns-options"></div>
       </div>
     </div>
     <div class="foods-view-toggle" role="group" aria-label="Modo de visualização">
-      <button type="button" class="foods-view-button is-active" data-foods-view="cards" aria-pressed="true">Padrão</button>
-      <button type="button" class="foods-view-button" data-foods-view="table" aria-pressed="false">Tabela</button>
+      <button type="button" class="foods-view-button is-active" data-foods-view="cards" aria-pressed="true" data-i18n="common.cards">Padrão</button>
+      <button type="button" class="foods-view-button" data-foods-view="table" aria-pressed="false" data-i18n="common.table">Tabela</button>
     </div>
-    <span id="foods-count" class="foods-count">Carregando...</span>
+    <span id="foods-count" class="foods-count" data-i18n="site.loading">Carregando...</span>
   </div>
 
   <div id="foods-container" class="foods-grid">
-    <div class="foods-loading">Carregando alimentos...</div>
+    <div class="foods-loading" data-i18n="foods.loading">Carregando alimentos...</div>
   </div>
 </section>

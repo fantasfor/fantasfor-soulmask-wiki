@@ -1,0 +1,35 @@
+<section class="map-page">
+  <header class="map-header">
+    <div>
+      <h1 data-i18n="map.title">Mapa interativo</h1>
+      <p class="map-subtitle" data-i18n="map.subtitle">Mapa oficial do jogo com portais, ruínas, baús, minérios, tribos e onde nasce cada criatura. Arraste para mover e use a roda do mouse para zoom.</p>
+    </div>
+  </header>
+
+  <div class="map-layout">
+    <aside class="map-side">
+      <h2 class="map-side-title" data-i18n="map.gameMarkers">Marcadores do jogo</h2>
+      <div class="map-layers" id="map-layers" role="group" aria-label="Marcadores do jogo" data-i18n-aria="map.gameMarkers"></div>
+      <label class="map-side-title" for="map-creature" data-i18n="map.creatureSpawns">Onde nasce cada criatura</label>
+      <select class="map-input" id="map-creature"></select>
+      <h2 class="map-side-title" data-i18n="map.myMarkers">Meus marcadores</h2>
+      <button type="button" class="map-btn primary" id="map-add" aria-pressed="false" data-i18n="map.add">+ Adicionar marcador</button>
+      <p class="map-hint" id="map-hint" data-i18n="map.hint">Clique em "Adicionar marcador" e depois no mapa.</p>
+      <div class="map-filters" id="map-filters" role="group" aria-label="Categorias" data-i18n-aria="map.categories"></div>
+      <ul class="map-markers" id="map-markers"></ul>
+      <p class="map-hint" data-i18n="map.syncHint">Entre com Google (no menu) para guardar seus marcadores na sua conta.</p>
+    </aside>
+    <div class="map-canvas" id="map-canvas" aria-label="Mapa do Soulmask" data-i18n-aria="map.title"></div>
+  </div>
+
+  <form class="map-dialog" id="map-dialog" hidden>
+    <h2 data-i18n="map.newMarker">Novo marcador</h2>
+    <input class="map-input" name="name" maxlength="60" required placeholder="Nome (ex.: Ferro, Base, Chefe Mamute)" data-i18n-placeholder="map.namePlaceholder" />
+    <select class="map-input" name="cat" aria-label="Categoria" data-i18n-aria="map.category"></select>
+    <textarea class="map-input" name="note" maxlength="300" rows="2" placeholder="Anotação (opcional)" data-i18n-placeholder="map.notePlaceholder"></textarea>
+    <div class="map-dialog-actions">
+      <button type="submit" class="map-btn primary" data-i18n="map.save">Salvar</button>
+      <button type="button" class="map-btn" data-cancel data-i18n="map.cancel">Cancelar</button>
+    </div>
+  </form>
+</section>

@@ -77,9 +77,11 @@ export function initGdmbotStore() {
   const el = (name) => root.querySelector(`[data-gb="${name}"]`);
   const all = (name) => root.querySelectorAll(`[data-gb="${name}"]`);
 
-  ['price', 'priceNote', 'deliveryTime'].forEach((key) => {
+  ['price', 'priceNote', 'deliveryTime', 'priceFrom', 'discount'].forEach((key) => {
     if (config[key]) all(key).forEach((node) => { node.textContent = config[key]; });
   });
+  // promoção: preço cheio riscado + desconto
+  all('promo').forEach((node) => { node.hidden = !(config.priceFrom && config.discount); });
 
   // download
   all('download').forEach((link) => {

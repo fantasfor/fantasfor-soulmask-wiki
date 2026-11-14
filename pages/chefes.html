@@ -1,4 +1,17 @@
-<section>
-  <h2>Chefes</h2>
-  <p>Informações sobre chefes, drops e estratégias.</p>
+<section class="items-page db-page bosses-page">
+  <div class="items-header">
+    <h1 data-i18n="bosses.title">Chefes</h1>
+    <p class="items-subtitle" data-i18n="bosses.subtitle">Os guardiões das pirâmides: como invocar cada dificuldade no altar, o que cada um deixa cair e os conjuntos de armadura que liberam.</p>
+  </div>
+  <div class="items-filters">
+    <input type="search" id="db-search" class="items-search-input" placeholder="Buscar chefes, drops ou conjuntos..." data-i18n-placeholder="bosses.search" aria-label="Buscar chefes" data-i18n-aria="bosses.search" />
+    <select id="bosses-filter" class="items-search-input farming-sort" aria-label="Filtrar" data-i18n-aria="bosses.filter">
+      <option value="" data-i18n="bosses.all">Todos</option>
+      <option value="base" data-i18n="bosses.base">Mapa base</option>
+      <option value="dlc" data-i18n="bosses.dlc">DLC</option>
+    </select>
+    <div class="items-stats"><span id="db-count" data-i18n="site.loading">Carregando...</span></div>
+  </div>
+  <p class="bosses-note" data-i18n="bosses.note">Cada chefe tem 3 dificuldades, invocadas no altar dele. A dificuldade Berserker libera o conjunto de armadura e a estátua; a da Destruição libera a versão avançada.</p>
+  <div id="db-container" class="items-grid bosses-grid"></div>
 </section>

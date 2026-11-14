@@ -1,4 +1,20 @@
-<section>
-  <h2>Conforto</h2>
-  <p>Informações sobre conforto e efeitos no jogo.</p>
+<section class="items-page db-page comfort-page">
+  <div class="items-header">
+    <h1 data-i18n="comfort.title">Conforto</h1>
+    <p class="items-subtitle" data-i18n="comfort.subtitle">Quanto conforto cada móvel dá, os 10 níveis de conforto e o bônus de Humor Agradável de cada um.</p>
+  </div>
+  <h2 class="comfort-section-title" data-i18n="comfort.levelsTitle">Níveis de conforto</h2>
+  <p class="comfort-howto" id="comfort-howto"></p>
+  <div id="comfort-levels" class="comfort-levels"></div>
+  <h2 class="comfort-section-title" data-i18n="comfort.furnitureTitle">Móveis e decorações</h2>
+  <div class="items-filters">
+    <input type="search" id="db-search" class="items-search-input" placeholder="Buscar móveis..." data-i18n-placeholder="comfort.search" aria-label="Buscar móveis" data-i18n-aria="comfort.search" />
+    <select id="comfort-sort" class="items-search-input farming-sort" aria-label="Ordenar" data-i18n-aria="tier.sort">
+      <option value="value" data-i18n="comfort.sortValue">Mais conforto</option>
+      <option value="total" data-i18n="comfort.sortTotal">Maior total possível</option>
+      <option value="name" data-i18n="talents.sortName">Ordem alfabética</option>
+    </select>
+    <div class="items-stats"><span id="db-count" data-i18n="site.loading">Carregando...</span></div>
+  </div>
+  <div id="db-container" class="comfort-grid"></div>
 </section>

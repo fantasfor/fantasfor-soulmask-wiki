@@ -3,48 +3,60 @@
     <div class="sidebar-brand">
       <div class="sidebar-brand-text">
         <div class="site-name">Soulmask</div>
-        <div class="site-tagline">Fantasfor Wiki</div>
+        <div class="site-tagline" data-i18n="site.tagline">Fantasfor Wiki</div>
       </div>
     </div>
 
+    <div class="account-box" id="account-box" aria-live="polite"></div>
+
+    <div class="lang-switch" role="group" data-i18n-aria="site.lang" aria-label="Idioma">
+      <button type="button" class="lang-switch-btn" data-lang="pt" aria-pressed="false">PT</button>
+      <button type="button" class="lang-switch-btn" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+
     <div class="sidebar-search-wrapper">
-      <input class="sidebar-search" type="text" role="textbox" placeholder="Buscar..." aria-label="Buscar" />
+      <input class="sidebar-search" type="text" role="textbox" placeholder="Buscar..." data-i18n-placeholder="site.search" aria-label="Buscar" data-i18n-aria="site.search" />
     </div>
   </div>
 
   <div class="sidebar-body">
     <div class="sidebar-indicator" aria-hidden="true"></div>
     <nav aria-label="Main navigation">
-    <div class="nav-section">Introdução</div>
+    <div class="nav-section" data-i18n="nav.intro">Introdução</div>
     <ul class="nav-list" role="menu">
-      <li><a class="nav-link active" data-page="home" href="#home">Página inicial</a></li>
-      <li><a class="nav-link" data-page="apoie" href="#apoie">Apoie</a></li>
-      <li><a class="nav-link" data-page="reportar" href="#reportar">Reportar / Sugestão</a></li>
+      <li><a class="nav-link active" data-page="home" href="#home" data-i18n="nav.home">Página inicial</a></li>
+      <li><a class="nav-link" data-page="apoie" href="#apoie" data-i18n="nav.support">Apoie</a></li>
+      <li><a class="nav-link" data-page="reportar" href="#reportar" data-i18n="nav.report">Reportar / Sugestão</a></li>
     </ul>
 
-    <div class="nav-section">Ferramentas</div>
+    <div class="nav-section" data-i18n="nav.tools">Ferramentas</div>
     <ul class="nav-list" role="menu">
-      <li><a class="nav-link" data-page="talentos" href="#talentos">Talentos</a></li>
-      <li><a class="nav-link" data-page="itens" href="#itens">Itens</a></li>
-      <li><a class="nav-link" data-page="builder-maker" href="#builder-maker">Builder Maker</a></li>
-      <li><a class="nav-link" data-page="tier-list" href="#tier-list">Tier List</a></li>
-      <li><a class="nav-link" data-page="gdmbot" href="#gdmbot">GDMbot ⭐</a></li>
+      <li><a class="nav-link" data-page="builder-maker" href="#builder-maker" data-i18n="nav.builder">Builder Maker</a></li>
+      <li><a class="nav-link" data-page="tier-list" href="#tier-list" data-i18n="nav.tierlist">Tier List</a></li>
+      <li><a class="nav-link" data-page="mapa" href="#mapa" data-i18n="nav.map">Mapa interativo</a></li>
+      <li><a class="nav-link" data-page="gdmbot" href="#gdmbot" data-i18n="nav.gdmbot">GDMbot ⭐</a></li>
     </ul>
 
-    <div class="nav-section">Outros</div>
+    <div class="nav-section" data-i18n="nav.database">Base de dados</div>
     <ul class="nav-list" role="menu">
-      <li><a class="nav-link" data-page="conforto" href="#conforto">Conforto</a></li>
-      <li><a class="nav-link" data-page="animas" href="#animas">Animas</a></li>
-      <li><a class="nav-link" data-page="plantio" href="#plantio">Plantio</a></li>
-      <li><a class="nav-link" data-page="mascaras" href="#mascaras">Máscaras</a></li>
-      <li><a class="nav-link" data-page="alimentos" href="#alimentos">Alimentos</a></li>
-      <li><a class="nav-link" data-page="chefes" href="#chefes">Chefes</a></li>
-      <li><a class="nav-link" data-page="armaduras" href="#armaduras">Armaduras</a></li>
+      <li><a class="nav-link" data-page="talentos" href="#talentos" data-i18n="nav.talents">Talentos</a></li>
+      <li><a class="nav-link" data-page="itens" href="#itens" data-i18n="nav.items">Itens</a></li>
+      <li><a class="nav-link" data-page="armaduras" href="#armaduras" data-i18n="nav.armors">Armaduras</a></li>
+      <li><a class="nav-link" data-page="armas" href="#armas" data-i18n="nav.weapons">Armas</a></li>
+      <li><a class="nav-link" data-page="mascaras" href="#mascaras" data-i18n="nav.masks">Máscaras</a></li>
+      <li><a class="nav-link" data-page="alimentos" href="#alimentos" data-i18n="nav.foods">Alimentos</a></li>
+      <li><a class="nav-link" data-page="receitas" href="#receitas" data-i18n="nav.recipes">Receitas</a></li>
+      <li><a class="nav-link" data-page="criaturas" href="#criaturas" data-i18n="nav.creatures">Criaturas</a></li>
+    </ul>
+
+    <div class="nav-section" data-i18n="nav.other">Outros</div>
+    <ul class="nav-list" role="menu">
+      <li><a class="nav-link" data-page="conforto" href="#conforto" data-i18n="nav.comfort">Conforto</a></li>
+      <li><a class="nav-link" data-page="plantio" href="#plantio" data-i18n="nav.farming">Plantio</a></li>
+      <li><a class="nav-link" data-page="chefes" href="#chefes" data-i18n="nav.bosses">Chefes</a></li>
     </ul>
     </nav>
   </div>
 
   <div class="nav-divider" aria-hidden="true"></div>
-
-  <!-- removed extra buttons and collapse control per user request -->
 </div>

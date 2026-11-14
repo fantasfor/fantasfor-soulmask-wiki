@@ -206,30 +206,70 @@
     .builder-character-area {
       position: relative;
       display: grid;
-      grid-template-columns: 56px minmax(0, 1fr) 56px;
-      align-items: center;
-      gap: 0;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 10px;
       width: 100%;
-      padding: 25px;
+      padding: 20px;
     }
 
-    .armor-slots {
-      display: grid;
+    .builder-left-slots {
+      display: flex;
       gap: 8px;
       justify-self: start;
     }
 
-    .food-category-slots {
+    .slot-col {
       display: grid;
-      align-content: center;
-      gap: 8px;
+      gap: 6px;
+      align-content: start;
+      justify-items: center;
+    }
+
+    .slot-col-title {
+      color: var(--builder-cyan);
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .slot-col-grid {
+      display: grid;
+      gap: 6px;
+      justify-items: center;
+    }
+
+    .slot-cell {
+      display: grid;
+      justify-items: center;
+      gap: 3px;
+      width: 66px;
+    }
+
+    .slot-cell-label {
+      max-width: 66px;
+      overflow: hidden;
+      color: var(--builder-muted);
+      font-size: 0.58rem;
+      line-height: 1.15;
+      text-align: center;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .slot-cell .armor-slot.selected + .slot-cell-label {
+      color: var(--builder-text);
+    }
+
+    .food-category-slots {
       justify-self: end;
     }
 
     .food-picker-inline {
       position: absolute;
       top: 25px;
-      right: 170px;
+      right: 100px;
       z-index: 5;
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -304,7 +344,7 @@
     .armor-picker-inline {
       position: absolute;
       top: 25px;
-      left: 84px;
+      left: 170px;
       z-index: 5;
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -347,16 +387,16 @@
 
     .class-weapon-item {
       display: flex;
-      flex: 0 0 48px;
+      flex: 0 0 43px;
       flex-direction: column;
       align-items: center;
       gap: 3px;
     }
 
     .class-weapon-icon {
-      width: 48px;
-      height: 48px;
-      flex: 0 0 48px;
+      width: 43px;
+      height: 43px;
+      flex: 0 0 43px;
       object-fit: contain;
     }
 
@@ -382,6 +422,53 @@
 
     .food-category-slots {
       grid-column: 3;
+    }
+
+    .builder-center {
+      position: relative;
+      display: grid;
+      justify-items: center;
+      align-content: start;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .builder-center .builder-profile-image {
+      height: 340px;
+    }
+
+    .slot-row {
+      display: grid;
+      justify-items: center;
+      gap: 6px;
+    }
+
+    .slot-row-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 66px);
+      gap: 6px;
+    }
+
+    .gear-picker-center {
+      position: absolute;
+      bottom: 92px;
+      left: 50%;
+      z-index: 5;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+      width: 236px;
+      max-height: 300px;
+      padding: 6px;
+      border: 1px solid #686e73;
+      background: #111212;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+      overflow-y: auto;
+      transform: translateX(-50%);
+    }
+
+    .gear-picker-center[hidden] {
+      display: none;
     }
 
     .talents-header {
@@ -975,6 +1062,280 @@
       margin: 10px;
     }
 
+    /* Seletores (armadura, alimento, arma, máscara) com busca */
+    .builder-picker {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      width: 236px;
+      max-height: 340px;
+      align-content: start;
+    }
+
+    .builder-picker .picker-search {
+      grid-column: 1 / -1;
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #686e73;
+      background: #191a1a;
+      color: var(--builder-text);
+      font-size: 0.74rem;
+      outline: none;
+    }
+
+    .builder-picker .picker-search:focus {
+      border-color: var(--builder-cyan);
+    }
+
+    .builder-picker .picker-empty {
+      grid-column: 1 / -1;
+      color: var(--builder-muted);
+      font-size: 0.74rem;
+      padding: 6px;
+    }
+
+    .armor-picker-option.quality-3 { border-color: rgba(80, 160, 255, 0.55); }
+    .armor-picker-option.quality-4 { border-color: rgba(185, 116, 255, 0.6); }
+    .armor-picker-option.quality-5 { border-color: rgba(236, 180, 60, 0.7); }
+
+    /* seletor de talentos */
+    .talent-picker-dialog {
+      grid-template-rows: auto auto auto minmax(0, 1fr);
+      width: min(1040px, 100%);
+      max-height: min(780px, calc(100vh - 40px));
+    }
+
+    .talent-picker-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .talent-picker-toolbar .talent-picker-search {
+      flex: 1 1 260px;
+      width: auto;
+    }
+
+    .talent-picker-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--builder-muted);
+      font-size: 0.74rem;
+      cursor: pointer;
+    }
+
+    .talent-picker-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .talent-picker-tabs:empty {
+      display: none;
+    }
+
+    .talent-tab {
+      padding: 6px 12px;
+      border: 1px solid #686e73;
+      background: #191a1a;
+      color: var(--builder-muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+
+    .talent-tab[aria-selected="true"],
+    .talent-tab:hover {
+      border-color: var(--tab-color, var(--builder-cyan));
+      color: var(--builder-text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .talent-tab .tab-count {
+      margin-left: 4px;
+      color: var(--builder-muted);
+      font-size: 0.66rem;
+    }
+
+    .talent-picker-list {
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 6px;
+    }
+
+    .talent-row {
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 7px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-left: 3px solid var(--row-color, #686e73);
+      background: rgba(0, 0, 0, 0.25);
+      color: var(--builder-text);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .talent-row:hover,
+    .talent-row:focus-visible,
+    .talent-row.is-preview {
+      border-color: var(--builder-cyan);
+      border-left-color: var(--row-color, var(--builder-cyan));
+      background: rgba(144, 209, 238, 0.08);
+      outline: none;
+    }
+
+    .talent-row.selected {
+      background: rgba(57, 217, 138, 0.12);
+      border-color: #39d98a;
+    }
+
+    .talent-row:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .talent-row img,
+    .talent-row .talent-row-noicon {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .talent-row-text {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .talent-row-name {
+      overflow: hidden;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .talent-row-desc {
+      display: -webkit-box;
+      overflow: hidden;
+      color: var(--builder-muted);
+      font-size: 0.68rem;
+      line-height: 1.3;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+    }
+
+    .talent-row-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .talent-badge {
+      padding: 1px 5px;
+      border: 1px solid rgba(212, 175, 55, 0.5);
+      color: #d4af37;
+      font-size: 0.6rem;
+      line-height: 1.4;
+    }
+
+    .talent-badge.muted {
+      border-color: rgba(255, 255, 255, 0.18);
+      color: var(--builder-muted);
+    }
+
+    .talent-picker-preview .preview-type {
+      display: inline-block;
+      margin-bottom: 8px;
+      color: var(--row-color, var(--builder-cyan));
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .talent-picker-preview .preview-pick {
+      margin-top: 12px;
+      width: 100%;
+    }
+
+    .build-actions-row-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .build-totals {
+      display: grid;
+      gap: 10px;
+    }
+
+    .build-totals h3 {
+      margin: 0;
+      font-size: 0.78rem;
+      color: var(--builder-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .builder-maker-page .stat-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 3px;
+    }
+
+    .builder-maker-page .stat-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.8rem;
+      color: var(--builder-text);
+    }
+
+    .builder-maker-page .stat-value {
+      color: #ecd760;
+      white-space: nowrap;
+    }
+
+    .builder-maker-page .set-tier {
+      padding: 6px 0;
+      border-top: 1px dashed rgba(255, 255, 255, 0.08);
+    }
+
+    .builder-maker-page .set-tier.is-locked {
+      opacity: 0.45;
+    }
+
+    .builder-maker-page .set-tier-label {
+      display: block;
+      color: #ecd760;
+      font-size: 0.78rem;
+      margin-bottom: 4px;
+    }
+
+    .builder-maker-page .set-tier-effect {
+      margin: 4px 0 0;
+      color: var(--builder-muted);
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+
+    .talent-picker-preview .preview-levels {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: var(--builder-muted);
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .talent-picker-preview .preview-excl {
+      color: #d4af37;
+      font-size: 0.78rem;
+      margin-top: 8px;
+    }
+
     @media (max-width: 1240px) {
       .builder-main-grid {
         grid-template-columns: 1fr;
@@ -1007,8 +1368,31 @@
       }
 
       .talent-picker-list {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: 1fr;
         max-height: 310px;
+      }
+
+      .builder-character-area {
+        grid-template-columns: auto auto;
+      }
+
+      .builder-center .builder-profile-image {
+        display: none;
+      }
+
+      .builder-center {
+        grid-column: 1 / -1;
+        grid-row: 2;
+      }
+
+      .food-category-slots {
+        grid-column: 2;
+      }
+
+      .armor-picker-inline,
+      .food-picker-inline {
+        left: 12px;
+        right: auto;
       }
 
       .talent-picker-preview {
@@ -1022,27 +1406,42 @@
       <section class="builder-panel">
         <div class="panel-block">
           <div class="builder-title-wrap">
-            <h1 class="builder-title"><span id="builderHeaderName">Build sem nome</span> <span class="builder-title-edit">✎</span></h1>
+            <h1 class="builder-title"><span id="builderHeaderName" data-i18n="builder.unnamed">Build sem nome</span> <span class="builder-title-edit">✎</span></h1>
             <p class="builder-subtitle">
-              <span class="builder-meta-value" id="builderHeaderClass">Nao selecionada</span>
-              <span class="builder-header-master" id="builderHeaderMaster">Mestre</span>
-              <span class="builder-meta-tribe">&lt;Tribo <span class="builder-meta-value" id="builderHeaderTribe">Nao selecionada</span>&gt;</span>
-              <span class="builder-meta-value" id="builderHeaderTitle">Nao selecionado</span>
+              <span class="builder-meta-value" id="builderHeaderClass" data-i18n="builder.notSelected">Não selecionada</span>
+              <span class="builder-header-master" id="builderHeaderMaster" data-i18n="builder.master">Mestre</span>
+              <span class="builder-meta-tribe">&lt;<span data-i18n="builder.tribe">Tribo</span> <span class="builder-meta-value" id="builderHeaderTribe" data-i18n="builder.notSelected">Não selecionada</span>&gt;</span>
+              <span class="builder-meta-value" id="builderHeaderTitle" data-i18n="builder.notSelectedM">Não selecionado</span>
             </p>
           </div>
         </div>
 
         <div class="builder-character-area">
-          <div class="armor-slots" id="armorSlots" aria-label="Peças de armadura"></div>
-          <div class="armor-picker-inline" id="armorPickerInline" hidden aria-label="Escolher peça de armadura"></div>
-          <img class="builder-profile-image" src="assets/img/builder/personagem.webp" alt="Personagem da build" />
-          <div class="food-category-slots" id="foodCategorySlots" aria-label="Categorias de alimentos"></div>
-          <div class="food-picker-inline" id="foodPickerInline" hidden aria-label="Escolher alimento"></div>
+          <div class="builder-left-slots">
+            <div class="slot-col">
+              <span class="slot-col-title" data-i18n="builder.armorTitle">Armadura</span>
+              <div class="slot-col-grid" id="armorSlots" aria-label="Peças de armadura" data-i18n-aria="builder.armorPieces"></div>
+            </div>
+          </div>
+          <div class="builder-picker armor-picker-inline" id="armorPickerInline" hidden></div>
+          <div class="builder-center">
+            <img class="builder-profile-image" src="assets/img/builder/personagem.webp" alt="Personagem da build" data-i18n-alt="builder.characterAlt" />
+            <div class="slot-row">
+              <span class="slot-col-title" data-i18n="builder.gearTitle">Equipamento</span>
+              <div class="slot-row-grid" id="builderGearRow"></div>
+            </div>
+            <div class="builder-picker gear-picker-center" id="gearPickerInline" hidden></div>
+          </div>
+          <div class="slot-col food-category-slots">
+            <span class="slot-col-title" data-i18n="builder.foodTitle">Alimentos</span>
+            <div class="slot-col-grid" id="foodCategorySlots" aria-label="Categorias de alimentos" data-i18n-aria="builder.foodSlots"></div>
+          </div>
+          <div class="builder-picker food-picker-inline" id="foodPickerInline" hidden></div>
           <div class="class-weapons-list" id="classWeaponsList"></div>
         </div>
 
         <div class="talents-header">
-          <h2 class="panel-section-title">Talentos</h2>
+          <h2 class="panel-section-title" data-i18n="builder.talents">Talentos</h2>
         </div>
 
         <div class="talent-selector-list">
@@ -1052,52 +1451,66 @@
 
       <section class="builder-panel">
         <div class="panel-block field-stack">
-          <h2 class="panel-section-title">Informacoes da Build</h2>
-          <input id="buildName" class="builder-field" type="text" placeholder="Nome da Build" />
-          <textarea id="buildDescription" class="builder-field" rows="3" placeholder="Descricao (opcional)"></textarea>
+          <h2 class="panel-section-title" data-i18n="builder.info">Informações da Build</h2>
+          <input id="buildName" class="builder-field" type="text" placeholder="Nome da Build" data-i18n-placeholder="builder.name" />
+          <textarea id="buildDescription" class="builder-field" rows="3" placeholder="Descrição (opcional)" data-i18n-placeholder="builder.description"></textarea>
           <select id="buildTribe" class="builder-field">
-            <option value="">Classe</option>
-            <option value="warrior">Guerreiro</option>
-            <option value="hunter">Caçador</option>
-            <option value="guard">Guarda</option>
+            <option value="" data-i18n="builder.class">Classe</option>
+            <option value="warrior" data-i18n="builder.class.warrior">Guerreiro</option>
+            <option value="hunter" data-i18n="builder.class.hunter">Caçador</option>
+            <option value="guard" data-i18n="builder.class.guard">Guarda</option>
           </select>
+          <label class="export-level-label" for="gearQuality" data-i18n="builder.gearQuality">Qualidade do equipamento</label>
+          <select id="gearQuality" class="builder-field export-level-select"></select>
           <div class="build-actions-row">
-            <button type="button" class="build-action-btn primary" id="actionSaveBuild">Salvar build</button>
-            <button type="button" class="build-action-btn" id="actionClearBuild">Nova build</button>
+            <button type="button" class="build-action-btn primary" id="actionSaveBuild" data-i18n="builder.save">Salvar build</button>
+            <button type="button" class="build-action-btn" id="actionClearBuild" data-i18n="builder.new">Nova build</button>
+          </div>
+          <div class="build-actions-row build-actions-row-3">
+            <button type="button" class="build-action-btn" id="actionShareBuild" data-i18n="builder.share">Copiar link</button>
+            <button type="button" class="build-action-btn" id="actionExportBuild" data-i18n="builder.export">Exportar</button>
+            <button type="button" class="build-action-btn" id="actionImportBuild" data-i18n="builder.import">Importar</button>
           </div>
           <p class="build-status" id="buildSaveStatus" aria-live="polite"></p>
         </div>
 
         <div class="panel-block">
-          <h2 class="panel-section-title">Bônus de conjunto</h2>
+          <h2 class="panel-section-title" data-i18n="builder.totals">Resumo da build</h2>
+          <div class="build-totals" id="buildTotals">
+            <p class="set-bonus-empty" data-i18n="builder.totalsEmpty">Equipe peças e escolha alimentos para ver os totais.</p>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <h2 class="panel-section-title" data-i18n="builder.setBonus">Bônus de conjunto</h2>
           <div class="set-bonus-panel" id="setBonusPanel">
-            <p class="set-bonus-empty">Equipe peças para ver os bônus.</p>
+            <p class="set-bonus-empty" data-i18n="builder.setBonusEmpty">Equipe peças para ver os bônus.</p>
           </div>
         </div>
 
         <div class="panel-block field-stack">
-          <h2 class="panel-section-title">Exportar para o GDMbot</h2>
-          <label class="export-level-label" for="talentExportLevel">Nível do talento</label>
+          <h2 class="panel-section-title" data-i18n="builder.exportGdm">Exportar para o GDMbot</h2>
+          <label class="export-level-label" for="talentExportLevel" data-i18n="builder.talentLevel">Nível do talento</label>
           <select id="talentExportLevel" class="builder-field export-level-select">
-            <option value="max">Máximo disponível</option>
-            <option value="1">Nível 1</option>
-            <option value="2">Nível 2</option>
-            <option value="3">Nível 3</option>
+            <option value="max" data-i18n="builder.levelMax">Máximo disponível</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
           </select>
-          <pre class="export-preview" id="talentExportPreview">Nenhum talento selecionado.</pre>
-          <textarea id="talentExportCode" class="builder-field export-code" rows="3" readonly placeholder="Selecione talentos para gerar o código" aria-label="Código da macro"></textarea>
+          <pre class="export-preview" id="talentExportPreview" data-i18n="builder.noTalents">Nenhum talento selecionado.</pre>
+          <textarea id="talentExportCode" class="builder-field export-code" rows="3" readonly placeholder="Selecione talentos para gerar o código" data-i18n-placeholder="builder.codePlaceholder" aria-label="Código da macro"></textarea>
           <div class="build-actions-row">
-            <button type="button" class="build-action-btn primary" id="actionCopyTalentCode">Copiar código</button>
-            <button type="button" class="build-action-btn" id="actionDownloadTalentCode">Baixar .json</button>
+            <button type="button" class="build-action-btn primary" id="actionCopyTalentCode" data-i18n="builder.copyCode">Copiar código</button>
+            <button type="button" class="build-action-btn" id="actionDownloadTalentCode" data-i18n="builder.downloadJson">Baixar .json</button>
           </div>
-          <p class="export-hint">No GDMbot, clique em "Colar" (ou Ctrl+V) e aperte F8 com o jogo aberto. A macro abre o console com "-" duas vezes, limpa os talentos atuais (gm ClearNG) e digita um comando por talento. Ainda não tem o GDMbot? <a href="#gdmbot">Baixe grátis aqui</a>.</p>
+          <p class="export-hint" data-i18n-html="builder.exportHint"></p>
           <p class="build-status" id="talentExportStatus" aria-live="polite"></p>
         </div>
       </section>
 
       <aside class="builder-panel">
         <div class="panel-block">
-          <h2 class="panel-section-title">Builds Salvas</h2>
+          <h2 class="panel-section-title" data-i18n="builder.savedBuilds">Builds Salvas</h2>
         </div>
         <div class="saved-builds-list" id="savedBuildsList"></div>
       </aside>
@@ -1109,10 +1522,15 @@
   <div class="talent-picker-modal" id="talentPickerModal" hidden>
     <section class="talent-picker-dialog" role="dialog" aria-modal="true" aria-labelledby="talentPickerTitle">
       <div class="talent-picker-header">
-        <h2 class="talent-picker-title" id="talentPickerTitle">Escolher talento</h2>
-        <button type="button" class="talent-picker-close" id="talentPickerClose" aria-label="Fechar seletor de talentos">&times;</button>
+        <h2 class="talent-picker-title" id="talentPickerTitle" data-i18n="builder.pickTalent">Escolher talento</h2>
+        <button type="button" class="talent-picker-close" id="talentPickerClose" aria-label="Fechar seletor de talentos" data-i18n-aria="builder.closePicker">&times;</button>
       </div>
-      <input id="talentPickerSearch" class="talent-picker-search" type="search" placeholder="Buscar talento..." aria-label="Buscar talento" autocomplete="off" />
+      <div class="talent-picker-toolbar">
+        <input id="talentPickerSearch" class="talent-picker-search" type="search" placeholder="Buscar talento..." data-i18n-placeholder="builder.searchTalent" aria-label="Buscar talento" data-i18n-aria="builder.searchTalent" autocomplete="off" />
+        <label class="talent-picker-check"><input type="checkbox" id="talentPickerCompatible" checked /> <span data-i18n="builder.onlyCompatible">Só compatíveis com a build</span></label>
+        <button type="button" class="build-action-btn" id="talentPickerRemove" data-i18n="builder.removeTalent">Remover talento</button>
+      </div>
+      <div class="talent-picker-tabs" id="talentPickerTabs" role="tablist"></div>
       <div class="talent-picker-content">
         <div class="talent-picker-list" id="talentPickerList"></div>
         <aside class="talent-picker-preview" id="talentPickerPreview" aria-live="polite"></aside>

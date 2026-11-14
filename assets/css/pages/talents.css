@@ -412,3 +412,19 @@
     min-width: 52px;
   }
 }
+
+/* avaliação com estrelas */
+.talent-card-rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.talent-card-rating .star-btn {
+  font-size: 1.15rem;
+}

@@ -1,0 +1,242 @@
+/* Mapa interativo */
+.map-page {
+  width: min(100%, 1400px);
+  margin: 0 auto;
+  padding: 24px 24px 40px;
+}
+
+.map-header h1 {
+  margin: 0 0 4px;
+  font-family: Cinzel, serif;
+  font-size: 2rem;
+  text-transform: uppercase;
+}
+
+.map-subtitle,
+.map-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.map-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.map-side {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.map-side-title {
+  margin: 8px 0 0;
+  color: var(--accent);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.map-btn {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid #686e73;
+  background: #191a1a;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.map-btn.primary,
+.map-btn[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: rgba(144, 209, 238, 0.14);
+  font-weight: 700;
+}
+
+.map-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.map-filter {
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 3px solid var(--pin);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.map-filter[aria-pressed="false"] {
+  opacity: 0.4;
+}
+
+.map-filter small {
+  color: var(--muted);
+}
+
+.map-markers {
+  display: grid;
+  gap: 4px;
+  max-height: 46vh;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.map-markers li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.map-marker-item {
+  overflow: hidden;
+  padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 3px solid var(--pin);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.82rem;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.map-marker-del {
+  width: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 0;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.map-canvas {
+  height: calc(100vh - 170px);
+  min-height: 420px;
+  border: 1px solid #686e73;
+  background: #2f5f78;
+}
+
+.map-page .map-canvas.leaflet-container {
+  background: #2f6580;
+}
+
+.map-canvas.is-adding,
+.map-canvas.is-adding .leaflet-interactive {
+  cursor: crosshair;
+}
+
+.map-pin span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--pin);
+  border-radius: 50%;
+  background: rgba(11, 10, 9, 0.85);
+  color: var(--pin);
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.map-page .leaflet-popup-content-wrapper,
+.map-page .leaflet-popup-tip {
+  background: #141414;
+  color: var(--text);
+}
+
+.map-page .leaflet-popup-content p {
+  margin: 6px 0;
+}
+
+.map-dialog {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 1100;
+  display: grid;
+  gap: 8px;
+  width: min(360px, calc(100vw - 32px));
+  padding: 18px;
+  border: 1px solid var(--accent);
+  background: #141414;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  transform: translate(-50%, -50%);
+}
+
+.map-dialog[hidden] {
+  display: none;
+}
+
+.map-dialog h2 {
+  margin: 0;
+  font-family: Cinzel, serif;
+  font-size: 1rem;
+}
+
+.map-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #686e73;
+  background: #191a1a;
+  color: var(--text);
+  font: inherit;
+}
+
+.map-dialog-actions {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 860px) {
+  .map-page {
+    padding: 16px 12px 32px;
+  }
+
+  .map-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .map-canvas {
+    order: -1;
+    height: 70vh;
+  }
+}
+
+.map-layers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.map-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 1px solid #000;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.map-page .leaflet-popup-content a {
+  color: var(--accent);
+}
+
+/* o reset do site limita imagens/canvas a 100% da largura; dentro do Leaflet isso some com os marcadores */
+.map-page .leaflet-container canvas,
+.map-page .leaflet-container img {
+  max-width: none !important;
+  max-height: none !important;
+}
