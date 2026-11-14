@@ -1,0 +1,19 @@
+<section class="tier-list-page">
+  <header class="tier-list-header">
+    <span class="tier-list-eyebrow">Soulmask Database</span>
+    <h1>Tier List</h1>
+    <p>Organize seus equipamentos e talentos por nível.</p>
+  </header>
+
+  <div class="tier-list-categories" aria-label="Categoria da tier list">
+    <button type="button" class="tier-category is-active" data-category="armadura" aria-pressed="true">Armadura</button>
+    <button type="button" class="tier-category" data-category="arma" aria-pressed="false">Arma</button>
+    <button type="button" class="tier-category" data-category="mascaras" aria-pressed="false">Máscaras</button>
+    <button type="button" class="tier-category" data-category="talentos" aria-pressed="false">Talentos</button>
+  </div>
+
+  <section class="tier-list-armor-pool" id="tier-list-armor-pool" aria-label="Armaduras disponíveis" hidden></section>
+  <section class="tier-list-weapon-pool" id="tier-list-weapon-pool" aria-label="Armas disponíveis" hidden></section>
+  <section class="tier-list-mask-pool" id="tier-list-mask-pool" aria-label="Máscaras disponíveis" hidden></section>
+  <div class="tier-list-board" id="tier-list-board" aria-live="polite"></div>
+</section>

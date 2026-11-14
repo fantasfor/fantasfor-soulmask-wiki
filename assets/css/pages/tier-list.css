@@ -1,0 +1,255 @@
+.tier-list-page {
+  width: min(100%, 1120px);
+  margin: 0 auto;
+  padding: 32px 28px 56px;
+}
+
+.tier-list-header {
+  margin: 0 0 28px;
+  text-align: center;
+}
+
+.tier-list-eyebrow {
+  color: var(--accent);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.tier-list-header h1 {
+  margin: 6px 0;
+  font-family: Cinzel, serif;
+  font-size: 2.2rem;
+  text-transform: uppercase;
+}
+
+.tier-list-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.tier-list-categories {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.tier-category {
+  min-height: 42px;
+  padding: 0 22px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+
+.tier-category:hover,
+.tier-category.is-active {
+  border-color: var(--accent);
+  background: rgba(144, 209, 238, 0.12);
+  color: var(--text);
+}
+
+.tier-list-board {
+  display: grid;
+  gap: 8px;
+}
+
+.tier-list-armor-pool,
+.tier-list-weapon-pool,
+.tier-list-mask-pool {
+  margin: 0 0 14px;
+}
+
+.tier-list-armor-pool h2,
+.tier-list-weapon-pool h2,
+.tier-list-mask-pool h2 {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.tier-armor-grid,
+.tier-weapon-grid,
+.tier-mask-grid {
+  display: flex;
+  min-height: 72px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+}
+
+.tier-armor-item,
+.tier-weapon-item,
+.tier-mask-item {
+  display: grid;
+  width: 60px;
+  height: 60px;
+  flex: 0 0 60px;
+  place-items: center;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.28);
+  cursor: grab;
+}
+
+.tier-weapon-item,
+.tier-mask-item {
+  width: 68px;
+  height: 68px;
+  flex-basis: 68px;
+  padding: 3px;
+}
+
+.tier-armor-item:hover,
+.tier-armor-item.is-selected,
+.tier-weapon-item:hover,
+.tier-weapon-item.is-selected,
+.tier-mask-item:hover,
+.tier-mask-item.is-selected {
+  border-color: var(--accent);
+  background: rgba(144, 209, 238, 0.12);
+}
+
+.tier-armor-item:active,
+.tier-weapon-item:active,
+.tier-mask-item:active {
+  cursor: grabbing;
+}
+
+.tier-armor-item img,
+.tier-weapon-item img,
+.tier-mask-item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.tier-row.is-drop-target {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.tier-row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  min-height: 92px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.tier-rank {
+  display: grid;
+  place-items: center;
+  background: var(--tier-color);
+  color: #171717;
+  font-family: Cinzel, serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.tier-content {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+}
+
+.tier-entry-form {
+  display: flex;
+  flex: 1 1 220px;
+  gap: 6px;
+  max-width: 360px;
+}
+
+.tier-entry-input {
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--text);
+  font: inherit;
+}
+
+.tier-entry-input:focus {
+  border-color: var(--accent);
+  outline: 1px solid var(--accent);
+}
+
+.tier-entry-submit,
+.tier-entry-remove {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.tier-entry-submit:hover,
+.tier-entry-remove:hover {
+  border-color: var(--accent);
+}
+
+.tier-entry {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 4px 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.25);
+  overflow-wrap: anywhere;
+}
+
+.tier-entry-name {
+  min-width: 0;
+}
+
+.tier-entry-remove {
+  width: 26px;
+  height: 26px;
+  color: var(--muted);
+  line-height: 1;
+}
+
+@media (max-width: 600px) {
+  .tier-list-page {
+    padding: 24px 14px 40px;
+  }
+
+  .tier-list-categories {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tier-category {
+    padding: 0 10px;
+  }
+
+  .tier-row {
+    grid-template-columns: 52px minmax(0, 1fr);
+  }
+
+  .tier-content {
+    padding: 8px;
+  }
+}

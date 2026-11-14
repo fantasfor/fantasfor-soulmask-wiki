@@ -192,19 +192,23 @@
 
     .class-weapons-list {
       display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
+      justify-content: safe center;
+      flex-wrap: nowrap;
       gap: 12px;
       margin-top: 12px;
-      grid-column: 2;
+      grid-column: 1 / -1;
+      min-width: 0;
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
     }
 
     .builder-character-area {
       position: relative;
       display: grid;
-      grid-template-columns: 52px minmax(0, 1fr);
+      grid-template-columns: 56px minmax(0, 1fr) 56px;
       align-items: center;
-      gap: 12px;
+      gap: 0;
       width: 100%;
       padding: 25px;
     }
@@ -213,6 +217,35 @@
       display: grid;
       gap: 8px;
       justify-self: start;
+    }
+
+    .food-category-slots {
+      display: grid;
+      align-content: center;
+      gap: 8px;
+      justify-self: end;
+    }
+
+    .food-picker-inline {
+      position: absolute;
+      top: 25px;
+      right: 170px;
+      z-index: 5;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      width: 174px;
+      max-height: 300px;
+      padding: 6px;
+      border: 1px solid #686e73;
+      background: #111212;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .food-picker-inline[hidden] {
+      display: none;
     }
 
     .armor-slot {
@@ -314,14 +347,16 @@
 
     .class-weapon-item {
       display: flex;
+      flex: 0 0 48px;
       flex-direction: column;
       align-items: center;
       gap: 3px;
     }
 
     .class-weapon-icon {
-      width: 42px;
-      height: 42px;
+      width: 48px;
+      height: 48px;
+      flex: 0 0 48px;
       object-fit: contain;
     }
 
@@ -340,9 +375,13 @@
       width: 100%;
       max-width: 1000px;
       height: 400px;
-      object-fit: contain;
+      object-fit: cover;
       justify-self: center;
       filter: drop-shadow(0 16px 20px rgba(0, 0, 0, 0.45));
+    }
+
+    .food-category-slots {
+      grid-column: 3;
     }
 
     .talents-header {
@@ -776,6 +815,87 @@
       gap: 8px;
     }
 
+    .build-actions-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .build-action-btn {
+      min-height: 38px;
+      padding: 8px 10px;
+      border: 1px solid #686e73;
+      background: #191a1a;
+      color: var(--builder-text);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+    }
+
+    .build-action-btn:hover,
+    .build-action-btn:focus-visible {
+      border-color: var(--builder-cyan);
+      color: var(--builder-cyan);
+      outline: none;
+    }
+
+    .build-action-btn.primary {
+      border-color: var(--builder-cyan);
+      background: linear-gradient(180deg, rgba(144, 209, 238, 0.14), rgba(0, 0, 0, 0.1));
+    }
+
+    .build-status {
+      margin: 0;
+      min-height: 1.2em;
+      color: #39d98a;
+      font-size: 0.74rem;
+    }
+
+    .export-level-label {
+      color: var(--builder-muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .export-level-select {
+      background: #191a1a;
+      cursor: pointer;
+    }
+
+    .export-level-select option {
+      background: #191a1a;
+      color: var(--builder-text);
+    }
+
+    .export-code {
+      resize: vertical;
+      font-family: Consolas, "Courier New", monospace;
+      word-break: break-all;
+    }
+
+    .export-preview {
+      margin: 0;
+      padding: 8px 10px;
+      max-height: 160px;
+      overflow: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #0e0e0e;
+      color: #ecd760;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.74rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .export-hint {
+      margin: 0;
+      color: var(--builder-muted);
+      font-size: 0.72rem;
+      line-height: 1.4;
+    }
+
     .saved-builds-list {
       padding: 10px;
       display: grid;
@@ -916,6 +1036,8 @@
           <div class="armor-slots" id="armorSlots" aria-label="Peças de armadura"></div>
           <div class="armor-picker-inline" id="armorPickerInline" hidden aria-label="Escolher peça de armadura"></div>
           <img class="builder-profile-image" src="assets/img/builder/personagem.webp" alt="Personagem da build" />
+          <div class="food-category-slots" id="foodCategorySlots" aria-label="Categorias de alimentos"></div>
+          <div class="food-picker-inline" id="foodPickerInline" hidden aria-label="Escolher alimento"></div>
           <div class="class-weapons-list" id="classWeaponsList"></div>
         </div>
 
@@ -939,6 +1061,11 @@
             <option value="hunter">Caçador</option>
             <option value="guard">Guarda</option>
           </select>
+          <div class="build-actions-row">
+            <button type="button" class="build-action-btn primary" id="actionSaveBuild">Salvar build</button>
+            <button type="button" class="build-action-btn" id="actionClearBuild">Nova build</button>
+          </div>
+          <p class="build-status" id="buildSaveStatus" aria-live="polite"></p>
         </div>
 
         <div class="panel-block">
@@ -946,6 +1073,25 @@
           <div class="set-bonus-panel" id="setBonusPanel">
             <p class="set-bonus-empty">Equipe peças para ver os bônus.</p>
           </div>
+        </div>
+
+        <div class="panel-block field-stack">
+          <h2 class="panel-section-title">Exportar para o GDMbot</h2>
+          <label class="export-level-label" for="talentExportLevel">Nível do talento</label>
+          <select id="talentExportLevel" class="builder-field export-level-select">
+            <option value="max">Máximo disponível</option>
+            <option value="1">Nível 1</option>
+            <option value="2">Nível 2</option>
+            <option value="3">Nível 3</option>
+          </select>
+          <pre class="export-preview" id="talentExportPreview">Nenhum talento selecionado.</pre>
+          <textarea id="talentExportCode" class="builder-field export-code" rows="3" readonly placeholder="Selecione talentos para gerar o código" aria-label="Código da macro"></textarea>
+          <div class="build-actions-row">
+            <button type="button" class="build-action-btn primary" id="actionCopyTalentCode">Copiar código</button>
+            <button type="button" class="build-action-btn" id="actionDownloadTalentCode">Baixar .json</button>
+          </div>
+          <p class="export-hint">No GDMbot, clique em "Colar" (ou Ctrl+V) e aperte F8 com o jogo aberto. A macro abre o console com "-" duas vezes, limpa os talentos atuais (gm ClearNG) e digita um comando por talento. Ainda não tem o GDMbot? <a href="#gdmbot">Baixe grátis aqui</a>.</p>
+          <p class="build-status" id="talentExportStatus" aria-live="polite"></p>
         </div>
       </section>
 

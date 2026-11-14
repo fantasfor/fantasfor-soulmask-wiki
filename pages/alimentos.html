@@ -12,6 +12,17 @@
     <select id="foods-subcategory-filter" class="foods-filter-select" aria-label="Filtrar por subcategoria">
       <option value="">Todas as subcategorias</option>
     </select>
+    <div class="foods-columns-picker" hidden>
+      <button id="foods-columns-button" class="foods-columns-button" type="button" aria-expanded="false" aria-controls="foods-columns-panel">Escolher colunas</button>
+      <div id="foods-columns-panel" class="foods-columns-panel" hidden>
+        <div class="foods-columns-panel-title">Colunas da subcategoria</div>
+        <div id="foods-columns-options" class="foods-columns-options"></div>
+      </div>
+    </div>
+    <div class="foods-view-toggle" role="group" aria-label="Modo de visualização">
+      <button type="button" class="foods-view-button is-active" data-foods-view="cards" aria-pressed="true">Padrão</button>
+      <button type="button" class="foods-view-button" data-foods-view="table" aria-pressed="false">Tabela</button>
+    </div>
     <span id="foods-count" class="foods-count">Carregando...</span>
   </div>
 

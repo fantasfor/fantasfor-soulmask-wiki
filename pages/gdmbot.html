@@ -1,0 +1,390 @@
+<section class="gdmbot-page">
+  <!--
+    CONFIGURAÇÃO DA LOJA — edite só este bloco (veja GDMbot/servidor/CONFIGURAR_VENDAS.md).
+    firebase:     "Configuração do SDK" do app Web no console do Firebase (é público, pode ficar no site).
+    apiBase:      endereço do servidor no Netlify + "/api", ex.: "https://gdmbot-loja.netlify.app/api".
+    price:        só o texto exibido; o valor cobrado de verdade é GDMBOT_PRICE no servidor.
+    downloadUrl:  link do GDMbot.exe (ex.: página de Releases do GitHub).
+    Enquanto "firebase" estiver vazio, os botões de compra aparecem como "em breve".
+  -->
+  <script type="application/json" id="gdmbotStoreConfig">
+    {
+      "price": "49,90",
+      "priceNote": "pagamento único · licença vitalícia",
+      "downloadUrl": "",
+      "supportEmail": "",
+      "deliveryTime": "segundos após a aprovação",
+      "apiBase": "https://gdmbot-loja.netlify.app/api",
+      "firebase": {
+        "apiKey": "AIzaSyDaUlPpU9DZxLqxIINrvsUeWNdv8J-FmkU",
+        "authDomain": "gdmbot-141e7.firebaseapp.com",
+        "projectId": "gdmbot-141e7",
+        "appId": "1:671420542572:web:af2972da507c63631f7249"
+      }
+    }
+  </script>
+
+  <style>
+    .gdmbot-page {
+      --gb-panel: rgba(255, 255, 255, 0.03);
+      --gb-line: #686e73;
+      --gb-gold: #ecd760;
+      --gb-green: #39d98a;
+      display: grid;
+      gap: 22px;
+      color: var(--text);
+    }
+
+    .gdmbot-page * { box-sizing: border-box; }
+
+    .gb-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+      gap: 28px;
+      align-items: center;
+      padding: 26px;
+      border: 1px solid var(--gb-line);
+      background: linear-gradient(135deg, rgba(144, 209, 238, 0.08), rgba(0, 0, 0, 0.25) 60%);
+    }
+
+    .gb-logo { height: 54px; width: auto; display: block; margin-bottom: 14px; }
+
+    .gb-hero h1 {
+      margin: 0 0 10px;
+      font-family: "Cinzel", serif;
+      font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+    }
+
+    .gb-hero h1 span { color: var(--accent); }
+
+    .gb-lead { margin: 0 0 18px; color: var(--muted); line-height: 1.6; font-size: 0.98rem; }
+
+    .gb-cta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+    .gb-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border: 1px solid var(--gb-line);
+      background: #191a1a;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 0.86rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+    }
+
+    .gb-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+
+    .gb-btn.buy {
+      border-color: var(--gb-gold);
+      background: linear-gradient(180deg, rgba(236, 215, 96, 0.25), rgba(236, 215, 96, 0.08));
+      color: var(--gb-gold);
+    }
+
+    .gb-btn.buy:hover { background: rgba(236, 215, 96, 0.3); }
+
+    .gb-btn.is-disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .gb-shot {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid var(--gb-line);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+    }
+
+    .gb-section-title {
+      margin: 0 0 12px;
+      font-family: "Cinzel", serif;
+      font-size: 1.05rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .gb-features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .gb-card {
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--gb-panel);
+    }
+
+    .gb-card h3 { margin: 0 0 6px; font-size: 0.95rem; }
+    .gb-card p { margin: 0; color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
+    .gb-card .gb-icon { font-size: 1.4rem; display: block; margin-bottom: 8px; }
+
+    .gb-pricing {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .gb-plan {
+      padding: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: var(--gb-panel);
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .gb-plan.pro {
+      border-color: var(--gb-gold);
+      background: linear-gradient(180deg, rgba(236, 215, 96, 0.08), rgba(0, 0, 0, 0.2));
+    }
+
+    .gb-plan h3 { margin: 0; font-family: "Cinzel", serif; letter-spacing: 0.06em; }
+    .gb-plan.pro h3 { color: var(--gb-gold); }
+    .gb-price { font-size: 2rem; font-weight: 800; }
+    .gb-price small { font-size: 0.8rem; font-weight: 400; color: var(--muted); display: block; }
+    .gb-plan ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; font-size: 0.88rem; }
+    .gb-plan li::before { content: "✓  "; color: var(--gb-green); font-weight: 700; }
+    .gb-plan li.no { color: var(--muted); }
+    .gb-plan li.no::before { content: "—  "; color: var(--muted); }
+
+    .gb-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      counter-reset: step;
+    }
+
+    .gb-step {
+      padding: 16px 16px 16px 54px;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--gb-panel);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .gb-step strong { color: var(--text); display: block; margin-bottom: 2px; }
+
+    .gb-step::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .gb-faq { display: grid; gap: 8px; }
+
+    .gb-faq details {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--gb-panel);
+      padding: 12px 16px;
+    }
+
+    .gb-faq summary { cursor: pointer; font-weight: 700; font-size: 0.92rem; }
+    .gb-faq p, .gb-faq pre { margin: 10px 0 0; color: var(--muted); font-size: 0.86rem; line-height: 1.6; }
+    .gb-faq pre { white-space: pre-wrap; font-family: inherit; max-height: 420px; overflow: auto; }
+
+    .gb-note { color: var(--muted); font-size: 0.8rem; margin: 0; line-height: 1.5; }
+
+    .gb-banner {
+      padding: 14px 18px;
+      border: 1px solid var(--accent);
+      background: rgba(144, 209, 238, 0.08);
+      line-height: 1.5;
+    }
+
+    .gb-message { padding: 12px 16px; border: 1px solid var(--gb-line); background: var(--gb-panel); }
+    .gb-message[data-kind="ok"] { border-color: var(--gb-green); color: var(--gb-green); }
+    .gb-message[data-kind="error"] { border-color: #e63946; color: #ff8a93; }
+
+    .gb-account {
+      display: grid;
+      gap: 10px;
+      padding: 18px;
+      border: 1px solid var(--gb-line);
+      background: var(--gb-panel);
+      align-content: start;
+    }
+
+    .gb-account-title { margin: 0; font-family: "Cinzel", serif; letter-spacing: 0.06em; color: var(--accent); }
+    .gb-user { display: flex; align-items: center; gap: 10px; }
+    .gb-user img { width: 38px; height: 38px; border-radius: 50%; }
+    .gb-user div { display: grid; min-width: 0; }
+    .gb-user strong, .gb-user span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .gb-user span { color: var(--muted); font-size: 0.78rem; }
+    .gb-link { margin-left: auto; background: none; border: 0; color: var(--accent); cursor: pointer; text-decoration: underline; }
+    .gb-pro-ok { margin: 0; color: var(--gb-gold); font-weight: 800; }
+    .gb-key {
+      width: 100%;
+      resize: none;
+      padding: 8px;
+      border: 1px solid var(--gb-line);
+      background: #0e0e0e;
+      color: var(--text);
+      font-family: Consolas, monospace;
+      font-size: 0.72rem;
+      word-break: break-all;
+    }
+
+    .gb-google { background: #fff; color: #1f1f1f; border-color: #fff; text-transform: none; letter-spacing: 0; }
+    .gb-google:hover { border-color: var(--accent); }
+    .gb-g {
+      width: 20px; height: 20px; display: grid; place-items: center; font-weight: 900;
+      color: #fff; background: conic-gradient(#ea4335 0 25%, #fbbc05 0 50%, #34a853 0 75%, #4285f4 0);
+      border-radius: 50%; font-size: 0.75rem;
+    }
+
+    .gb-buy-area { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(260px, 1fr); gap: 14px; }
+    @media (max-width: 900px) { .gb-buy-area { grid-template-columns: 1fr; } }
+
+    @media (max-width: 900px) {
+      .gb-hero { grid-template-columns: 1fr; padding: 18px; }
+    }
+  </style>
+
+  <div class="gb-banner" data-gb="appBanner" hidden>
+    <strong>Conectar o GDMbot</strong> — entre com a sua conta Google para ativar o Pro no app.
+    <div style="margin-top:10px">
+      <button type="button" class="gb-btn gb-google" data-gb-action="app-login"><span class="gb-g">G</span> Entrar com Google</button>
+    </div>
+  </div>
+  <div class="gb-message" data-gb="message" hidden></div>
+
+  <div class="gb-hero">
+    <div>
+      <img class="gb-logo" src="assets/img/gdmbot/logo.webp" alt="GDMbot" />
+      <h1>Automatize o <span>teclado e o mouse</span> com um clique.</h1>
+      <p class="gb-lead">
+        O GDMbot grava e executa macros no Windows: cliques, teclas, textos, busca de imagens na tela e
+        condições SE/SENÃO. Integra direto com o <a href="#builder-maker">Builder Maker</a>: copie o código
+        da sua build, cole no GDMbot e aperte F8.
+      </p>
+      <div class="gb-cta">
+        <a class="gb-btn" data-gb="download" href="#">⬇ Baixar grátis</a>
+        <a class="gb-btn buy" data-gb="buy" href="#">⭐ Comprar Pro — R$ <span data-gb="price">49,90</span></a>
+      </div>
+      <p class="gb-note" style="margin-top:10px"><span data-gb="priceNote"></span> · Windows 10/11</p>
+    </div>
+    <img class="gb-shot" src="assets/img/gdmbot/app.webp" alt="Tela do GDMbot com uma macro de talentos" loading="lazy" />
+  </div>
+
+  <div>
+    <h2 class="gb-section-title">O que ele faz</h2>
+    <div class="gb-features">
+      <div class="gb-card"><span class="gb-icon">⏺</span><h3>Gravação</h3><p>Grave teclado e mouse (cliques, arrastos e teclas seguradas) e reproduza com precisão.</p></div>
+      <div class="gb-card"><span class="gb-icon">🖼</span><h3>Busca de imagem</h3><p>Encontra botões e ícones na tela e clica neles, mesmo que mudem de lugar.</p></div>
+      <div class="gb-card"><span class="gb-icon">🔀</span><h3>SE / SENÃO</h3><p>Decide o que fazer conforme o que aparece na tela. Blocos podem ser aninhados.</p></div>
+      <div class="gb-card"><span class="gb-icon">⌨</span><h3>Atalhos globais</h3><p>F9 inicia/para, F8 roda uma vez, F11 pausa — funcionam com o jogo em foco.</p></div>
+      <div class="gb-card"><span class="gb-icon">🧩</span><h3>Builder Maker</h3><p>Exporte os talentos da sua build no site e aplique no jogo com um atalho.</p></div>
+      <div class="gb-card"><span class="gb-icon">🛡</span><h3>Seguro</h3><p>Funciona offline, não coleta dados e solta automaticamente as teclas ao parar.</p></div>
+    </div>
+  </div>
+
+  <div>
+    <h2 class="gb-section-title">Planos</h2>
+    <div class="gb-buy-area">
+    <div class="gb-pricing">
+      <div class="gb-plan">
+        <h3>Grátis</h3>
+        <div class="gb-price">R$ 0<small>para sempre</small></div>
+        <ul>
+          <li>Todos os comandos de teclado, mouse e imagem</li>
+          <li>SE / SENÃO, gravação e atalhos globais</li>
+          <li>Código do Builder Maker</li>
+          <li>Macros de até 25 comandos</li>
+          <li class="no">Repetição infinita / X vezes</li>
+          <li class="no">Leitura de texto na tela (OCR)</li>
+        </ul>
+        <a class="gb-btn" data-gb="download" href="#">⬇ Baixar grátis</a>
+      </div>
+      <div class="gb-plan pro">
+        <h3>⭐ Pro</h3>
+        <div class="gb-price">R$ <span data-gb="price">49,90</span><small data-gb="priceNote"></small></div>
+        <ul>
+          <li>Tudo da versão Grátis</li>
+          <li>Macros ilimitados</li>
+          <li>Repetição infinita e X vezes</li>
+          <li>Leitura de texto na tela (OCR)</li>
+          <li>Atualizações e suporte</li>
+        </ul>
+        <a class="gb-btn buy" data-gb="buy" href="#">⭐ Comprar Pro</a>
+      </div>
+    </div>
+    <aside class="gb-account" data-gb="account" id="minha-conta">
+      <p class="gb-note">Carregando…</p>
+    </aside>
+    </div>
+  </div>
+
+  <div>
+    <h2 class="gb-section-title">Como funciona a compra</h2>
+    <div class="gb-steps">
+      <div class="gb-step"><strong>Baixe e teste grátis</strong>Use à vontade antes de comprar.</div>
+      <div class="gb-step"><strong>Entre com Google</strong>A licença fica na sua conta Google — nada de chave perdida.</div>
+      <div class="gb-step"><strong>Pague com Pix, cartão ou boleto</strong>Pelo Mercado Pago. A licença é liberada <span data-gb="deliveryTime">segundos após a aprovação</span>.</div>
+      <div class="gb-step"><strong>Ative no app</strong>No GDMbot: ⭐ ATIVAR PRO → Entrar com Google. Pronto!</div>
+    </div>
+  </div>
+
+  <div>
+    <h2 class="gb-section-title">Perguntas frequentes</h2>
+    <div class="gb-faq">
+      <details>
+        <summary>O Windows ou o antivírus mostrou um aviso. É seguro?</summary>
+        <p>Programas que simulam teclado e mouse às vezes são marcados por engano (falso positivo), e o
+          SmartScreen avisa sobre apps novos. Clique em "Mais informações" → "Executar assim mesmo".
+          O GDMbot não acessa a internet nem coleta dados.</p>
+      </details>
+      <details>
+        <summary>Posso usar em qualquer jogo?</summary>
+        <p>O GDMbot é uma ferramenta genérica de automação. Muitos jogos online proíbem macros e podem
+          suspender contas — verifique as regras do jogo. No Soulmask, os comandos <code>gm</code> do
+          Builder Maker funcionam em modo solo ou em servidor em que você é administrador.</p>
+      </details>
+      <details>
+        <summary>Em quantos computadores posso usar a licença?</summary>
+        <p>A licença é pessoal e fica na sua conta Google: entre com ela no GDMbot em qualquer computador seu.
+          Não compartilhe nem revenda a chave — chaves divulgadas são canceladas.</p>
+      </details>
+      <details>
+        <summary>Paguei com Pix/boleto e a licença não apareceu</summary>
+        <p>Pix costuma ser aprovado em segundos; boleto leva até 3 dias úteis. A licença aparece sozinha em
+          <a href="#gdmbot">Minha conta</a> assim que o Mercado Pago confirmar — entre com a mesma conta Google usada na compra.</p>
+      </details>
+      <details>
+        <summary>E se eu me arrepender?</summary>
+        <p>Você tem 7 dias após a compra para pedir reembolso (direito de arrependimento do Código de
+          Defesa do Consumidor). A chave é cancelada após o reembolso.</p>
+      </details>
+      <details>
+        <summary>Preciso instalar mais alguma coisa?</summary>
+        <p>Não para o uso normal. Para ler texto na tela (OCR, versão Pro) instale o
+          <a href="https://github.com/UB-Mannheim/tesseract/wiki" target="_blank" rel="noopener noreferrer">Tesseract OCR</a>.</p>
+      </details>
+      <details>
+        <summary>Não recebi minha chave / preciso de ajuda</summary>
+        <p data-gb="support">Use a aba <a href="#reportar">Reportar / Sugestão</a> informando o e-mail usado na compra.</p>
+      </details>
+      <details>
+        <summary>Termos de uso</summary>
+        <pre data-gb="terms">Carregando…</pre>
+      </details>
+    </div>
+  </div>
+</section>

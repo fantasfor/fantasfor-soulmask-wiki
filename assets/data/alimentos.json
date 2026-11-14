@@ -11,7 +11,7 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0010_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Sociedade: 20, Capacidade de Carga: 40, Recupera\u00e7\u00e3o de Sociedade: 80",
+    "bonus":"Limite de Saciedade: 20, Capacidade de Carga: 40, Recupera\u00e7\u00e3o de Saciedade: 80",
     "duracao":"20 minutos"
   },
   {
@@ -26,7 +26,7 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0011_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Sociedade: 40, DEF: 20, Recupera\u00e7\u00e3o de Sociedade: 100",
+    "bonus":"Limite de Saciedade: 40, DEF: 20, Recupera\u00e7\u00e3o de Saciedade: 100",
     "duracao":"30 minutos"
   },
   {
@@ -41,7 +41,7 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0013_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Sociedade: 30, Capacidade de Carga: 50, Recupera\u00e7\u00e3o de Sociedade: 100",
+    "bonus":"Limite de Saciedade: 30, Capacidade de Carga: 50, Recupera\u00e7\u00e3o de Saciedade: 100",
     "duracao":"30 minutos"
   },
   {
@@ -56,7 +56,7 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0014_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Sociedade: 40, Dano Cr\u00edtico: 10%, Efici\u00eancia de EXP Corporal: 200%, Recupera\u00e7\u00e3o de Sociedade: 100",
+    "bonus":"Limite de Saciedade: 40, Dano Cr\u00edtico: 10%, Efici\u00eancia de EXP Corporal: 200%, Recupera\u00e7\u00e3o de Saciedade: 100",
     "duracao":"30 minutos"
   },
   {
@@ -71,8 +71,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0019_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Saciedade: 40, Recupera\u00e7\u00e3o de Sociedade: 100, Capacidade de Carga: 80",
-    "duracao":"por 30 minutos"
+    "bonus":"Limite de Saciedade: 40, Capacidade de Carga: 80, Recupera\u00e7\u00e3o de Saciedade: 100",
+    "duracao":"30 minutos"
   },
   {
     "id":1120,
@@ -86,8 +86,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0022_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Saciedade: 40, DEF: 20, Recupera\u00e7\u00e3o de Sociedade: 100",
-    "duracao":"por 30 minutos"
+    "bonus":"Limite de Saciedade: 40, DEF: 20, Recupera\u00e7\u00e3o de Saciedade: 100",
+    "duracao":"30 minutos"
   },
   {
     "id":1128,
@@ -101,8 +101,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0030_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Saciedade: 20, Recupera\u00e7\u00e3o de Sociedade: 80, Capacidade de Carga: 40",
-    "duracao":"por 20 minutos"
+    "bonus":"Limite de Saciedade: 20, Capacidade de Carga: 40, Recupera\u00e7\u00e3o de Saciedade: 80",
+    "duracao":"20 minutos"
   },
   {
     "id":1135,
@@ -116,8 +116,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0037_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Saciedade: 20, DEF: 10, Recupera\u00e7\u00e3o de Sociedade: 80",
-    "duracao":"por 20 minutos"
+    "bonus":"Limite de Saciedade: 20, DEF: 10, Recupera\u00e7\u00e3o de Saciedade: 80",
+    "duracao":"20 minutos"
   },
   {
     "id":1141,
@@ -131,8 +131,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0043_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Saciedade: 20, Recupera\u00e7\u00e3o de Sociedade: 80, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 20, Dano Cr\u00edtico: 5%, Efici\u00eancia de EXP Corporal: 200%",
-    "duracao":"por 20 minutos"
+    "bonus":"Limite de Saciedade: 20, Dano Cr\u00edtico: 5%, Efici\u00eancia de EXP Corporal: 100%, Recupera\u00e7\u00e3o de Saciedade: 80, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 20",
+    "duracao":"20 minutos"
   },
   {
     "id":1143,
@@ -146,8 +146,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0045_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Saciedade: 10, DEF: 5, Recupera\u00e7\u00e3o de Sociedade: 60",
-    "duracao":"por 10 minutos"
+    "bonus":"Limite de Saciedade: 10, DEF: 5, Recupera\u00e7\u00e3o de Saciedade: 60",
+    "duracao":"10 minutos"
   },
   {
     "id":1147,
@@ -161,8 +161,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t5_img_0049_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Saciedade: 10, Recupera\u00e7\u00e3o de Sociedade: 60, Capacidade de Carga: 20",
-    "duracao":"por 10 minutos"
+    "bonus":"Limite de Saciedade: 10, Capacidade de Carga: 20, Recupera\u00e7\u00e3o de Saciedade: 60",
+    "duracao":"10 minutos"
   },
   {
     "id":1149,
@@ -176,8 +176,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t5_img_0051_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Saciedade: 10, Recupera\u00e7\u00e3o de Sociedade: 60, Capacidade de Carga: 20",
-    "duracao":"por 10 minutos"
+    "bonus":"Limite de Saciedade: 10, Capacidade de Carga: 20, Recupera\u00e7\u00e3o de Saciedade: 60",
+    "duracao":"10 minutos"
   },
   {
     "id":1152,
@@ -191,8 +191,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0054_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Sociedade: 40, Dano Cr\u00edtico: 10%, Efici\u00eancia de EXP Corporal: 200%, Recupera\u00e7\u00e3o de Sociedade: 100",
-    "duracao":"por 30 minutos"
+    "bonus":"Limite de Saciedade: 40, Dano Cr\u00edtico: 10%, Efici\u00eancia de EXP Corporal: 200%, Recupera\u00e7\u00e3o de Saciedade: 100",
+    "duracao":"30 minutos"
   },
   {
     "id":1156,
@@ -206,8 +206,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0058_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Saciedade: 40, Recupera\u00e7\u00e3o de Sociedade: 100, Capacidade de Carga: 80",
-    "duracao":"por 30 minutos"
+    "bonus":"Limite de Saciedade: 40, Capacidade de Carga: 80, Recupera\u00e7\u00e3o de Saciedade: 100",
+    "duracao":"30 minutos"
   },
   {
     "id":1157,
@@ -221,8 +221,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0059_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Saciedade: 20, DEF: 10, Recupera\u00e7\u00e3o de Sociedade: 80",
-    "duracao":"por 20 minutos"
+    "bonus":"Limite de Saciedade: 20, DEF: 10, Recupera\u00e7\u00e3o de Saciedade: 80",
+    "duracao":"20 minutos"
   },
   {
     "id":1159,
@@ -236,8 +236,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0061_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Saciedade: 20, Recupera\u00e7\u00e3o de Sociedade: 80, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 20, Dano Cr\u00edtico: 5%, Efici\u00eancia de EXP Corporal: 200%",
-    "duracao":"por 20 minutos"
+    "bonus":"Limite de Saciedade: 20, Dano Cr\u00edtico: 5%, Efici\u00eancia de EXP Corporal: 100%, Recupera\u00e7\u00e3o de Saciedade: 80, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 20",
+    "duracao":"20 minutos"
   },
   {
     "id":1100,
@@ -251,7 +251,7 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0002_05_01.webp",
     "translated":1,
-    "bonus":"Resist\u00eancia a Veneno: 20, Limite de Hidrata\u00e7\u00e3o: 20, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 100, Recupera\u00e7\u00e3o de Sociedade: 20, Radia\u00e7\u00e3o: -5",
+    "bonus":"Resist\u00eancia a Veneno: 20, Limite de Hidrata\u00e7\u00e3o: 20, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 100, Recupera\u00e7\u00e3o de Saciedade: 20, Radia\u00e7\u00e3o: -5",
     "duracao":"30 minutos"
   },
   {
@@ -266,8 +266,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0025_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 100, Recupera\u00e7\u00e3o de Sociedade: 20, Resist\u00eancia a Frio 10, Limite de Hidrata\u00e7\u00e3o: 20",
-    "duracao":"por 20 minutos"
+    "bonus":"Resist\u00eancia a Frio: 10, Limite de Hidrata\u00e7\u00e3o: 10, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 100, Recupera\u00e7\u00e3o de Saciedade: 20",
+    "duracao":"20 minutos"
   },
   {
     "id":1124,
@@ -281,8 +281,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0026_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 100, Recupera\u00e7\u00e3o de Sociedade: 20",
-    "duracao":"por 20 minutos"
+    "bonus":"Resist\u00eancia ao Fogo: 10, Limite de Hidrata\u00e7\u00e3o: 20, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 100, Recupera\u00e7\u00e3o de Saciedade: 20",
+    "duracao":"20 minutos"
   },
   {
     "id":1127,
@@ -296,8 +296,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0029_05_01.webp",
     "translated":1,
-    "bonus":"Resist\u00eancia a Veneno: 10, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 100, Recupera\u00e7\u00e3o de Sociedade: 20",
-    "duracao":"por 20 minutos"
+    "bonus":"Resist\u00eancia a Veneno: 10, Limite de Hidrata\u00e7\u00e3o: 10, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 100, Recupera\u00e7\u00e3o de Saciedade: 20",
+    "duracao":"20 minutos"
   },
   {
     "id":1131,
@@ -311,8 +311,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0033_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 100, Recupera\u00e7\u00e3o de Sociedade: 20, Resist\u00eancia ao Fogo 10, Limite de Hidrata\u00e7\u00e3o: 20",
-    "duracao":"por 20 minutos"
+    "bonus":"Resist\u00eancia ao Fogo: 10, Limite de Hidrata\u00e7\u00e3o: 20, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 100, Recupera\u00e7\u00e3o de Saciedade: 20",
+    "duracao":"20 minutos"
   },
   {
     "id":1161,
@@ -326,8 +326,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0063_05_01.webp",
     "translated":1,
-    "bonus":"Resist\u00eancia a Veneno: 20, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 100, Recupera\u00e7\u00e3o de Sociedade: 20, Radia\u00e7\u00e3o: -5, Limite de Hidrata\u00e7\u00e3o: 20",
-    "duracao":"por 30 minutos"
+    "bonus":"Resist\u00eancia a Veneno: 20, Limite de Hidrata\u00e7\u00e3o: 20, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 100, Recupera\u00e7\u00e3o de Saciedade: 20, Radia\u00e7\u00e3o: -5",
+    "duracao":"30 minutos"
   },
   {
     "id":1102,
@@ -341,7 +341,7 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0004_05_01.webp",
     "translated":1,
-    "bonus":"Limite de PV: 100, Velocidade de Consumo de \u00c1gua: -20%, Recupera\u00e7\u00e3o de Sociedade: 40, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40",
+    "bonus":"Limite de PV: 100, Velocidade de Consumo de \u00c1gua: -20%, Recupera\u00e7\u00e3o de Saciedade: 40, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40",
     "duracao":"10 minutos"
   },
   {
@@ -356,8 +356,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0005_05_01.webp",
     "translated":1,
-    "bonus":"Limite de PV: 100, Recupera\u00e7\u00e3o de Sociedade: 40, Velocidade de Consumo de Alimentos: -20%",
-    "duracao":"por 20 minutos"
+    "bonus":"Limite de PV: 100, Velocidade de Consumo de Alimentos: -40%, Recupera\u00e7\u00e3o de Saciedade: 40",
+    "duracao":"20 minutos"
   },
   {
     "id":1105,
@@ -371,7 +371,7 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0007_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Sociedade: 30, Limite de PV: 50, Recupera\u00e7\u00e3o de PV: 1",
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 30, Limite de PV: 50, Recupera\u00e7\u00e3o de PV\/s: 1",
     "duracao":"5 minutos"
   },
   {
@@ -386,8 +386,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0008_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Sociedade: 20, Limite de PV: 50, Recupera\u00e7\u00e3o de PV: 0.5",
-    "duracao":"por 5 minutos"
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 20, Limite de PV: 50, Recupera\u00e7\u00e3o de PV\/s: 0.5",
+    "duracao":"5 minutos"
   },
   {
     "id":1113,
@@ -401,8 +401,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0015_05_01.webp",
     "translated":1,
-    "bonus":"Limite de PV: 200, Recupera\u00e7\u00e3o de Sociedade: 40, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 60, Velocidade de Consumo de \u00c1gua: -20%",
-    "duracao":"por 30 minutos"
+    "bonus":"Limite de PV: 200, Velocidade de Consumo de \u00c1gua: -80%, Recupera\u00e7\u00e3o de Saciedade: 60, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40",
+    "duracao":"30 minutos"
   },
   {
     "id":1114,
@@ -416,8 +416,8 @@
     "weight":0.06,
     "image_path":"assets\/img\/itens\/t5_img_0016_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Sociedade: 30, DEF: 7.5%",
-    "duracao":"por 5 minutos"
+    "bonus":"DEF: 7.5%, Recupera\u00e7\u00e3o de Saciedade: 30",
+    "duracao":"5 minutos"
   },
   {
     "id":1115,
@@ -431,13 +431,13 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0017_05_01.webp",
     "translated":1,
-    "bonus":"Limite de PV: 100, Recupera\u00e7\u00e3o de Sociedade: 40, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40, Velocidade de Consumo de \u00c1gua: -40%",
-    "duracao":"por 20 minutos"
+    "bonus":"Limite de PV: 100, Velocidade de Consumo de \u00c1gua: -40%, Recupera\u00e7\u00e3o de Saciedade: 40, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40",
+    "duracao":"20 minutos"
   },
   {
     "id":1119,
     "name_en":"Fried Rare Steak",
-    "name_pt":"Bife Raro Frito 9",
+    "name_pt":"Bife Raro Frito",
     "description_en":"[Meat] When consumed, HP +10 per second, Max HP +200 for 30 minutes, Satiety +100 and grants enhanced recovery for 10 seconds.",
     "description_pt":"[Carne] Ao consumir, recupera PV em 10 e aumenta o Limite de PV em 200 a cada segundo por 30 minutos, recupera Saciedade em 100, e concede recupera\u00e7\u00e3o aprimorada por 10 segundos.",
     "category":"Comida e Bebidas",
@@ -446,8 +446,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0021_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de PV: 10, Limite de PV: 200, Recupera\u00e7\u00e3o de Sociedade: 100",
-    "duracao":"por 30 minutos, por 10 segundos"
+    "bonus":"Recupera\u00e7\u00e3o de PV\/s: 10, Limite de PV: 200, Recupera\u00e7\u00e3o de Saciedade: 100, Recupera\u00e7\u00e3o Aprimorada",
+    "duracao":"30 minutos, 10 segundos"
   },
   {
     "id":1126,
@@ -461,8 +461,8 @@
     "weight":0.06,
     "image_path":"assets\/img\/itens\/t5_img_0028_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Sociedade: 20, DEF: 5%",
-    "duracao":"por 5 minutos"
+    "bonus":"DEF: 5%, Recupera\u00e7\u00e3o de Saciedade: 20",
+    "duracao":"5 minutos"
   },
   {
     "id":1136,
@@ -476,8 +476,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0038_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Sociedade: 40, Limite de PV: 100, Recupera\u00e7\u00e3o de PV: 2",
-    "duracao":"por 10 minutos"
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 40, Limite de PV: 100, Recupera\u00e7\u00e3o de PV\/s: 2",
+    "duracao":"10 minutos"
   },
   {
     "id":1137,
@@ -491,8 +491,8 @@
     "weight":0.06,
     "image_path":"assets\/img\/itens\/t5_img_0039_05_01.webp",
     "translated":1,
-    "bonus":"Limite de PV: 100, ATQ: 5, Recupera\u00e7\u00e3o de Sociedade: 100",
-    "duracao":"por 20 minutos, por 10 segundos"
+    "bonus":"Limite de PV: 100, ATQ: 5, Recupera\u00e7\u00e3o de Saciedade: 100, Recupera\u00e7\u00e3o Aprimorada",
+    "duracao":"20 minutos, 10 segundos"
   },
   {
     "id":1138,
@@ -506,8 +506,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0040_05_01.webp",
     "translated":1,
-    "bonus":"Limite de PV: 100, Recupera\u00e7\u00e3o de PV: 6, Sociedade: 100",
-    "duracao":null
+    "bonus":"Limite de PV: 100, Recupera\u00e7\u00e3o de PV\/s: 6, Recupera\u00e7\u00e3o de Saciedade: 100, Recupera\u00e7\u00e3o Aprimorada",
+    "duracao":"10 minutos, 10 segundos"
   },
   {
     "id":1142,
@@ -521,8 +521,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0044_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Sociedade: 80, Limite de PV: 150, Recupera\u00e7\u00e3o de PV: 4",
-    "duracao":"por 20 minutos"
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 80, Limite de PV: 150, Recupera\u00e7\u00e3o de PV\/s: 4",
+    "duracao":"20 minutos"
   },
   {
     "id":1144,
@@ -536,8 +536,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0046_05_01.webp",
     "translated":1,
-    "bonus":"Limite de PV: 50, Recupera\u00e7\u00e3o de Sociedade: 10",
-    "duracao":"por 10 minutos"
+    "bonus":"Limite de PV: 50, Velocidade de Consumo de Alimentos: -20%, Recupera\u00e7\u00e3o de Saciedade: 10",
+    "duracao":"10 minutos"
   },
   {
     "id":1150,
@@ -551,8 +551,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0052_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Sociedade: 40, Limite de PV: 100, Recupera\u00e7\u00e3o de PV: 2",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 40, Limite de PV: 100, Recupera\u00e7\u00e3o de PV\/s: 2",
+    "duracao":"10 minutos"
   },
   {
     "id":1151,
@@ -566,8 +566,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t5_img_0053_05_01.webp",
     "translated":1,
-    "bonus":"Limite de PV: 150, Recupera\u00e7\u00e3o de Sociedade: 80",
-    "duracao":"por 20 minutos"
+    "bonus":"Limite de PV: 150, Velocidade de Consumo de Alimentos: -50%, Recupera\u00e7\u00e3o de Saciedade: 80",
+    "duracao":"20 minutos"
   },
   {
     "id":1153,
@@ -581,8 +581,8 @@
     "weight":0.06,
     "image_path":"assets\/img\/itens\/t5_img_0055_05_01.webp",
     "translated":1,
-    "bonus":"Limite de PV: 200, ATQ: 10, Recupera\u00e7\u00e3o de Sociedade: 100",
-    "duracao":"por 30 minutos, por 10 segundos"
+    "bonus":"Limite de PV: 200, ATQ: 10, Recupera\u00e7\u00e3o de Saciedade: 100, Recupera\u00e7\u00e3o Aprimorada",
+    "duracao":"30 minutos, 10 segundos"
   },
   {
     "id":1154,
@@ -596,8 +596,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0056_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Sociedade: 100, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40",
-    "duracao":"por 30 minutos"
+    "bonus":"Limite de PV: 200, Velocidade de Consumo de Alimentos: -80%, Recupera\u00e7\u00e3o de Saciedade: 100, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40",
+    "duracao":"30 minutos"
   },
   {
     "id":1158,
@@ -611,8 +611,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0060_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Sociedade: 100, Limite de PV: 200, Recupera\u00e7\u00e3o de PV: 8",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 100, Limite de PV: 200, Recupera\u00e7\u00e3o de PV\/s: 8",
+    "duracao":"30 minutos"
   },
   {
     "id":1116,
@@ -626,7 +626,7 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0018_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Vigor: 100%, Limite de Vigor: 20, Recupera\u00e7\u00e3o de Sociedade: 80",
+    "bonus":"Recupera\u00e7\u00e3o de Vigor: 100%, Limite de Vigor: 20, Recupera\u00e7\u00e3o de Saciedade: 80",
     "duracao":"30 minutos"
   },
   {
@@ -641,8 +641,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0020_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Vigor: 100%, Recupera\u00e7\u00e3o de Sociedade: 80",
-    "duracao":"por 30 minutos"
+    "bonus":"Recupera\u00e7\u00e3o de Vigor: 100%, Limite de Vigor: 20, Recupera\u00e7\u00e3o de Saciedade: 80",
+    "duracao":"30 minutos"
   },
   {
     "id":1121,
@@ -656,8 +656,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0023_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Vigor: 10, Movimento: 5%, Radia\u00e7\u00e3o: -0.02, Recupera\u00e7\u00e3o de Sociedade: 40",
-    "duracao":"por 20 minutos, por 10 segundos"
+    "bonus":"Limite de Vigor: 10, Velocidade de Movimento: 5%, Radia\u00e7\u00e3o\/s: -0.02, Recupera\u00e7\u00e3o de Saciedade: 40, Recupera\u00e7\u00e3o Aprimorada",
+    "duracao":"20 minutos, 10 segundos"
   },
   {
     "id":1132,
@@ -671,8 +671,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0034_05_01.webp",
     "translated":1,
-    "bonus":"Limite de Vigor: 20, Movimento: 10%, Radia\u00e7\u00e3o: -0.05, Recupera\u00e7\u00e3o de Sociedade: 60",
-    "duracao":"por 30 minutos, por 10 segundos"
+    "bonus":"Limite de Vigor: 20, Velocidade de Movimento: 10%, Radia\u00e7\u00e3o\/s: -0.05, Recupera\u00e7\u00e3o de Saciedade: 60, Recupera\u00e7\u00e3o Aprimorada",
+    "duracao":"30 minutos, 10 segundos"
   },
   {
     "id":1133,
@@ -686,8 +686,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0035_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de F\u00f4lego: 1, Limite de Vigor: 10, Recupera\u00e7\u00e3o de Sociedade: 20, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 60",
-    "duracao":"por 20 minutos"
+    "bonus":"Recupera\u00e7\u00e3o de F\u00f4lego\/s: 1, Veneno\/s: -0.02, Limite de Vigor: 10, Recupera\u00e7\u00e3o de Saciedade: 20, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 60",
+    "duracao":"20 minutos"
   },
   {
     "id":1134,
@@ -701,8 +701,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0036_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Vigor: 50%, Sociedade: 60",
-    "duracao":"por 20 minutos"
+    "bonus":"Recupera\u00e7\u00e3o de Vigor: 50%, Limite de Vigor: 10, Recupera\u00e7\u00e3o de Saciedade: 60",
+    "duracao":"20 minutos"
   },
   {
     "id":1139,
@@ -716,8 +716,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0041_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de F\u00f4lego: 2, Limite de Vigor: 20, Recupera\u00e7\u00e3o de Sociedade: 40, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 60",
-    "duracao":"por 30 minutos"
+    "bonus":"Recupera\u00e7\u00e3o de F\u00f4lego\/s: 2, Veneno\/s: -0.05, Limite de Vigor: 20, Recupera\u00e7\u00e3o de Saciedade: 40, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 60",
+    "duracao":"30 minutos"
   },
   {
     "id":1140,
@@ -731,8 +731,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0042_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Vigor: 50%, Sociedade: 60",
-    "duracao":"por 20 minutos"
+    "bonus":"Recupera\u00e7\u00e3o de Vigor: 50%, Limite de Vigor: 10, Recupera\u00e7\u00e3o de Saciedade: 60",
+    "duracao":"20 minutos"
   },
   {
     "id":1145,
@@ -746,8 +746,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t5_img_0047_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de F\u00f4lego: 0.5, Limite de Vigor: 5, Recupera\u00e7\u00e3o de Sociedade: 10",
-    "duracao":"por 10 minutos"
+    "bonus":"Recupera\u00e7\u00e3o de F\u00f4lego\/s: 0.5, Veneno\/s: -0.01, Limite de Vigor: 5, Recupera\u00e7\u00e3o de Saciedade: 10",
+    "duracao":"10 minutos"
   },
   {
     "id":1146,
@@ -761,8 +761,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0048_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Vigor: 25%, Recupera\u00e7\u00e3o de Sociedade: 40",
-    "duracao":"por 10 minutos"
+    "bonus":"Recupera\u00e7\u00e3o de Vigor: 25%, Limite de Vigor: 5, Recupera\u00e7\u00e3o de Saciedade: 40",
+    "duracao":"10 minutos"
   },
   {
     "id":1148,
@@ -776,8 +776,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0050_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Vigor: 25%, Recupera\u00e7\u00e3o de Sociedade: 40",
-    "duracao":"por 10 minutos"
+    "bonus":"Recupera\u00e7\u00e3o de Vigor: 25%, Limite de Vigor: 5, Recupera\u00e7\u00e3o de Saciedade: 40",
+    "duracao":"10 minutos"
   },
   {
     "id":1101,
@@ -791,8 +791,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0003_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Sociedade: 50",
-    "duracao":null
+    "bonus":"PV Instant\u00e2neo: 100, Recupera\u00e7\u00e3o de Saciedade: 50",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1104,
@@ -806,8 +806,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0006_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Moral: 0.25, Limite de Moral: -0.25",
-    "duracao":"por 20 minutos, por 30 segundos"
+    "bonus":"Resist\u00eancia a Cr\u00edtico: 10%, Recupera\u00e7\u00e3o de Moral\/s: 0.25, Limite de Moral\/s: -0.25",
+    "duracao":"20 minutos, 30 segundos"
   },
   {
     "id":1107,
@@ -821,8 +821,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0009_05_01.webp",
     "translated":1,
-    "bonus":"Sociedade: 5",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 5",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1110,
@@ -836,8 +836,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t5_img_0012_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Sociedade: 10, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 10, Recupera\u00e7\u00e3o de PV: 5",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 10, Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 10, PV Instant\u00e2neo: 5",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1125,
@@ -851,8 +851,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0027_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Moral: 0.25, Limite de Moral: -0.25",
-    "duracao":"por 20 minutos, por 30 segundos"
+    "bonus":"Resist\u00eancia a Cr\u00edtico: 10%, Recupera\u00e7\u00e3o de Moral\/s: 0.25, Limite de Moral\/s: -0.25",
+    "duracao":"20 minutos, 30 segundos"
   },
   {
     "id":1099,
@@ -866,8 +866,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0001_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40, Recupera\u00e7\u00e3o de Sociedade: 20",
-    "duracao":"por 30 minutos"
+    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40, Recupera\u00e7\u00e3o de Saciedade: 20, Dano: 3%",
+    "duracao":"20 minutos"
   },
   {
     "id":1122,
@@ -881,8 +881,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0024_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40, Recupera\u00e7\u00e3o de Sociedade: 20",
-    "duracao":"por 30 minutos"
+    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40, Recupera\u00e7\u00e3o de Saciedade: 20, Dano: 3%",
+    "duracao":"20 minutos"
   },
   {
     "id":1129,
@@ -896,8 +896,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0031_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40, Recupera\u00e7\u00e3o de Sociedade: 20",
-    "duracao":"por 30 minutos"
+    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40, Recupera\u00e7\u00e3o de Saciedade: 20, Dano: 6%",
+    "duracao":"30 minutos"
   },
   {
     "id":1130,
@@ -911,8 +911,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0032_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40, Recupera\u00e7\u00e3o de Sociedade: 20",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40, Recupera\u00e7\u00e3o de Saciedade: 20, Cr\u00edtico: 3%",
+    "duracao":"10 minutos"
   },
   {
     "id":1155,
@@ -926,8 +926,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t5_img_0057_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40, Recupera\u00e7\u00e3o de Sociedade: 20",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40, Recupera\u00e7\u00e3o de Saciedade: 20, Cr\u00edtico: 6%",
+    "duracao":"20 minutos"
   },
   {
     "id":1160,
@@ -941,8 +941,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t5_img_0062_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40, Recupera\u00e7\u00e3o de Sociedade: 20",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 40, Recupera\u00e7\u00e3o de Saciedade: 20, Cr\u00edtico: 6%",
+    "duracao":"20 minutos"
   },
   {
     "id":1176,
@@ -956,8 +956,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t6_img_0015_05_01.webp",
     "translated":1,
-    "bonus":null,
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 15",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1202,
@@ -971,8 +971,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t6_img_0041_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Sociedade: 20",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 20",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1162,
@@ -986,8 +986,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t6_img_0001_05_01.webp",
     "translated":1,
-    "bonus":"Vigor: 5, Sociedade: 5, PV: 10, Radia\u00e7\u00e3o: -2",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Vigor: 5, Recupera\u00e7\u00e3o de Saciedade: 5, PV Instant\u00e2neo: 10, Radia\u00e7\u00e3o: -2",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1164,
@@ -1001,8 +1001,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t6_img_0003_05_01.webp",
     "translated":1,
-    "bonus":"F\u00f4lego: 2, Sociedade: 5, PV: 5",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de F\u00f4lego: 2, Recupera\u00e7\u00e3o de Saciedade: 5, PV Instant\u00e2neo: 5",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1173,
@@ -1016,8 +1016,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t6_img_0012_05_01.webp",
     "translated":1,
-    "bonus":"Hidrata\u00e7\u00e3o: 20, Sociedade: 10, PV: 15, Radia\u00e7\u00e3o: -1",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 20, Recupera\u00e7\u00e3o de Saciedade: 10, PV Instant\u00e2neo: 15, Radia\u00e7\u00e3o: -1",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1175,
@@ -1032,7 +1032,7 @@
     "image_path":"assets\/img\/itens\/t6_img_0014_05_01.webp",
     "translated":1,
     "bonus":null,
-    "duracao":null
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1181,
@@ -1046,8 +1046,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t6_img_0020_05_01.webp",
     "translated":1,
-    "bonus":"Hidrata\u00e7\u00e3o: 20, Sociedade: 10, PV: 20, Radia\u00e7\u00e3o: -1",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 20, Recupera\u00e7\u00e3o de Saciedade: 10, PV Instant\u00e2neo: 20, Radia\u00e7\u00e3o: -1",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1182,
@@ -1061,8 +1061,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t6_img_0021_05_01.webp",
     "translated":1,
-    "bonus":"Hidrata\u00e7\u00e3o: 5, Sociedade: 10, PV: 15, Radia\u00e7\u00e3o: -1",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 5, Recupera\u00e7\u00e3o de Saciedade: 10, PV Instant\u00e2neo: 15, Radia\u00e7\u00e3o: -1",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1188,
@@ -1076,8 +1076,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t6_img_0027_05_01.webp",
     "translated":1,
-    "bonus":"Hidrata\u00e7\u00e3o: 20, Sociedade: 10, PV: 15, Radia\u00e7\u00e3o: -1",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 20, Recupera\u00e7\u00e3o de Saciedade: 10, PV Instant\u00e2neo: 15, Radia\u00e7\u00e3o: -1",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1191,
@@ -1091,8 +1091,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t6_img_0030_05_01.webp",
     "translated":1,
-    "bonus":"Hidrata\u00e7\u00e3o: 20, Sociedade: 10, PV: 20, Radia\u00e7\u00e3o: -2",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 20, Recupera\u00e7\u00e3o de Saciedade: 10, PV Instant\u00e2neo: 20, Radia\u00e7\u00e3o: -2",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1183,
@@ -1106,8 +1106,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t6_img_0022_05_01.webp",
     "translated":1,
-    "bonus":"Sociedade: 10, Radia\u00e7\u00e3o: -5",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 10, Radia\u00e7\u00e3o: -5",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1165,
@@ -1121,8 +1121,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t6_img_0004_05_01.webp",
     "translated":1,
-    "bonus":null,
-    "duracao":null
+    "bonus":"Resist\u00eancia a Frio: 2 (m\u00e1x. 3 ac\u00famulos)",
+    "duracao":"2 minutos"
   },
   {
     "id":1170,
@@ -1136,8 +1136,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t6_img_0009_05_01.webp",
     "translated":1,
-    "bonus":"Sociedade: 20, PV: 10",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 20, PV Instant\u00e2neo: 10",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1178,
@@ -1151,8 +1151,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t6_img_0017_05_01.webp",
     "translated":1,
-    "bonus":null,
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 10",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1185,
@@ -1166,8 +1166,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t6_img_0024_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de F\u00f4lego: 2, Recupera\u00e7\u00e3o de Sociedade: 2",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de F\u00f4lego: 2, Recupera\u00e7\u00e3o de Saciedade: 2",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1186,
@@ -1182,7 +1182,7 @@
     "image_path":"assets\/img\/itens\/t6_img_0025_05_01.webp",
     "translated":1,
     "bonus":null,
-    "duracao":null
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1189,
@@ -1196,8 +1196,8 @@
     "weight":0.03,
     "image_path":"assets\/img\/itens\/t6_img_0028_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Sociedade: 2",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 2, PV Instant\u00e2neo: 4",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1193,
@@ -1211,8 +1211,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t6_img_0032_05_01.webp",
     "translated":1,
-    "bonus":null,
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 20",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1194,
@@ -1226,8 +1226,8 @@
     "weight":0.1,
     "image_path":"assets\/img\/itens\/t6_img_0033_05_01.webp",
     "translated":1,
-    "bonus":"Sociedade: 10, PV: 10",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 10, PV Instant\u00e2neo: 10",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1196,
@@ -1241,8 +1241,8 @@
     "weight":0.04,
     "image_path":"assets\/img\/itens\/t6_img_0035_05_01.webp",
     "translated":1,
-    "bonus":null,
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Saciedade: 40",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1201,
@@ -1256,8 +1256,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t6_img_0040_05_01.webp",
     "translated":1,
-    "bonus":"Hidrata\u00e7\u00e3o: 20, Sociedade: 10, Radia\u00e7\u00e3o: -1",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 20, Recupera\u00e7\u00e3o de Saciedade: 10, PV Instant\u00e2neo: 15, Radia\u00e7\u00e3o: -1",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1204,
@@ -1272,7 +1272,7 @@
     "image_path":"assets\/img\/itens\/t6_img_0043_05_01.webp",
     "translated":1,
     "bonus":null,
-    "duracao":null
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1314,
@@ -1286,8 +1286,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t8_img_0001_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de PV: 80",
-    "duracao":null
+    "bonus":"PV Instant\u00e2neo: 80",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1315,
@@ -1301,8 +1301,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t8_img_0002_05_01.webp",
     "translated":1,
-    "bonus":null,
-    "duracao":null
+    "bonus":"PV Instant\u00e2neo: 20",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1319,
@@ -1316,8 +1316,8 @@
     "weight":0.06,
     "image_path":"assets\/img\/itens\/t8_img_0006_05_01.webp",
     "translated":1,
-    "bonus":"Limite de PV: 150",
-    "duracao":null
+    "bonus":"PV Instant\u00e2neo: 10% do Limite de PV + 150",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1320,
@@ -1331,8 +1331,8 @@
     "weight":0.06,
     "image_path":"assets\/img\/itens\/t8_img_0007_05_01.webp",
     "translated":1,
-    "bonus":"Limite de PV: 1000, Recupera\u00e7\u00e3o de Vigor: 150",
-    "duracao":null
+    "bonus":"PV Instant\u00e2neo: 60% do Limite de PV + 1000, Recupera\u00e7\u00e3o de Vigor: 150",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1323,
@@ -1346,8 +1346,8 @@
     "weight":0.06,
     "image_path":"assets\/img\/itens\/t8_img_0010_05_01.webp",
     "translated":1,
-    "bonus":"Limite de PV: 300",
-    "duracao":null
+    "bonus":"PV Instant\u00e2neo: 20% do Limite de PV + 300",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1327,
@@ -1391,8 +1391,8 @@
     "weight":0.06,
     "image_path":"assets\/img\/itens\/t8_img_0016_05_01.webp",
     "translated":1,
-    "bonus":"Limite de PV: 600, Recupera\u00e7\u00e3o de Vigor: 100",
-    "duracao":null
+    "bonus":"PV Instant\u00e2neo: 40% do Limite de PV + 600, Recupera\u00e7\u00e3o de Vigor: 100",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1333,
@@ -1406,8 +1406,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t8_img_0020_05_01.webp",
     "translated":1,
-    "bonus":null,
-    "duracao":"por 5 minutos"
+    "bonus":"Limite de PV: 3000, ATQ: 150, DEF: 150",
+    "duracao":"5 minutos"
   },
   {
     "id":1334,
@@ -1421,8 +1421,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t8_img_0021_05_01.webp",
     "translated":1,
-    "bonus":null,
-    "duracao":"por 5 minutos"
+    "bonus":"Limite de PV: 4000, ATQ: 200, DEF: 200",
+    "duracao":"5 minutos"
   },
   {
     "id":1336,
@@ -1436,8 +1436,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t8_img_0023_05_01.webp",
     "translated":1,
-    "bonus":null,
-    "duracao":"por 5 minutos"
+    "bonus":"Limite de PV: 2000, ATQ: 100, DEF: 100",
+    "duracao":"5 minutos"
   },
   {
     "id":1342,
@@ -1451,8 +1451,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t8_img_0029_05_01.webp",
     "translated":1,
-    "bonus":"Limite de PV: 20",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de PV\/s: 1% do Limite de PV + 20",
+    "duracao":"20 segundos"
   },
   {
     "id":1346,
@@ -1466,8 +1466,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t8_img_0033_05_01.webp",
     "translated":1,
-    "bonus":"Limite de PV: 40",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de PV\/s: 2% do Limite de PV + 40",
+    "duracao":"20 segundos"
   },
   {
     "id":1347,
@@ -1481,8 +1481,8 @@
     "weight":0.05,
     "image_path":"assets\/img\/itens\/t8_img_0034_05_01.webp",
     "translated":1,
-    "bonus":null,
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de PV\/s: 20",
+    "duracao":"20 segundos"
   },
   {
     "id":1348,
@@ -1526,7 +1526,7 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t8_img_0037_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 60, Recupera\u00e7\u00e3o de Sociedade: 20, Dano de Calor Causticante: -20%, Radia\u00e7\u00e3o: -0,02",
+    "bonus":"Recupera\u00e7\u00e3o de Hidrata\u00e7\u00e3o: 60, Recupera\u00e7\u00e3o de Saciedade: 20, Dano de Calor Causticante: -20%, Radia\u00e7\u00e3o\/s: -0.02",
     "duracao":"10 minutos"
   },
   {
@@ -1601,8 +1601,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t8_img_0011_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Moral: 0.1",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Humor\/s: 0.2, Recupera\u00e7\u00e3o de Moral\/s: 0.1",
+    "duracao":"30 minutos"
   },
   {
     "id":1325,
@@ -1616,8 +1616,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t8_img_0012_05_01.webp",
     "translated":1,
-    "bonus":"Movimento: 10%, Recupera\u00e7\u00e3o de Moral: 0.5, Limite de Moral: -0.5",
-    "duracao":"por 10 minutos, por 30 segundos"
+    "bonus":"Velocidade de Movimento: 10%, Dano de Congelamento: -20%, Recupera\u00e7\u00e3o de Moral\/s: 0.5, Limite de Moral\/s: -0.5",
+    "duracao":"10 minutos, 30 segundos"
   },
   {
     "id":1316,
@@ -1631,8 +1631,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t8_img_0003_05_01.webp",
     "translated":1,
-    "bonus":null,
-    "duracao":null
+    "bonus":"Radia\u00e7\u00e3o: -50%",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1318,
@@ -1677,7 +1677,7 @@
     "image_path":"assets\/img\/itens\/t8_img_0008_05_01.webp",
     "translated":1,
     "bonus":"Recupera\u00e7\u00e3o de Vigor: 40, Veneno: -20%",
-    "duracao":null
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1322,
@@ -1691,8 +1691,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t8_img_0009_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de Vigor: 10",
-    "duracao":null
+    "bonus":"Recupera\u00e7\u00e3o de Vigor: 10, Veneno: -10%",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1330,
@@ -1707,7 +1707,7 @@
     "image_path":"assets\/img\/itens\/t8_img_0017_05_01.webp",
     "translated":1,
     "bonus":null,
-    "duracao":null
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1339,
@@ -1721,8 +1721,8 @@
     "weight":0.08,
     "image_path":"assets\/img\/itens\/t8_img_0026_05_01.webp",
     "translated":1,
-    "bonus":"Recupera\u00e7\u00e3o de PV: 200, Veneno: -60%",
-    "duracao":null
+    "bonus":"PV Instant\u00e2neo: 200, Veneno: -60%",
+    "duracao":"Instant\u00e2neo"
   },
   {
     "id":1341,
