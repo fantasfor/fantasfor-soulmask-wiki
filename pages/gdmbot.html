@@ -2,7 +2,7 @@
   <!--
     CONFIGURAÇÃO DA LOJA — edite só este bloco (veja GDMbot/servidor/CONFIGURAR_VENDAS.md).
     firebase:     "Configuração do SDK" do app Web no console do Firebase (é público, pode ficar no site).
-    apiBase:      endereço do servidor no Netlify + "/api", ex.: "https://gdmbot-loja.netlify.app/api".
+    apiBase:      endereço do servidor no Cloudflare + "/api", ex.: "https://gdmbot-loja.gdmbot-loja.workers.dev/api".
     price:        só o texto exibido; o valor cobrado de verdade é GDMBOT_PRICE no servidor (tem que ser igual).
     priceFrom:    preço cheio mostrado riscado; discount: valor do desconto. Deixe "" para não mostrar promoção.
     downloadUrl:  link do GDMbot.exe (ex.: página de Releases do GitHub).
@@ -17,7 +17,7 @@
       "downloadUrl": "https://github.com/fantasfor/GDMbot/raw/main/GDMbot-v2.0.0.zip",
       "supportEmail": "",
       "deliveryTime": "segundos após a aprovação",
-      "apiBase": "https://gdmbot-loja.netlify.app/api",
+      "apiBase": "https://gdmbot-loja.gdmbot-loja.workers.dev/api",
       "firebase": {
         "apiKey": "AIzaSyDaUlPpU9DZxLqxIINrvsUeWNdv8J-FmkU",
         "authDomain": "gdmbot-141e7.firebaseapp.com",

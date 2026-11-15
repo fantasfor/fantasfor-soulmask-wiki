@@ -190,6 +190,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       o.k = p[4]; o.icon = data.icons?.ore; o.size = CATS[p[4]]?.size || 20;
     } else {
       o.k = cat; o.label = p[4]; o.icon = data.icons?.[cat]; o.size = CATS[cat]?.size || 22;
+      if (cat === 'dungeon') o.dg = data.dungeons?.[p[5]];   // masmorra: entrada, inimigos e baús
       if (cat === 'pyramid') {
         o.boss = p[5];
         // a pirâmide continua em "Locais" (a janela mostra o chefe dela); o chefe fica no altar de invocação
@@ -426,6 +427,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     o.creature ? creatures.get(o.creature)?.name_pt : '', o.creature ? creatures.get(o.creature)?.name_en : '',
     o.fol?.name_pt, o.fol?.name_en, o.baby ? babyName(o.baby) : '',
     o.boss ? bossById.get(o.boss)?.name_pt : '', o.boss ? bossById.get(o.boss)?.name_en : '',
+    o.dg?.title_pt, o.dg?.title_en,
     ORE.includes(o.k) ? t('src.veinOf', { name: t(`map.game.${o.k}`) }) : ''
   ].filter(Boolean).join(' '));
   const matches = (o) => (nameOnly ? nameHay(o).includes(query) : hay(o).includes(query));
@@ -740,6 +742,15 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
   }
   const near = (o, r = 9) => points.filter((q) => (q.cat === 'chest' || q.cat === 'maskChest') && (q.x - o.x) ** 2 + (q.y - o.y) ** 2 <= r * r);
 
+  // linha que abre para mostrar a tabela de drop (masmorras)
+  function dgRow(name, icon, meta, bag, mult, what) {
+    const rows = data.bags?.[bag] ? data.bags[bag].map((x) => [...x.slice(0, 5), `${bag}:${x[5]}`, x[6]]) : [];
+    const head = `${icon ? `<img src="${esc(icon)}" alt="" />` : '<i></i>'}<span title="${esc(name)}">${esc(name)}</span><small>${esc(meta)}</small>`;
+    if (!rows.length) return `<div class="mp-here mp-here-flat"><div class="mp-here-row">${head}</div></div>`;
+    return `<details class="mp-here"><summary>${head}</summary>
+      <div class="mp-here-body"><h5>${esc(t(what))}</h5>${groupTable(rows, mult)}</div></details>`;
+  }
+
   // feras, inimigos e recursos em volta de um local: uma linha por tipo (abre para ver o drop)
   function whoIsHere(o) {
     const r = NEAR_R[o.cat] || 9;
@@ -845,6 +856,39 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       sub = [typeName, o.level ? `${t('common.level')} ${o.level}` : ''].filter(Boolean).join(' · ');
       tone = 'chest';
       body = block(t('map.rewards'), groupTable(data.bags?.[o.bag], multOf(o)));
+    } else if (o.dg) {
+      // masmorra: o portal leva a uma masmorra montada ao acaso com salas prontas
+      const dg = o.dg;
+      title = pick(dg, 'title') || typeName;
+      sub = [typeName, dg.level ? `${t('common.level')} ${dg.level}` : ''].filter(Boolean).join(' · ');
+      tone = 'boss';
+      const chips = [dg.level ? `${t('common.level')} ${dg.level}` : '', dg.time ? t('map.dg.time', { t: fmtTime(dg.time) }) : '',
+        dg.players ? t('map.dg.players', { n: dg.players }) : ''].filter(Boolean);
+      const extra = [dg.awareness ? t('map.dg.awareness', { n: dg.awareness }) : '', dg.mask ? t('map.dg.mask', { n: dg.mask }) : ''].filter(Boolean);
+      body = (pick(dg, 'desc') ? `<p class="mp-note"><em>${esc(pick(dg, 'desc'))}</em></p>` : '')
+        + `<div class="mp-chips mp-chips-pad">${chips.map((x) => `<span>${esc(x)}</span>`).join('')}</div>`
+        + block(t('map.dg.cost'), (dg.cost?.length ? slots(dg.cost) : '')
+          + (extra.length ? `<div class="mp-chips mp-chips-pad">${extra.map((x) => `<span>${esc(x)}</span>`).join('')}</div>` : ''))
+        + `<p class="mp-note">${esc(t('map.dg.hint'))}</p>`;
+      // inimigos com a mesma bolsa de drop ficam numa linha só (ex.: os 5 tipos de Matador guarda)
+      const byBag = new Map();
+      (dg.enemies || []).forEach((e) => {
+        const k = `${e.role}|${e.bag || pick(e, 'name')}`;
+        if (!byBag.has(k)) byBag.set(k, { ...e, names: [] });
+        byBag.get(k).names.push(pick(e, 'name'));
+      });
+      const ROLE_ORDER = { boss: 0, elite: 1, guard: 2 };
+      const foes = [...byBag.values()].sort((a, b) => ROLE_ORDER[a.role] - ROLE_ORDER[b.role]);
+      const r = modeRates();
+      if (foes.length) {
+        body += block(t('map.enemiesHere'), foes.map((e) => dgRow(e.names.join(', '), e.role === 'boss' ? data.icons?.boss : data.icons?.mech,
+          [t(`map.dg.role.${e.role}`), e.hi ? `${t('common.level')} ${e.hi}` : ''].filter(Boolean).join(' · '),
+          e.bag, e.role === 'boss' ? (r.BossRenDiaoLuoRatio ?? 1) : (r.PuTongRenDiaoLuoRatio ?? 1), 'map.drops')).join(''));
+      }
+      if (dg.chests?.length) {
+        body += block(t('map.dg.chests'), dg.chests.map((c) => dgRow(pick(c, 'name') || t('map.game.chest'), data.icons?.chest, '',
+          c.bag, r.BaoXiangDropRatio ?? 1, 'map.rewards')).join(''));
+      }
     } else if (NEAR_CATS.includes(o.cat)) {
       title = lab(o.label) || typeName;
       sub = typeName;

@@ -1857,8 +1857,9 @@ def build_dungeons(loc, use_bag, bag_of):
         cost = [{"id": asset_name(d["DemandDaoJu"][0]), "n": d.get("DemandCount") or 1}
                 for d in formula.get("DemandDaoJu") or [] if d.get("DemandDaoJu")]
         scgs = room_spawners(str(conf.get("SGFModuleDataBase") or "").split(".")[0])
-        lv_m = re.search(r"(\d{2})$", key or "")
-        levels = sorted({int(x) for s in scgs for x in re.findall(r"(?:_Lv|_)(\d{2})(?:_C|\.|/)", s)})
+        lv_m = re.search(r"Lv(\d{2})$", key or "")
+        # sem "LvXX" no código (ex.: "Demo002" = masmorra grande): usa o maior nível das salas
+        levels = sorted({int(x) for s in scgs for x in re.findall(r"_(?:Lv)?(\d{2})(?:_C|\.)", s)})
         lv = int(lv_m.group(1)) if lv_m else (max(levels) if levels else 0)
         enemies = []
         for s in sorted(scgs):
@@ -2222,8 +2223,10 @@ def build_map_markers(loc, creature_ids, items=None):
                     points.append([cat, x, y, z, sub])
                     continue
                 if cat == "invasion":
-                    # BP_RuQinSGQ: tribo próxima que ataca a base do jogador
-                    points.append(["invasion", x, y, z, "base", 0, 0])
+                    # BP_RuQinSGQ: tribo próxima que ataca a base do jogador (só na Floresta; nas Areias Errantes
+                    # o pedido foi não mostrar esse tipo)
+                    if mid != "dlc":
+                        points.append(["invasion", x, y, z, "base", 0, 0])
                     continue
                 lvl = re.search(r"_(\d{2})[A-Z]", c) or re.search(r"_T(\d)_", c)
                 game_cls = cls_path.split(":")[0] if cls_path.startswith("/Game/") else None

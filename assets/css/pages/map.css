@@ -561,8 +561,9 @@
   top: 10px;
   right: 10px;
   width: 340px;
-  max-width: calc(100% - 20px);
-  max-height: calc(100% - 20px);
+  zoom: 1.1;             /* caixa inteira 10% maior: letras, ícones e largura (~374 px) */
+  max-width: calc((100% - 20px) / 1.1);
+  max-height: calc((100% - 20px) / 1.1);
   overflow-y: auto;
   border: 2px solid #686e73;
   background: linear-gradient(180deg, #161616, #0d0d0d);
@@ -612,12 +613,64 @@
   min-width: 0;
 }
 
+/* tabela de drop com colunas fixas: grupo, chance e quantidade estreitas; o item usa o resto e quebra a linha */
 .map-info .mp-gt {
   width: 100%;
+  table-layout: fixed;
+}
+
+.map-info .mp-gt th:nth-child(1),
+.map-info .mp-gt-g {
+  width: 46px;
+}
+
+.map-info .mp-gt th:nth-child(2) {
+  width: 58px;
+}
+
+.map-info .mp-gt th:nth-child(3) {
+  width: 46px;
+}
+
+.map-info .mp-gt th {
+  font-size: 0.6rem;
+  letter-spacing: 0.03em;
+}
+
+.map-info .mp-gt td,
+.map-info .mp-gt th {
+  padding-right: 4px;
+  padding-left: 4px;
+}
+
+.map-info .mp-gt-i a {
+  align-items: flex-start;
+  min-width: 0;
 }
 
 .map-info .mp-gt-i span {
+  min-width: 0;
   white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.map-info .mp-scroll,
+.map-info .mp-here,
+.map-info .mp-here-body {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.map-info .mp-here summary span,
+.map-info .mp-here-row span {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.map-info .mp-chips span,
+.map-info .mp-note,
+.map-info .mp-slot-name {
+  overflow-wrap: anywhere;
 }
 
 .map-info .mp-head small,
