@@ -1532,8 +1532,8 @@ def _marker_kind(c):
         return ("tabletAncient" if int(m.group(1)) < 100 else "tabletDivine"), None
     if c.startswith("BP_JianZhu_JingZiTaMen"):
         return "pyramid", None
-    if c.startswith("BP_JianZhu_DiXiaCheng"):
-        return "dungeon", None
+    if (c.startswith("BP_JianZhu_DiXiaCheng") or c.startswith("BP_Portal_DungeonEgypt_Lv")) and "Exit" not in c:
+        return "dungeon", None   # entrada de masmorra (Floresta) / portal da masmorra (Areias Errantes)
     if c.startswith("BP_JianZhu_YiJiDaMen") or c.startswith("BP_JianZhu_YiJi_JiGuanDaMen"):
         return "ruin", None
     if c.startswith("BP_JianZhu_YiJiMianJuXiuFu"):
@@ -1545,17 +1545,17 @@ def _marker_kind(c):
     m = re.match(r"BP_JianZhu_KuangMai_([A-Za-z]+?)\d*_C$", c)
     if m:
         return "ore", m.group(1).lower()
-    if c.startswith("BP_BuLuoGLQ"):
-        return "tribe", None
+    # BP_BuLuoGLQ (gerente da tribo) fica no mesmo lugar do acampamento/quartel/fortaleza oficial: não vira marcador
     if c.startswith(("BP_Building_RuinsRespawnPoint", "BP_Building_CentralCoreRespawnPoint")):
         return "respawn", None
     if c.startswith("BP_CrowdNPC_Firefly"):
         return "firefly", None
     if c.startswith("BP_RuQinSGQ"):
         return "invasion", None   # ponto de onde saem as invasões
-    m = re.match(r"BP_Building_Summon_(Sobek|Scarab|JackalKing)", c)
+    # altar de invocação dos chefes: DLC (Sobek, Escaravelho, Anúbis) e Floresta (os 5 chefes de pirâmide)
+    m = re.match(r"BP_(?:Building|JianZhu)_Summon_(Sobek|Scarab|JackalKing|JianChiHu|JinGangYuan|JuFengJiu|MengMaXiang|MoGuiWa)_C$", c)
     if m:
-        return "summon", m.group(1)   # altar de invocação de chefe da DLC (Sobek, Escaravelho, Anúbis)
+        return "summon", m.group(1)
     if "ShuaGuaiQi" in c:
         return "spawn", None
     return None
@@ -1789,6 +1789,128 @@ def _foliage_positions(p, e, end):
     return out
 
 
+DUNGEON_ENTRANCES = ["/Game/Blueprints/JianZhu/GameFunction/BP_JianZhu_DiXiaCheng_001",
+                     "/Game/Blueprints/JianZhu/GameFunction/BP_JianZhu_DiXiaCheng_002",
+                     "/Game/Blueprints/JianZhu/GameFunction/BP_JianZhu_DiXiaCheng_Lv40",
+                     "/Game/Blueprints/JianZhu/GameFunction/BP_JianZhu_DiXiaCheng_Lv50",
+                     "/Game/AdditionMap01/BluePrints/Dungeon/Portal/BP_Portal_DungeonEgypt_Lv40",
+                     "/Game/AdditionMap01/BluePrints/Dungeon/Portal/BP_Portal_DungeonEgypt_Lv50",
+                     "/Game/AdditionMap01/BluePrints/Dungeon/Portal/BP_Portal_DungeonEgypt_Lv60"]
+
+
+def build_dungeons(loc, use_bag, bag_of):
+    """Masmorras (entra-se por um portal e cai numa masmorra montada ao acaso com salas prontas).
+    Para cada entrada: nome, descrição, nível, tempo, jogadores, custo de entrada, inimigos (das salas,
+    no nível da masmorra) e baús. -> {classe da entrada: {...}}"""
+    confs = {}
+    for wd in ("BP_Level01Main_Data", "BP_DLCLevel01Main_Data"):
+        for c in (Package.open("/Game/Blueprints/StreamLevel/WorldSettingData/" + wd).cdo() or {}).get("DiXiaChengConfigList") or []:
+            confs[c.get("Name")] = c
+    names = {}
+
+    def name_of(cls):
+        if cls not in names:
+            pkg = Package.open(cls.split(".")[0])
+            cdo = (pkg.cdo() if pkg else None) or {}
+            names[cls] = loc.get(cdo.get("JianZhuDisplayName") or cdo.get("Name") or cdo.get("MoRenMingZi"))
+        return names[cls]
+
+    room_cache = {}
+
+    def room_spawners(db):
+        """SCGClass de todos os spawners das salas do banco de salas."""
+        if db not in room_cache:
+            found = set()
+            p = Package.open(db)
+            exp = [e for e in (p.exports if p else []) if (p.export_class(e) or "").endswith("ModuleDatabase")]
+            mods = p.read_export_props(exp[0])[0].get("Modules") or [] if exp else []
+            for m in mods:
+                lp = Package.open(str(m.get("Level") or "").split(".")[0])
+                for e in (lp.exports if lp else []):
+                    if "ShuaGuaiQi" not in (lp.export_class(e) or ""):
+                        continue
+                    try:
+                        pr, _ = lp.read_export_props(e)
+                    except Exception:
+                        continue
+                    if pr.get("SCGClass"):
+                        found.add(str(pr["SCGClass"]))
+            room_cache[db] = found
+        return room_cache[db]
+
+    out = {}
+    for ent in DUNGEON_ENTRANCES:
+        cdo = (Package.open(ent) or None)
+        cdo = cdo.cdo() if cdo else None
+        if not cdo:
+            continue
+        gfm = cdo.get("GameFunctionExecutionMap") or {}
+        if not gfm:
+            continue
+        formula_path, ex = next(iter(gfm.items()))
+        key = ((ex or {}).get("ExecutionList") or [{}])[0].get("ExecutePara1")
+        conf = confs.get(key)
+        if not conf:
+            continue
+        fp = Package.open(formula_path.split(".")[0])
+        formula = (fp.cdo() if fp else None) or {}
+        cost = [{"id": asset_name(d["DemandDaoJu"][0]), "n": d.get("DemandCount") or 1}
+                for d in formula.get("DemandDaoJu") or [] if d.get("DemandDaoJu")]
+        scgs = room_spawners(str(conf.get("SGFModuleDataBase") or "").split(".")[0])
+        lv_m = re.search(r"(\d{2})$", key or "")
+        levels = sorted({int(x) for s in scgs for x in re.findall(r"(?:_Lv|_)(\d{2})(?:_C|\.|/)", s)})
+        lv = int(lv_m.group(1)) if lv_m else (max(levels) if levels else 0)
+        enemies = []
+        for s in sorted(scgs):
+            if not re.search(r"(?:_Lv|_)%d(?:_C|\.|/)" % lv, s):
+                continue
+            role = "boss" if "Boss" in s else "elite" if ("JingYing" in s or "Elite" in s) else "guard"
+            sp = Package.open(s.split(".")[0])
+            scdo = (sp.cdo() if sp else None) or {}
+            for info in scdo.get("SCGInfoList") or []:
+                for g in info.get("SGBList") or []:
+                    gcls = g.get("GuaiWuClass")
+                    if not gcls:
+                        continue
+                    nm = name_of(gcls)
+                    bag = g.get("DiaoLuoBaoID")
+                    e = {"role": role, "lo": g.get("SCGZuiXiaoDengJi") or 0, "hi": g.get("SCGZuiDaDengJi") or 0}
+                    if nm:
+                        bi(e, "name", nm)
+                    b = use_bag(bag if bag and bag != "None" else None)
+                    if b:
+                        e["bag"] = b
+                    if nm and not any(x.get("name_pt") == e.get("name_pt") and x["role"] == role for x in enemies):
+                        enemies.append(e)
+        # baús da masmorra: pasta do nível (Floresta: BaoXiang/DiXiaCheng[Lv40|Lv50]; DLC: GameBox/Dungeons/Dungeon_LvXX)
+        if "/AdditionMap01/" in ent:
+            chest_dir = "/Game/AdditionMap01/BluePrints/GameBox/Dungeons/Dungeon_Lv%d" % lv
+        else:
+            chest_dir = "/Game/Blueprints/BaoXiang/DiXiaCheng/DiXiaChengLv%d" % lv
+            if not list(game_assets_under(chest_dir)):
+                chest_dir = "/Game/Blueprints/BaoXiang/DiXiaCheng"
+        chests = []
+        for gp in sorted(game_assets_under(chest_dir)):
+            if os.path.dirname(gp) != chest_dir:
+                continue
+            b = bag_of(gp)
+            nm = name_of(gp)
+            if b:
+                c = {"bag": b}
+                if nm:
+                    bi(c, "name", nm)
+                chests.append(c)
+        d = {"key": key, "level": lv, "time": int(conf.get("MaxTimeSeconds") or 0),
+             "players": conf.get("MaxPlayers") or 0, "cost": cost,
+             "mask": formula.get("DemandMianJuNengLiang") or 0, "awareness": formula.get("PeiFangDengJi") or 0,
+             "enemies": enemies, "chests": chests}
+        bi(d, "title", loc.get(conf.get("Title")))
+        bi(d, "desc", loc.get(conf.get("Desc")))
+        out[ent.rsplit("/", 1)[-1]] = d
+    STATS["masmorras"] += len(out)
+    return out
+
+
 MAP_TAG_WIDGETS = {"main": "/Game/Blueprints/UI/Map/WBP_MapTag_LevelMain01",
                    "dlc": "/Game/Blueprints/UI/Map/WBP_MapTag_LevelMain02"}
 
@@ -1940,6 +2062,8 @@ def build_map_markers(loc, creature_ids, items=None):
         if v.get("bagRows"):
             out["bags"]["fol:" + k] = v["bagRows"]
             out["foliage"][k]["bag"] = "fol:" + k
+
+    out["dungeons"] = build_dungeons(loc, use_bag, bag_of)
 
     for mid, (main_path, folder) in MAP_LEVELS.items():
         ws = _level_settings(main_path)
@@ -2104,6 +2228,8 @@ def build_map_markers(loc, creature_ids, items=None):
                 lvl = re.search(r"_(\d{2})[A-Z]", c) or re.search(r"_T(\d)_", c)
                 game_cls = cls_path.split(":")[0] if cls_path.startswith("/Game/") else None
                 pt = [cat, x, y, z, label(actor_name(game_cls) if game_cls else None)]
+                if cat == "dungeon":
+                    pt.append(c[:-2] if c.endswith("_C") else c)   # chave em out["dungeons"]
                 if cat in ("chest", "maskChest"):
                     pt.append(int(lvl.group(1)) if lvl else 0)
                     pt.append(bag_of(game_cls) if game_cls else None)

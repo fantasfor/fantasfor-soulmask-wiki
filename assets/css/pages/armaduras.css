@@ -1,6 +1,6 @@
 /* Armaduras: lista de conjuntos à esquerda, detalhe à direita, chave Normal/Avançada */
 .armaduras-page {
-  width: min(100%, 1240px);
+  width: 100%;
   margin: 0 auto;
   padding: 24px 28px 48px;
 }

@@ -62,3 +62,10 @@ as regras, publique: `firebase deploy --only firestore:rules` dentro de `GDMbot/
 em Firebase Console → Firestore → Regras → Publicar.
 | `meta.json` | Nomes oficiais dos atributos e categorias em PT/EN |
 | `legacy-ids.json` | Conversão de IDs antigos (builds e tier lists salvas no navegador) |
+
+## Google (SEO) e Analytics
+
+- Página nova ou texto mudou: edite `PAGES` em `tools/build_seo.py` e rode `python tools/build_seo.py` (gera `<pagina>.html` na raiz, `sitemap.xml` e `robots.txt`).
+- Verificação do Search Console: `GOOGLE_SITE_VERIFICATION` em `tools/build_seo.py`.
+- Google Analytics: `GA_ID` em `assets/js/analytics.js`.
+

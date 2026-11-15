@@ -546,6 +546,17 @@ main.container {
   }
 }
 
+/* página inicial ocupa a largura toda, como as outras páginas (antes ficava presa em 900 px
+   à esquerda e sobrava um vão grande à direita) */
+#page-content > .view > section.home-page {
+  width: 100%;
+}
+
+.home-page .home-intro,
+.home-page .home-quick-nav {
+  max-width: none;
+}
+
 /* mesmo espaço em todas as páginas: o bloco principal de cada página (a <section> raiz)
    tinha um padding diferente em cada uma (0 a 32 px); agora é um só para todas */
 #page-content > .view > section {

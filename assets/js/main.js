@@ -13,6 +13,7 @@ import { initCreaturesPage } from './pages/creatures.js';
 import { initTierListPage } from './pages/tierlist.js';
 import { initBuilderPage } from './pages/builder.js';
 import { initCloud, mountAccountWidget } from './cloud.js';
+import { trackPageView } from './analytics.js';
 import { initMapPage } from './pages/map.js';
 import { initFarmingPage } from './pages/farming.js';
 import { initReportPage } from './pages/report.js';
@@ -72,6 +73,15 @@ function hashParams() {
   return new URLSearchParams(location.hash.split('?')[1] || '');
 }
 window.getHashParams = hashParams;
+
+// Páginas de entrada para o Google (comandos.html, mapa.html... geradas por tools/build_seo.py):
+// mostram a seção do nome do arquivo e o endereço volta para o formato do site (./#comandos).
+function adoptLandingPage() {
+  const file = (location.pathname.split('/').pop() || '').replace(/\.html$/, '');
+  if (location.hash || !file || file === 'index') return;
+  history.replaceState(null, '', `./${location.search}#${file}`);
+}
+adoptLandingPage();
 
 // ------------------------------------------------------------------ busca global
 const SEARCH_SOURCES = [
@@ -220,6 +230,7 @@ async function loadPageFromHash(opts = {}) {
   }
   if (token !== loadToken || !view) return;
   updateDocumentTitle();
+  trackPageView(page);
   const init = PAGE_INIT[page];
   if (init) {
     const root = view.firstElementChild || view;
@@ -244,7 +255,8 @@ window.navigateTo = function navigateTo(page) {
 };
 
 document.body.addEventListener('click', (ev) => {
-  const anchor = ev.target.closest('a[href^="#"]');
+  if (ev.button !== 0 || ev.ctrlKey || ev.metaKey || ev.shiftKey) return; // nova aba: segue o link normal
+  const anchor = ev.target.closest('a[href^="#"], a.nav-link[data-page]');
   if (!anchor || anchor.closest('.item-modal')) return;
   const href = anchor.getAttribute('href') || '';
   if (href === '#') return;

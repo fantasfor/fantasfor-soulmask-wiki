@@ -895,8 +895,11 @@ button.item-card {
 
 .farming-drop {
   display: inline-flex;
+  flex-wrap: wrap;          /* nome comprido quebra a linha em vez de sair do cartão */
   align-items: center;
   gap: 4px;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .farming-drop small {
@@ -994,7 +997,9 @@ button.item-card {
 
 .boss-tier {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);   /* não passa da largura do cartão */
   gap: 8px;
+  min-width: 0;
 }
 
 .boss-summon {
@@ -1289,7 +1294,7 @@ a.comfort-item-name:hover {
 /* Reportar / Sugestão e Apoie */
 .report-page,
 .support-page {
-  width: min(100%, 860px);
+  width: 100%;
   margin: 0 auto;
   padding: 28px 20px 48px;
 }

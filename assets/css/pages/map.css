@@ -1,6 +1,6 @@
 /* Mapa interativo */
 .map-page {
-  width: min(100%, 1400px);
+  width: 100%;   /* usa a largura toda, até a margem padrão da direita */
   margin: 0 auto;
   padding: 24px 24px 40px;
 }
@@ -471,6 +471,168 @@
   top: 8px;
   right: 8px;
   color: var(--muted);
+}
+
+/* "no local": feras, inimigos e recursos de um covil, ruína ou mina (cada linha abre o drop) */
+.mp-here {
+  border: 1px solid #2e3133;
+  background: #111212;
+}
+
+.mp-here + .mp-here {
+  margin-top: 4px;
+}
+
+.mp-here summary,
+.mp-here-row {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  list-style: none;
+}
+
+.mp-here summary {
+  cursor: pointer;
+}
+
+.mp-here summary::-webkit-details-marker {
+  display: none;
+}
+
+.mp-here summary::after {
+  content: '+';
+  position: absolute;
+  right: 8px;
+  color: var(--muted);
+}
+
+.mp-here summary {
+  position: relative;
+  padding-right: 22px;
+}
+
+.mp-here[open] summary::after {
+  content: '\2212';
+}
+
+.mp-here[open] summary,
+.mp-here summary:hover {
+  background: #191a1a;
+}
+
+.mp-here img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.mp-here span {
+  overflow: hidden;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mp-here small {
+  color: var(--muted);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.mp-here-body {
+  padding: 6px 8px 8px;
+  border-top: 1px solid #2e3133;
+}
+
+.mp-here-body h5 {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* painel fixo no canto superior direito do mapa (abre ao clicar num marcador) */
+.map-info {
+  position: absolute;
+  z-index: 800;
+  top: 10px;
+  right: 10px;
+  width: 340px;
+  max-width: calc(100% - 20px);
+  max-height: calc(100% - 20px);
+  overflow-y: auto;
+  border: 2px solid #686e73;
+  background: linear-gradient(180deg, #161616, #0d0d0d);
+  color: var(--text);
+  box-shadow: 0 0 0 3px #0b0a09, 0 0 0 4px rgba(255, 255, 255, 0.06), 0 18px 40px rgba(0, 0, 0, 0.7);
+  cursor: auto;
+  scrollbar-width: thin;
+}
+
+.map-info[hidden] {
+  display: none;
+}
+
+.map-info-close {
+  position: absolute;
+  z-index: 1;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #3a3d40;
+  background: #111212;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.map-info-close:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.map-info .mp-head {
+  padding-right: 30px;
+}
+
+/* tudo cabe na largura do painel (a tabela de drop quebra os nomes em vez de esticar) */
+.map-info .mp {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.map-info .mp > *,
+.map-info .mp-block,
+.map-info .mp-scroll {
+  min-width: 0;
+}
+
+.map-info .mp-gt {
+  width: 100%;
+}
+
+.map-info .mp-gt-i span {
+  white-space: normal;
+}
+
+.map-info .mp-head small,
+.map-info .mp-head strong {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .map-info {
+    top: auto;
+    bottom: 10px;
+    left: 10px;
+    width: auto;
+    max-height: 60%;
+  }
 }
 
 .mp {

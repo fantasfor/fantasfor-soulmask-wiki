@@ -71,7 +71,11 @@ const MODE_COND = {
 const ORE = ['iron', 'copper', 'tin', 'coal'];
 // locais que mostram os baús que existem por perto (com a chance de drop)
 const NEAR_CATS = ['ruin', 'bigRuin', 'holyRuin', 'mystRuin', 'dungeon', 'ruinDungeon', 'palace', 'maskAltar', 'pyramid',
-  'camp', 'barrack', 'fortress', 'shipCamp', 'lair', 'cave', 'island', 'floatIsland', 'bossAltar'];
+  'camp', 'barrack', 'fortress', 'shipCamp', 'lair', 'cave', 'island', 'floatIsland', 'bossAltar',
+  'mineS', 'mineM', 'mineL', 'arena', 'beast'];
+const MINE_CATS = ['mineS', 'mineM', 'mineL'];
+// raio (no desenho 0..1024, ~8 m por unidade) em que contam feras, inimigos e recursos "do local"
+const NEAR_R = { lair: 7, beast: 7, mineS: 8, mineM: 10, mineL: 13, camp: 9, barrack: 11, fortress: 14 };
 
 const readJSON = (k, f) => { try { return JSON.parse(localStorage.getItem(k) || 'null') ?? f; } catch (e) { return f; } };
 const writeJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* ignora */ } };
@@ -104,7 +108,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     modeEl.addEventListener('change', () => {
       modeState.mode = modeEl.value;
       writeJSON(MODE_KEY, modeState);
-      map.closePopup();
+      if (selected) openSide(selected);   // painel aberto: refaz com as quantidades do novo modo
       renderModeNote();
     });
   }
@@ -188,8 +192,8 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       o.k = cat; o.label = p[4]; o.icon = data.icons?.[cat]; o.size = CATS[cat]?.size || 22;
       if (cat === 'pyramid') {
         o.boss = p[5];
-        // filtro pelo chefe da pirâmide, mas no mapa fica o ícone de pirâmide, como no jogo
-        if (o.boss && data.bossIcons?.[o.boss]) { o.k = `b:${o.boss}`; o.size = 30; }
+        // a pirâmide continua em "Locais" (a janela mostra o chefe dela); o chefe fica no altar de invocação
+        if (o.boss) o.size = 30;
       }
     }
     // id dos "visitados": baús e invasões mantêm o id antigo (categoria), para não perder o que já foi marcado
@@ -440,6 +444,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     return images[url];
   }
   let drawn = [];
+  let selected = null;   // marcador aberto no painel da direita (ganha um anel no mapa)
   const IconLayer = L.Layer.extend({
     onAdd(mp) {
       this._canvas = L.DomUtil.create('canvas', 'map-icon-layer');
@@ -484,6 +489,17 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
         ctx.drawImage(im, pt.x - s / 2, pt.y - s / 2, s, s);
         drawn.push({ o, x: pt.x, y: pt.y, r: s / 2 + 3 });
       });
+      if (selected) {
+        const pt = mp.latLngToContainerPoint([SIZE - selected.y, selected.x]);
+        const r = (selected.size * zoomScale) / 2 + 6;
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = '#ecb43c';
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
       // nomes das regiões por cima dos ícones, no estilo do mapa do jogo (texto claro com contorno escuro)
       if (on.regions && !searching) {
         ctx.globalAlpha = 1;
@@ -573,10 +589,31 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       if (dist <= d.r * d.r && score < bd) { best = d; bd = score; }
     });
     if (!best) return;
-    const o = best.o;
-    L.popup({ maxWidth: 380, minWidth: 300, maxHeight: Math.max(260, map.getSize().y - 120), className: 'map-info-popup', autoPanPaddingTopLeft: [16, 40], autoPanPaddingBottomRight: [16, 16] })
-      .setLatLng([SIZE - o.y, o.x]).setContent(popupHtml(o)).openOn(map);
+    openSide(best.o);
   });
+
+  // painel de informações fixo no canto superior direito do mapa
+  if (map._sidePanel) map._sidePanel.remove();
+  const side = L.DomUtil.create('aside', 'map-info', map.getContainer());
+  side.hidden = true;
+  side.setAttribute('aria-live', 'polite');
+  map._sidePanel = side;
+  L.DomEvent.disableClickPropagation(side);
+  L.DomEvent.disableScrollPropagation(side);
+  function openSide(o, tierIdx = 0) {
+    selected = o;
+    side.innerHTML = `<button type="button" class="map-info-close" data-side-close aria-label="${esc(t('common.close'))}">&times;</button>${popupHtml(o, tierIdx)}`;
+    side.hidden = false;
+    side.scrollTop = 0;
+    layer.redraw();
+  }
+  function closeSide() {
+    side.hidden = true;
+    selected = null;
+    layer.redraw();
+  }
+  side.addEventListener('click', (e) => { if (e.target.closest('[data-side-close]')) closeSide(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !side.hidden) closeSide(); });
   map.getContainer().addEventListener('mousemove', (e) => {
     const r = map.getContainer().getBoundingClientRect();
     const x = e.clientX - r.left; const y = e.clientY - r.top;
@@ -703,6 +740,59 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
   }
   const near = (o, r = 9) => points.filter((q) => (q.cat === 'chest' || q.cat === 'maskChest') && (q.x - o.x) ** 2 + (q.y - o.y) ** 2 <= r * r);
 
+  // feras, inimigos e recursos em volta de um local: uma linha por tipo (abre para ver o drop)
+  function whoIsHere(o) {
+    const r = NEAR_R[o.cat] || 9;
+    const around = points.filter((q) => q !== o && (q.x - o.x) ** 2 + (q.y - o.y) ** 2 <= r * r);
+    const groupBy = (list, keyOf) => {
+      const m = new Map();
+      list.forEach((q) => {
+        const k = keyOf(q);
+        if (!m.has(k)) m.set(k, { q, n: 0, lo: Infinity, hi: 0, bags: new Set() });
+        const g = m.get(k);
+        g.n += 1;
+        if (q.lo) g.lo = Math.min(g.lo, q.lo);
+        if (q.hi) g.hi = Math.max(g.hi, q.hi);
+        if (q.bag && data.bags?.[q.bag]) g.bags.add(q.bag);
+      });
+      return [...m.values()].sort((a, b) => b.n - a.n);
+    };
+    const row = (g, name, icon, mult, what) => {
+      const lv = g.hi ? `${t('common.level')} ${g.lo === g.hi || g.lo === Infinity ? g.hi : `${g.lo}–${g.hi}`}` : '';
+      const rows = [...g.bags].flatMap((bg) => data.bags[bg].map((x) => [...x.slice(0, 5), `${bg}:${x[5]}`, x[6]]));
+      if (!rows.length) {
+        // sem tabela de drop (ex.: veio de minério): só a linha, sem abrir
+        return `<div class="mp-here mp-here-flat"><div class="mp-here-row">${icon ? `<img src="${esc(icon)}" alt="" />` : '<i></i>'}<span>${esc(name)}</span><small>${esc([lv, `×${g.n}`].filter(Boolean).join(' · '))}</small></div></div>`;
+      }
+      return `<details class="mp-here">
+        <summary>${icon ? `<img src="${esc(icon)}" alt="" />` : '<i></i>'}<span>${esc(name)}</span><small>${esc([lv, `×${g.n}`].filter(Boolean).join(' · '))}</small></summary>
+        <div class="mp-here-body"><h5>${esc(t(what))}</h5>${groupTable(rows, mult)}</div>
+      </details>`;
+    };
+    let html = '';
+    const beasts = groupBy(around.filter((q) => q.creature), (q) => q.creature);
+    if (beasts.length) {
+      html += block(t(o.cat === 'lair' || o.cat === 'beast' ? 'map.beastsHere' : 'map.animalsHere'),
+        beasts.map((g) => row(g, creatureName(g.q.creature), g.q.popIcon, multOf(g.q), 'map.harvest')).join(''));
+    }
+    const foes = groupBy(around.filter((q) => q.k?.startsWith('e:') || q.k?.startsWith('n:') || q.k?.startsWith('m:')), (q) => q.label);
+    if (foes.length) {
+      html += block(t('map.enemiesHere'), foes.map((g) => row(g, enemyName(g.q.label), g.q.icon, multOf(g.q), 'map.drops')).join(''));
+    }
+    if (MINE_CATS.includes(o.cat)) {
+      const res = groupBy(around.filter((q) => (q.fol && q.fol.g === 'deposit') || ORE.includes(q.k)), (q) => q.k);
+      if (res.length) {
+        html += block(t('map.resourcesHere'), res.map((g) => {
+          const q = g.q;
+          const name = q.fol ? pick(q.fol, 'name') : t('src.veinOf', { name: t(`map.game.${q.k}`) });
+          const icon = q.fol ? (items.get(q.fol.item)?.icon || q.icon) : q.icon;
+          return row({ ...g, hi: 0 }, name, icon, modeRates().CaiKuangDiaoLuoRatio ?? 1, 'map.harvest');
+        }).join(''));
+      }
+    }
+    return html;
+  }
+
   function popupHtml(o, tierIdx = 0) {
     const typeName = t(`map.game.${typeKey(o)}`);
     let title = typeName;
@@ -759,13 +849,15 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       title = lab(o.label) || typeName;
       sub = typeName;
       const ch = near(o);
+      // quem está no local (feras / inimigos) e, nas minas, os recursos que dá para tirar
+      body = whoIsHere(o);
       if (ch.length) {
         const lvls = ch.map((q) => q.level).filter(Boolean);
         sub += ` · ${t('map.chestsNear', { n: ch.length })}${lvls.length ? ` · ${t('common.level')} ${Math.min(...lvls)}–${Math.max(...lvls)}` : ''}`;
         // baús diferentes por perto: cada bolsa entra uma vez, com os grupos dela
         const bags = [...new Set(ch.map((q) => q.bag).filter((b) => data.bags?.[b]))];
         const rows = bags.flatMap((bg) => data.bags[bg].map((r) => [...r.slice(0, 5), `${bg}:${r[5]}`]));
-        body = block(t('map.rewardsNear'), groupTable(rows, multOf(o)));
+        body += block(t('map.rewardsNear'), groupTable(rows, multOf(o)));
       }
     } else {
       title = lab(o.label) || typeName;
@@ -782,7 +874,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     </div>`;
   }
   // ações dentro da janela: trocar chefe 1/2/3, copiar comando, marcar visitado
-  map.getContainer().addEventListener('click', async (e) => {
+  side.addEventListener('click', async (e) => {
     const box = e.target.closest('.mp');
     if (!box) return;
     const o = points.find((p) => p.idx === Number(box.dataset.point));
@@ -795,7 +887,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       setTimeout(() => { if (cp.isConnected) cp.textContent = t('map.copyGm'); }, 1500);
     }
   });
-  map.getContainer().addEventListener('change', (e) => {
+  side.addEventListener('change', (e) => {
     const cb = e.target.closest('[data-visit-id]');
     if (!cb) return;
     if (cb.checked) visited.add(cb.dataset.visitId); else visited.delete(cb.dataset.visitId);

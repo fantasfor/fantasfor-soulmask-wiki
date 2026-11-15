@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://fantasfor.github.io/fantasfor-soulmask-wiki/sitemap.xml
