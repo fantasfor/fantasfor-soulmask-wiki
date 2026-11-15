@@ -166,7 +166,7 @@ export function initGdmbotStore() {
     const name = user.displayName || user.email;
     const head = `
       <div class="gb-user">
-        ${user.photoURL ? `<img src="${user.photoURL}" alt="" referrerpolicy="no-referrer">` : ''}
+        ${/^https:\/\//.test(user.photoURL || '') ? `<img src="${user.photoURL.replace(/[&<>"']/g, '')}" alt="" referrerpolicy="no-referrer">` : ''}
         <div><strong></strong><span></span></div>
         <button type="button" class="gb-link" data-gb-action="logout">Sair</button>
       </div>`;
@@ -216,6 +216,23 @@ export function initGdmbotStore() {
     }
   };
 
+  // Segurança: a conexão com o app só acontece depois de um clique de confirmação. Sem isso, alguém
+  // poderia mandar um link "#gdmbot?app=CODIGO" do PRÓPRIO app e receber a licença de quem abrisse.
+  const appBannerConfirm = () => {
+    if (!appSession || linkedSession || !user) return;
+    const banner = el('appBanner');
+    if (!banner || banner.dataset.confirm === 'true') return;
+    banner.dataset.confirm = 'true';
+    banner.innerHTML = `
+      <strong>Conectar o GDMbot a esta conta?</strong>
+      <p class="gb-note">Só confirme se foi <b>você</b> que clicou em "Entrar com Google" no GDMbot <b>neste computador</b> agora.
+      Se recebeu este link de outra pessoa, não confirme: ela receberia a sua licença.</p>
+      <div style="margin-top:10px">
+        <button type="button" class="gb-btn" data-gb-action="app-link">Sim, conectar meu GDMbot</button>
+      </div>`;
+    banner.querySelector('[data-gb-action="app-link"]').addEventListener('click', linkApp);
+  };
+
   const linkApp = async () => {
     if (!appSession || linkedSession || !user) return;
     linkedSession = true;
@@ -263,11 +280,11 @@ export function initGdmbotStore() {
           license = snap.exists() ? snap.data() : null;
           if (license && license.status === 'active' && purchase === 'aprovada') show('Licença liberada! Obrigado pela compra.', 'ok');
           render();
-          linkApp();
+          appBannerConfirm();
         }, () => render());
       }
       render();
-      if (user) linkApp();
+      if (user) appBannerConfirm();
     });
   }).catch((error) => {
     console.error('Firebase', error);
