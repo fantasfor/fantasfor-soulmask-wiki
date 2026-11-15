@@ -1008,6 +1008,166 @@ button.item-card {
   gap: 6px;
 }
 
+/* foto de fundo do chefe no topo do cartão, nome por cima */
+.boss-hero {
+  position: relative;
+  margin: -16px -16px 0;
+  aspect-ratio: 16 / 8;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.boss-hero img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.boss-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.85) 100%);
+  pointer-events: none;
+}
+
+.boss-hero .item-card-title {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 10px;
+  z-index: 1;
+  margin: 0;
+  color: #fff;
+  font-size: 1.15rem;
+  text-shadow: 0 1px 3px #000, 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+.boss-block-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 0;
+  color: var(--accent);
+  font-family: "Cinzel", serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.boss-block-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(144, 209, 238, 0.6), transparent);
+}
+
+/* itens para invocar: espaços de inventário (igual ao mapa) */
+.boss-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
+  gap: 8px 6px;
+}
+
+.boss-slot {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 4px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.boss-slot-box {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 1px solid #686e73;
+  background: #191a1a;
+}
+
+.boss-slot:hover .boss-slot-box,
+.boss-slot:focus-visible .boss-slot-box {
+  border-color: var(--accent);
+  background: rgba(144, 209, 238, 0.1);
+}
+
+.boss-slot-box img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.boss-slot-box b {
+  position: absolute;
+  right: 3px;
+  bottom: 0;
+  color: #fff;
+  font-size: 0.74rem;
+  text-shadow: 0 1px 2px #000, 0 0 3px #000;
+}
+
+.boss-slot-name {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.15;
+  text-align: center;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+/* drops escondidos atrás do "Mostrar mais" */
+.boss-more summary {
+  display: flex;
+  justify-content: center;
+  padding: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--accent);
+  font-size: 0.82rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.boss-more summary::-webkit-details-marker {
+  display: none;
+}
+
+.boss-more summary:hover {
+  background: rgba(144, 209, 238, 0.08);
+}
+
+.boss-more summary::after {
+  content: "▾";
+  margin-left: 6px;
+}
+
+.boss-more[open] summary::after {
+  content: "▴";
+}
+
+.boss-more .boss-more-off,
+.boss-more[open] .boss-more-on {
+  display: none;
+}
+
+.boss-more[open] .boss-more-off {
+  display: inline;
+}
+
+.boss-more-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  padding-top: 10px;
+}
+
 .boss-unlocks {
   display: grid;
   gap: 8px;

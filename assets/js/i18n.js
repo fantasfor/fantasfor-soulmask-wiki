@@ -386,6 +386,8 @@ const STRINGS = {
     'bosses.parts': 'Partes quebráveis',
     'bosses.unlocks': 'Libera ao derrotar',
     'bosses.noUnlock': 'Esta dificuldade não libera tecnologias.',
+    'bosses.more': 'Mostrar mais',
+    'bosses.less': 'Mostrar menos',
 
     'comfort.checkTitle': 'Calculadora de conforto',
     'comfort.toolTag': 'Ferramenta',
@@ -1379,6 +1381,8 @@ const STRINGS = {
     'bosses.parts': 'Breakable parts',
     'bosses.unlocks': 'Unlocks on defeat',
     'bosses.noUnlock': 'This difficulty does not unlock any technology.',
+    'bosses.more': 'Show more',
+    'bosses.less': 'Show less',
 
     'comfort.checkTitle': 'Comfort calculator',
     'comfort.toolTag': 'Tool',
