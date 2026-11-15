@@ -21,7 +21,9 @@ const SYNC_KEYS = {
   'soulmask-tier-mask-v2': 'replace',
   'soulmask-tier-lists': 'replace',
   talents_favorites_v2: 'union',
-  'soulmask-map-markers': 'replace'
+  'soulmask-map-markers': 'replace',
+  'soulmask-map-visited': 'replace',
+  'soulmask-comfort-check': 'replace'
 };
 const META_KEY = 'cloud_sync_meta';
 

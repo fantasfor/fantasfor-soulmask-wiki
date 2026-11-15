@@ -468,3 +468,154 @@ main.container {
   color: #d9d2c5;
   line-height: 1.7;
 }
+
+/* cartão "Apoie o site" na página inicial (substitui o QR code) */
+.home-support {
+  width: 280px;
+  align-items: stretch;
+  padding: 18px;
+  border: 1px solid rgba(236, 215, 96, 0.45);
+  background: linear-gradient(180deg, rgba(236, 215, 96, 0.1), rgba(0, 0, 0, 0.2));
+}
+
+.home-support-btn {
+  display: block;
+  padding: 12px 16px;
+  border: 1px solid #ecd760;
+  background: rgba(236, 215, 96, 0.18);
+  color: #ecd760;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background 160ms ease;
+}
+
+.home-support-btn:hover,
+.home-support-btn:focus-visible {
+  background: rgba(236, 215, 96, 0.3);
+  outline: none;
+}
+
+/* página inicial: todos os botões de navegação, 50% menores */
+.home-quick-nav {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 22px 10px !important;
+  justify-items: center;
+  width: 100%;
+  max-width: 900px;
+}
+
+.home-quick-nav .home-nav-square {
+  gap: 12px;
+  width: 78px;
+  max-width: 78px;
+}
+
+.home-quick-nav .home-nav-box {
+  width: 45px;
+  padding: 6px;
+}
+
+.home-quick-nav .home-nav-text {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+/* caixa "Apoie" com as cores do site e brilho discreto (como a barra lateral) */
+.home-support {
+  border: 1px solid #686e73;
+  background: #191a1a;
+  box-shadow: 0 0 18px rgba(144, 209, 238, 0.08);
+}
+
+/* respiro entre a barra lateral e o conteúdo das páginas */
+#page-content {
+  padding-left: 20px;
+  padding-right: 20px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  #page-content {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+/* mesmo espaço em todas as páginas: o bloco principal de cada página (a <section> raiz)
+   tinha um padding diferente em cada uma (0 a 32 px); agora é um só para todas */
+#page-content > .view > section {
+  padding: 24px 24px 32px !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  #page-content > .view > section {
+    padding: 14px 6px 24px !important;
+  }
+}
+
+/* ícones da página inicial 25% maiores (45px -> 56px) */
+.home-quick-nav {
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+}
+
+.home-quick-nav .home-nav-square {
+  width: 92px;
+  max-width: 92px;
+  gap: 15px;
+}
+
+.home-quick-nav .home-nav-box {
+  width: 56px;
+  padding: 7px;
+}
+
+/* ícones da página inicial: mais 25% (56px -> 70px) */
+.home-quick-nav {
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: 26px 12px !important;
+}
+
+.home-quick-nav .home-nav-square {
+  width: 108px;
+  max-width: 108px;
+  gap: 18px;
+}
+
+.home-quick-nav .home-nav-box {
+  width: 70px;
+  padding: 9px;
+}
+
+.home-quick-nav .home-nav-text {
+  font-size: 11px;
+}
+
+/* rodapé: direitos autorais */
+.site-footer {
+  margin: 40px 20px 0;
+  padding: 18px 0 26px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.site-footer p {
+  max-width: 820px;
+  margin: 4px auto;
+}
+
+.site-footer-main {
+  color: var(--text);
+  font-family: "Cinzel", serif;
+  font-size: 0.82rem;
+}

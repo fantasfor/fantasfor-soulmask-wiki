@@ -350,9 +350,28 @@ class Package(object):
                 self._read_inner(r, info["inner"], end, None)
             n = r.i32()
             out = {}
+            vector_vals = None   # valor struct sem nome: tagged; se falhar, Vector nativo (12 bytes)
+            # chave enum de 1 byte (ByteProperty com enum) vem gravada como FName (8 bytes)
+            byte_as_name = False
+            if info["inner"] == "ByteProperty" and n and r.o + 8 <= end:
+                idx, num = struct.unpack_from("<ii", r.b, r.o)
+                byte_as_name = 0 <= idx < len(self.names) and 0 <= num < 64 and "::" in str(self.names[idx])
             for _ in range(n):
-                k = self._read_inner(r, info["inner"], end, None)
-                v = self._read_inner(r, info["value"], end, None)
+                k = r.fname() if byte_as_name else self._read_inner(r, info["inner"], end, None)
+                if info["value"] == "StructProperty" and vector_vals is not False:
+                    if vector_vals is None:
+                        pos = r.o
+                        try:
+                            v = self._read_tagged(r, end)
+                            vector_vals = False
+                        except Exception:
+                            r.o = pos
+                            vector_vals = True
+                    if vector_vals:
+                        v = [round(x, 3) for x in struct.unpack_from("<3f", r.b, r.o)]
+                        r.o += 12
+                else:
+                    v = self._read_inner(r, info["value"], end, None)
                 out[str(k)] = v
             return out
         if ptype == "DelegateProperty":

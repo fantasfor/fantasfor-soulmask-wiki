@@ -140,7 +140,7 @@ export function initGdmbotStore() {
   });
 
   if (!isFirebaseConfigured(config)) {
-    setBuyState('⭐ Comprar Pro (em breve)', true);
+    setBuyState('Comprar Pro (em breve)', true);
     if (account) account.innerHTML = '<p class="gb-note">As vendas abrem em breve.</p>';
     return;
   }
@@ -160,7 +160,7 @@ export function initGdmbotStore() {
         <button type="button" class="gb-btn gb-google" data-gb-action="login">
           <span class="gb-g">G</span> Entrar com Google
         </button>`;
-      setBuyState('⭐ Comprar Pro', false);
+      setBuyState('Comprar Pro', false);
       return;
     }
     const name = user.displayName || user.email;
@@ -172,8 +172,8 @@ export function initGdmbotStore() {
       </div>`;
     if (license && license.status === 'active') {
       account.innerHTML = `${head}
-        <p class="gb-pro-ok">⭐ Você tem o GDMbot Pro</p>
-        <p class="gb-note">No GDMbot, clique em <b>⭐ ATIVAR PRO → Entrar com Google</b>. Ou copie a chave abaixo e cole no app.</p>
+        <p class="gb-pro-ok">Você tem o GDMbot Pro</p>
+        <p class="gb-note">No GDMbot, clique em <b>ATIVAR PRO → Entrar com Google</b>. Ou copie a chave abaixo e cole no app.</p>
         <textarea class="gb-key" readonly rows="3"></textarea>
         <button type="button" class="gb-btn" data-gb-action="copy">Copiar chave</button>`;
       account.querySelector('.gb-key').value = license.key || '';
@@ -182,8 +182,8 @@ export function initGdmbotStore() {
       const revoked = license && license.status === 'revoked';
       account.innerHTML = `${head}
         <p class="gb-note">${revoked ? 'Sua licença foi cancelada (reembolso/estorno).' : 'Sua conta ainda não tem o Pro.'}</p>
-        <button type="button" class="gb-btn buy" data-gb-action="buy">⭐ Comprar Pro — R$ ${config.price || ''}</button>`;
-      setBuyState('⭐ Comprar Pro', false);
+        <button type="button" class="gb-btn buy" data-gb-action="buy">Comprar Pro — R$ ${config.price || ''}</button>`;
+      setBuyState('Comprar Pro', false);
     }
     account.querySelector('.gb-user strong').textContent = name;
     account.querySelector('.gb-user span').textContent = user.email || '';
@@ -212,7 +212,7 @@ export function initGdmbotStore() {
       window.location.href = data.url;
     } catch (error) {
       show(friendlyError(error), 'error');
-      setBuyState('⭐ Comprar Pro', false);
+      setBuyState('Comprar Pro', false);
     }
   };
 

@@ -82,7 +82,8 @@ export async function initTierListPage(root) {
     if (w.wtype && w.icon && !best[w.wtype]) best[w.wtype] = { icon: w.icon };
   });
   const catalogs = {
-    armadura: sets.map((s) => ({ id: String(s.id), name: pick(s, 'name'), icon: s.icon })),
+    // armaduras de chefe: só as avançadas (2xxx) + as de ruínas/Dungeon (3xxx)
+    armadura: sets.filter((s) => Number(s.id) >= 2000).map((s) => ({ id: String(s.id), name: pick(s, 'name'), icon: s.icon })),
     arma: Object.keys(best).map((k) => ({ id: k, name: L(meta.weaponTypes?.[k]) || k, icon: best[k].icon })),
     mascaras: masks.map((m) => ({ id: m.id, name: pick(m, 'name'), icon: m.icon }))
   };
@@ -266,7 +267,7 @@ export async function initTierListPage(root) {
       </div>
       <section class="tier-review-box">
         <h3>${esc(t('tier.rateTitle'))}</h3>
-        ${own ? `<p class="tier-muted">${esc(t('tier.ownList'))}</p>` : `
+        ${own ? `<p class="tier-muted">${esc(t('tier.ownList'))}</p>` : !u ? `<p class="tier-muted">${esc(t('rating.loginToRate'))}</p>` : `
           <form class="tier-review-form" data-review>
             ${starsInput(mineReview?.s || 0)}
             <textarea class="tier-entry-input tier-textarea" name="comment" maxlength="300" rows="2" placeholder="${esc(t('tier.commentPlaceholder'))}">${esc(mineReview?.c || '')}</textarea>
@@ -292,7 +293,7 @@ export async function initTierListPage(root) {
 
   async function sendReview(form) {
     const status = form.querySelector('[data-review-status]');
-    const u = await requireUser();
+    const u = getUser();
     if (!u || !openDoc) return;
     const stars = Number(form.dataset.stars || openDoc.ratings?.[u.uid]?.s || 0);
     if (!stars) { status.textContent = t('tier.pickStars'); return; }

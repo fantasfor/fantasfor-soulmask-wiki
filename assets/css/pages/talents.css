@@ -428,3 +428,8 @@
 .talent-card-rating .star-btn {
   font-size: 1.15rem;
 }
+
+.talent-rate-login {
+  color: var(--muted);
+  font-size: 0.72rem;
+}

@@ -1,0 +1,43 @@
+<section class="items-page db-page guide-page prof-page">
+  <div class="items-header">
+    <h1 data-i18n="prof.title">Proficiência</h1>
+    <p class="items-subtitle" data-i18n="prof.subtitle">Como a proficiência sobe, quanto de EXP cada nível pede e todos os bônus de armas, coleta e fabricação.</p>
+  </div>
+
+  <section class="guide-explain">
+    <h2 data-i18n="prof.howTitle">Como funciona o cálculo</h2>
+    <ol class="guide-steps">
+      <li data-i18n-html="prof.how1">Cada proficiência vai do nível <strong>1</strong> ao <strong>150</strong>. Para subir, você precisa juntar a EXP do nível (ela cresce a cada nível).</li>
+      <li data-i18n-html="prof.how2"><strong>Bônus contínuo:</strong> todo nível soma um pouquinho (ex.: +0,5% de dano). Alguns bônus só entram a cada 10 níveis. O total é a soma de todos os níveis que você já passou.</li>
+      <li data-i18n-html="prof.how3"><strong>Bônus de marco:</strong> nos níveis <strong>30, 60, 90 e 120</strong> você ganha um bônus extra grande (+5%, +6%, +7% e +8%). Eles somam com o contínuo.</li>
+      <li data-i18n-html="prof.how4"><strong>Limite:</strong> o normal é parar no <strong>100</strong>. As profissões aumentam o limite das proficiências da sua área em <strong>+15 a +25</strong> (sorteado em cada tribal), por isso alguns chegam a 120 ou mais.</li>
+      <li data-i18n-html="prof.how5">Nas armas, os níveis 30, 60, 90 e 120 também dão a chance de ganhar uma <a href="#maestria">habilidade de maestria</a>.</li>
+    </ol>
+  </section>
+
+  <section class="guide-tool" aria-labelledby="prof-calc-title">
+    <header class="guide-tool-head">
+      <div>
+        <span class="comfort-tool-tag" data-i18n="comfort.toolTag">Ferramenta</span>
+        <h2 id="prof-calc-title" data-i18n="prof.calcTitle">Calculadora de proficiência</h2>
+      </div>
+    </header>
+    <div class="guide-form">
+      <label><span data-i18n="prof.calcType">Proficiência</span><select id="prof-type" class="items-search-input"></select></label>
+      <label><span data-i18n="prof.calcFrom">Nível atual</span><input type="number" id="prof-from" class="items-search-input" min="0" max="149" value="0" /></label>
+      <label><span data-i18n="prof.calcTo">Nível desejado</span>
+        <span class="farm-sim-temp"><input type="range" id="prof-level" min="1" max="150" value="100" /><output id="prof-level-out">100</output></span></label>
+    </div>
+    <div id="prof-result" class="prof-result" aria-live="polite"></div>
+  </section>
+
+  <h2 class="comfort-section-title" data-i18n="prof.milestonesTitle">Marcos da proficiência escolhida</h2>
+  <div id="prof-milestones" class="prof-milestones"></div>
+
+  <h2 class="comfort-section-title" data-i18n="prof.expTitle">EXP por nível</h2>
+  <div id="prof-exp" class="guide-table-wrap"></div>
+
+  <h2 class="comfort-section-title" data-i18n="prof.classesTitle">Bônus das profissões</h2>
+  <p class="comfort-howto" data-i18n="prof.classesHint">Quanto cada profissão aumenta o limite máximo das proficiências da sua área.</p>
+  <div id="prof-classes" class="guide-cards"></div>
+</section>

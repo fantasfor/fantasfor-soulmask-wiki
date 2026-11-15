@@ -1,0 +1,4222 @@
+[
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "DebugRootMotion",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ToggleGzDebugger",
+  "back": 56,
+  "tip": "<summary>\n格子系统: 切换格子系统调试开关\n</summary>",
+  "cat": null,
+  "meta": {
+   "Comment": "/// <summary>\n/// 格子系统: 切换格子系统调试开关\n/// </summary>\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "<summary>\n格子系统: 切换格子系统调试开关\n</summary>"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "DebugSelfLocation",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ToggleOnlineFriends",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "DebugShip",
+  "back": 56,
+  "tip": "调试船",
+  "cat": null,
+  "meta": {
+   "Comment": "// 调试船\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "调试船"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "DebugShipAttachData",
+  "back": 56,
+  "tip": "调试绑定船只位置信息",
+  "cat": null,
+  "meta": {
+   "Comment": "// 调试绑定船只位置信息\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "调试绑定船只位置信息"
+  }
+ },
+ {
+  "params": [
+   [
+    "IsOpen",
+    44,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "ToggleRelicDoorState",
+  "back": 56,
+  "tip": "切换遗迹门的状态",
+  "cat": null,
+  "meta": {
+   "Comment": "// 切换遗迹门的状态\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "切换遗迹门的状态"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ToggleShuJuKuShowState",
+  "back": 56,
+  "tip": "去除Game UI 数据库内容的显示限制",
+  "cat": null,
+  "meta": {
+   "Comment": "// 去除Game UI 数据库内容的显示限制\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "去除Game UI 数据库内容的显示限制"
+  }
+ },
+ {
+  "params": [
+   [
+    "Attr",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "DebugShuXing",
+  "back": 56,
+  "tip": "持续显示属性变化",
+  "cat": null,
+  "meta": {
+   "Comment": "// 持续显示属性变化\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "持续显示属性变化"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "TouQuAllJianZhues",
+  "back": 56,
+  "tip": "偷取全部建筑",
+  "cat": null,
+  "meta": {
+   "Comment": "// 偷取全部建筑\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "偷取全部建筑"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "DebugTargetLocation",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "TouQuViewJianZhu",
+  "back": 56,
+  "tip": "偷取眼前的建筑",
+  "cat": null,
+  "meta": {
+   "Comment": "// 偷取眼前的建筑\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "偷取眼前的建筑"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "DebugTargetRotation",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "DebugTili",
+  "back": 56,
+  "tip": "调试体力",
+  "cat": null,
+  "meta": {
+   "Comment": "// 调试体力\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "调试体力"
+  }
+ },
+ {
+  "params": [
+   [
+    "NewYiDaoJiLuUniqueId",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "TriggerYinDao",
+  "back": 56,
+  "tip": "触发引导提示",
+  "cat": null,
+  "meta": {
+   "Comment": "// 触发引导提示\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "触发引导提示"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "UnLock_All_Mask_And_Parts",
+  "back": 56,
+  "tip": "解锁所有面具和部件(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 解锁所有面具和部件(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "解锁所有面具和部件(英文)"
+  }
+ },
+ {
+  "params": [
+   [
+    "Index",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "DeleteGuild",
+  "back": 56,
+  "tip": "强制删除公会",
+  "cat": null,
+  "meta": {
+   "Comment": "// 强制删除公会\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "强制删除公会"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "UnLock_Nodes",
+  "back": 56,
+  "tip": "解锁所有面具修复节点（英文）",
+  "cat": null,
+  "meta": {
+   "Comment": "// 解锁所有面具修复节点（英文）\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "解锁所有面具修复节点（英文）"
+  }
+ },
+ {
+  "params": [
+   [
+    "Dj",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "DengJi",
+  "back": 56,
+  "tip": "设置等级",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置等级\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置等级"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "UnLock_Techs",
+  "back": 56,
+  "tip": "解锁所有科技树节点(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 解锁所有科技树节点(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "解锁所有科技树节点(英文)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "UnLockAllMaskAndParts",
+  "back": 56,
+  "tip": "解锁所有面具和部件",
+  "cat": null,
+  "meta": {
+   "Comment": "// 解锁所有面具和部件\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "解锁所有面具和部件"
+  }
+ },
+ {
+  "params": [
+   [
+    "InRadius",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "destroy_buliding_in_range",
+  "back": 56,
+  "tip": "摧毁面对部落范围内的建筑(单位：米)英文",
+  "cat": null,
+  "meta": {
+   "Comment": "// 摧毁面对部落范围内的建筑(单位：米)英文\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "摧毁面对部落范围内的建筑(单位：米)英文"
+  }
+ },
+ {
+  "params": [
+   [
+    "IsWeishui",
+    44,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "WeiSui",
+  "back": 56,
+  "tip": "尾随某一个玩家",
+  "cat": null,
+  "meta": {
+   "Comment": "// 尾随某一个玩家\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "尾随某一个玩家"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "DestroyLevelSkyShip",
+  "back": 56,
+  "tip": "删除场景飞船Boss",
+  "cat": null,
+  "meta": {
+   "Comment": "// 删除场景飞船Boss\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "删除场景飞船Boss"
+  }
+ },
+ {
+  "params": [
+   [
+    "FileName",
+    21,
+    4503599627370624
+   ],
+   [
+    "FileContent",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "WriteUserFile",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "XiDian",
+  "back": 56,
+  "tip": "洗点",
+  "cat": null,
+  "meta": {
+   "Comment": "// 洗点\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "洗点"
+  }
+ },
+ {
+  "params": [
+   [
+    "bDMName",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "DMName",
+  "back": 56,
+  "tip": "关闭改名",
+  "cat": null,
+  "meta": {
+   "Comment": "// 关闭改名\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "关闭改名"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "XiuMian",
+  "back": 56,
+  "tip": "设置是否影响休眠",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置是否影响休眠\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置是否影响休眠"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "DongWuCount",
+  "back": 56,
+  "tip": "动物数量",
+  "cat": null,
+  "meta": {
+   "Comment": "// 动物数量\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "动物数量"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "YiChuViewRongQiMiMa",
+  "back": 56,
+  "tip": "移除眼前容器的密码",
+  "cat": null,
+  "meta": {
+   "Comment": "// 移除眼前容器的密码\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "移除眼前容器的密码"
+  }
+ },
+ {
+  "params": [
+   [
+    "RangeRadius",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "DrawZhouWeiJueSeCapsule",
+  "back": 56,
+  "tip": "画出周围角色的胶囊体",
+  "cat": null,
+  "meta": {
+   "Comment": "// 画出周围角色的胶囊体\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "画出周围角色的胶囊体"
+  }
+ },
+ {
+  "params": [
+   [
+    "InYinBi",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "YinBi",
+  "back": 56,
+  "tip": "隐蔽",
+  "cat": null,
+  "meta": {
+   "Comment": "// 隐蔽\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "隐蔽"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "DumpTarget",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "YingWuStop",
+  "back": 56,
+  "tip": "鹦鹉别动(测试命令)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 鹦鹉别动(测试命令)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "鹦鹉别动(测试命令)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "Egg",
+  "back": 56,
+  "tip": "打开编辑公告界面",
+  "cat": null,
+  "meta": {
+   "Comment": "// 打开编辑公告界面\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "打开编辑公告界面"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "YinShen",
+  "back": 56,
+  "tip": "隐身",
+  "cat": null,
+  "meta": {
+   "Comment": "// 隐身\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "隐身"
+  }
+ },
+ {
+  "params": [
+   [
+    "bEnable",
+    44,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "EnableRuntimeLogging",
+  "back": 56,
+  "tip": "启用/禁用运行时日志缓存",
+  "cat": null,
+  "meta": {
+   "Comment": "// 启用/禁用运行时日志缓存\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "启用/禁用运行时日志缓存"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ZhaoMu",
+  "back": 56,
+  "tip": "快速招募",
+  "cat": null,
+  "meta": {
+   "Comment": "// 快速招募\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "快速招募"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ZhenShe",
+  "back": 56,
+  "tip": "快速震慑",
+  "cat": null,
+  "meta": {
+   "Comment": "// 快速震慑\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "快速震慑"
+  }
+ },
+ {
+  "params": [
+   [
+    "InPermissionType",
+    3,
+    4503599627370624
+   ],
+   [
+    "InEnable",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "EnableServerPermissionList",
+  "back": 56,
+  "tip": "黑白名单操作",
+  "cat": null,
+  "meta": {
+   "Comment": "// 黑白名单操作\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "黑白名单操作"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ZhuaBu",
+  "back": 56,
+  "tip": "强制抓捕当前目标",
+  "cat": null,
+  "meta": {
+   "Comment": "// 强制抓捕当前目标\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "强制抓捕当前目标"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "EndGA",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 0,
+  "name": "HCheatExportDump",
+  "back": 48,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ExcuteFisrtTransDLCMap",
+  "back": 56,
+  "tip": "执行首次传送到DLC表现",
+  "cat": null,
+  "meta": {
+   "Comment": "// 执行首次传送到DLC表现\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "执行首次传送到DLC表现"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ExpObj",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [
+   [
+    "NGIndex",
+    3,
+    4503599627370624
+   ],
+   [
+    "lv",
+    3,
+    4503599627370624
+   ],
+   [
+    "PinZ",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Find120",
+  "back": 56,
+  "tip": "查找生成怪位置",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查找生成怪位置\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查找生成怪位置"
+  }
+ },
+ {
+  "params": [
+   [
+    "NGIndex",
+    3,
+    4503599627370624
+   ],
+   [
+    "PinZ",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "FindSCGLoc",
+  "back": 56,
+  "tip": "查找生成怪位置",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查找生成怪位置\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查找生成怪位置"
+  }
+ },
+ {
+  "params": [
+   [
+    "IsWeishui",
+    44,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Follow_Player_View",
+  "back": 56,
+  "tip": "尾随某一个玩家(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 尾随某一个玩家(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "尾随某一个玩家(英文)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ForceCrash",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ForceGuildOwner",
+  "back": 56,
+  "tip": "获取所在部落会长权限",
+  "cat": null,
+  "meta": {
+   "Comment": "// 获取所在部落会长权限\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "获取所在部落会长权限"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ForceOutOfMemory",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ForceSavePlayerData",
+  "back": 56,
+  "tip": "强制保存角色存档",
+  "cat": null,
+  "meta": {
+   "Comment": "// 强制保存角色存档\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "强制保存角色存档"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "FuHuo",
+  "back": 56,
+  "tip": "复活",
+  "cat": null,
+  "meta": {
+   "Comment": "// 复活\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "复活"
+  }
+ },
+ {
+  "params": [
+   [
+    "MiMa",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "GaiMM",
+  "back": 56,
+  "tip": "修改管理员密码",
+  "cat": null,
+  "meta": {
+   "Comment": "// 修改管理员密码\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "修改管理员密码"
+  }
+ },
+ {
+  "params": [
+   [
+    "nMode",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Ghost_Mode",
+  "back": 56,
+  "tip": "设置鬼魂模式 0 取消鬼魂模式 1 设置鬼魂模式(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置鬼魂模式 0 取消鬼魂模式 1 设置鬼魂模式(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置鬼魂模式 0 取消鬼魂模式 1 设置鬼魂模式(英文)"
+  }
+ },
+ {
+  "params": [
+   [
+    "nMode",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "GhostMode",
+  "back": 56,
+  "tip": "设置鬼魂模式 0 取消鬼魂模式 1 设置鬼魂模式",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置鬼魂模式 0 取消鬼魂模式 1 设置鬼魂模式\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置鬼魂模式 0 取消鬼魂模式 1 设置鬼魂模式"
+  }
+ },
+ {
+  "params": [
+   [
+    "Msg",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "GM",
+  "back": 56,
+  "tip": "<summary>\nMsg将会在服务器执行\n</summary>",
+  "cat": null,
+  "meta": {
+   "Comment": "/// <summary>\n/// Msg将会在服务器执行\n/// </summary>\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "<summary>\nMsg将会在服务器执行\n</summary>"
+  }
+ },
+ {
+  "params": [
+   [
+    "X",
+    10,
+    4503599627370624
+   ],
+   [
+    "Y",
+    10,
+    4503599627370624
+   ],
+   [
+    "Z",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Go",
+  "back": 56,
+  "tip": "传送",
+  "cat": null,
+  "meta": {
+   "Comment": "// 传送\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "传送"
+  }
+ },
+ {
+  "params": [
+   [
+    "dis",
+    10,
+    4503599627370624
+   ],
+   [
+    "Z",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "GoF",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "CPP_Default_Z": "0.000000",
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "GotoJiTan",
+  "back": 56,
+  "tip": "前往最近的祭坛",
+  "cat": null,
+  "meta": {
+   "Comment": "// 前往最近的祭坛\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "前往最近的祭坛"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "GPS",
+  "back": 56,
+  "tip": "查看自己的位置",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查看自己的位置\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查看自己的位置"
+  }
+ },
+ {
+  "params": [
+   [
+    "Index",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "JiaRuGongHui",
+  "back": 56,
+  "tip": "强制加入公会",
+  "cat": null,
+  "meta": {
+   "Comment": "// 强制加入公会\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "强制加入公会"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "JieSuoShouLieChengHao",
+  "back": 56,
+  "tip": "解锁狩猎",
+  "cat": null,
+  "meta": {
+   "Comment": "// 解锁狩猎\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "解锁狩猎"
+  }
+ },
+ {
+  "params": [
+   [
+    "Jy",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "JingYan",
+  "back": 56,
+  "tip": "加经验",
+  "cat": null,
+  "meta": {
+   "Comment": "// 加经验\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "加经验"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "Join_Target_Tribe",
+  "back": 56,
+  "tip": "强制加入对象的部落(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 强制加入对象的部落(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "强制加入对象的部落(英文)"
+  }
+ },
+ {
+  "params": [
+   [
+    "Index",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Join_Tribe",
+  "back": 56,
+  "tip": "强制加入公会(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 强制加入公会(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "强制加入公会(英文)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "JoinGuildFromViewActor",
+  "back": 56,
+  "tip": "强制加入对象的部落",
+  "cat": null,
+  "meta": {
+   "Comment": "// 强制加入对象的部落\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "强制加入对象的部落"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "JSMJ",
+  "back": 56,
+  "tip": "解锁所有面具修复节点",
+  "cat": null,
+  "meta": {
+   "Comment": "// 解锁所有面具修复节点\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "解锁所有面具修复节点"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "KeJiShu",
+  "back": 56,
+  "tip": "解锁所有科技树节点",
+  "cat": null,
+  "meta": {
+   "Comment": "// 解锁所有科技树节点\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "解锁所有科技树节点"
+  }
+ },
+ {
+  "params": [
+   [
+    "PSW",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Key",
+  "back": 56,
+  "tip": "游戏密令打开新世界",
+  "cat": null,
+  "meta": {
+   "Comment": "// 游戏密令打开新世界\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "游戏密令打开新世界"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "Kick_Tribe",
+  "back": 56,
+  "tip": "强制把对方踢出公会",
+  "cat": null,
+  "meta": {
+   "Comment": "// 强制把对方踢出公会\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "强制把对方踢出公会"
+  }
+ },
+ {
+  "params": [
+   [
+    "SteamID",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "KickPlayer",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [
+   [
+    "RemoteServerID",
+    3,
+    4503599627370626
+   ],
+   [
+    "RemoteSeasonID",
+    3,
+    4503599627370626
+   ],
+   [
+    "ConnectString",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "KuaFu",
+  "back": 56,
+  "tip": "跨服测试",
+  "cat": null,
+  "meta": {
+   "Comment": "// 跨服测试\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "跨服测试"
+  }
+ },
+ {
+  "params": [
+   [
+    "ItemClass",
+    17,
+    5629499668431234
+   ]
+  ],
+  "flags": 4326913,
+  "name": "LocateItem",
+  "back": 56,
+  "tip": "定位道具位置",
+  "cat": null,
+  "meta": {
+   "Comment": "// 定位道具位置\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "定位道具位置"
+  }
+ },
+ {
+  "params": [
+   [
+    "PinDao",
+    3,
+    4503599627370624
+   ],
+   [
+    "Msg",
+    29,
+    4503599627370880
+   ]
+  ],
+  "flags": 4326913,
+  "name": "LT",
+  "back": 56,
+  "tip": "聊天",
+  "cat": null,
+  "meta": {
+   "Comment": "// 聊天\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "聊天"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "NavDebugItem",
+  "back": 56,
+  "tip": "寻路测试道具",
+  "cat": null,
+  "meta": {
+   "Comment": "// 寻路测试道具\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "寻路测试道具"
+  }
+ },
+ {
+  "params": [
+   [
+    "bEnabled",
+    44,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "NavMeshDebugLog",
+  "back": 56,
+  "tip": "寻路调试输出开关",
+  "cat": null,
+  "meta": {
+   "Comment": "// 寻路调试输出开关\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "寻路调试输出开关"
+  }
+ },
+ {
+  "params": [
+   [
+    "bOpenNetFilter",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "NetFilterWords",
+  "back": 56,
+  "tip": "关闭网络过滤词",
+  "cat": null,
+  "meta": {
+   "Comment": "// 关闭网络过滤词\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "关闭网络过滤词"
+  }
+ },
+ {
+  "params": [
+   [
+    "ServerAddr",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "PingServer",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [
+   [
+    "Pz",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "PinZhi",
+  "back": 56,
+  "tip": "设置品质",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置品质\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置品质"
+  }
+ },
+ {
+  "params": [
+   [
+    "PropNameList",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Q",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "QieHuanJianZhuDebugMode",
+  "back": 56,
+  "tip": "切换建筑的调试模式",
+  "cat": null,
+  "meta": {
+   "Comment": "// 切换建筑的调试模式\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "切换建筑的调试模式"
+  }
+ },
+ {
+  "params": [
+   [
+    "Attr",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Query",
+  "back": 56,
+  "tip": "查询属性当前值",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查询属性当前值\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查询属性当前值"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "QueryKongZhi",
+  "back": 56,
+  "tip": "查询目标控制状态",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查询目标控制状态\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查询目标控制状态"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "QueryNieLian",
+  "back": 56,
+  "tip": "查询角色捏脸数据",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查询角色捏脸数据\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查询角色捏脸数据"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "QuerySelect",
+  "back": 56,
+  "tip": "查询选中目标",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查询选中目标\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查询选中目标"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "QueryStreamingLevelState",
+  "back": 56,
+  "tip": "查询单机和ListenServer,玩家位置关卡的加载状态",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查询单机和ListenServer,玩家位置关卡的加载状态\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查询单机和ListenServer,玩家位置关卡的加载状态"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "QueryWenDu",
+  "back": 56,
+  "tip": "查询温度",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查询温度\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查询温度"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "QueryZNpc",
+  "back": 56,
+  "tip": "查询z小于0的npc",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查询z小于0的npc\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查询z小于0的npc"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "RCJ",
+  "back": 56,
+  "tip": "重置所有成就: 清理游戏中以及STEAM中的成就，STEAM成就清理仅限于非SHIPPING版本的客户端",
+  "cat": null,
+  "meta": {
+   "Comment": "// 重置所有成就: 清理游戏中以及STEAM中的成就，STEAM成就清理仅限于非SHIPPING版本的客户端\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "重置所有成就: 清理游戏中以及STEAM中的成就，STEAM成就清理仅限于非SHIPPING版本的客户端"
+  }
+ },
+ {
+  "params": [
+   [
+    "FileName",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "ReadUserFile",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "RecordDynamicPhysicsActors",
+  "back": 56,
+  "tip": "LOG记录所有拥有动态刚体的对象",
+  "cat": null,
+  "meta": {
+   "Comment": "// LOG记录所有拥有动态刚体的对象\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "LOG记录所有拥有动态刚体的对象"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "Recruit",
+  "back": 56,
+  "tip": "快速招募(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 快速招募(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "快速招募(英文)"
+  }
+ },
+ {
+  "params": [
+   [
+    "InCan",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Recruit_Retroreflector",
+  "back": 56,
+  "tip": "设置可修正招募(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置可修正招募(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置可修正招募(英文)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "Refresh_Mastery",
+  "back": 56,
+  "tip": "刷新专精技能(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 刷新专精技能(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "刷新专精技能(英文)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "RefreshGlobalItemCountMap",
+  "back": 56,
+  "tip": "刷新全局缓存道具数量信息表(此命令用于调试)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 刷新全局缓存道具数量信息表(此命令用于调试)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "刷新全局缓存道具数量信息表(此命令用于调试)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "RefreshServerGlobalConfig",
+  "back": 56,
+  "tip": "官方服务器刷新全局配置",
+  "cat": null,
+  "meta": {
+   "Comment": "// 官方服务器刷新全局配置\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "官方服务器刷新全局配置"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "RefreshZJ",
+  "back": 56,
+  "tip": "刷新专精技能",
+  "cat": null,
+  "meta": {
+   "Comment": "// 刷新专精技能\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "刷新专精技能"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "Remove_Selected_Target",
+  "back": 56,
+  "tip": "清除选中目标(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 清除选中目标(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "清除选中目标(英文)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "RemoveExceedZuRen",
+  "back": 56,
+  "tip": "删除超出数量的族人",
+  "cat": null,
+  "meta": {
+   "Comment": "// 删除超出数量的族人\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "删除超出数量的族人"
+  }
+ },
+ {
+  "params": [
+   [
+    "GAName",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "RemoveGA",
+  "back": 56,
+  "tip": "移除技能",
+  "cat": null,
+  "meta": {
+   "Comment": "// 移除技能\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "移除技能"
+  }
+ },
+ {
+  "params": [
+   [
+    "GEName",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "RemoveGE",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [
+   [
+    "NGID",
+    3,
+    4503599627370624
+   ],
+   [
+    "bGood",
+    44,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "RemoveNG",
+  "back": 56,
+  "tip": "删一条天赋",
+  "cat": null,
+  "meta": {
+   "Comment": "// 删一条天赋\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "删一条天赋"
+  }
+ },
+ {
+  "params": [
+   [
+    "GEName",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "RemoveQiChenRenGE",
+  "back": 56,
+  "tip": "给骑乘人删除一个buff",
+  "cat": null,
+  "meta": {
+   "Comment": "// 给骑乘人删除一个buff\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "给骑乘人删除一个buff"
+  }
+ },
+ {
+  "params": [
+   [
+    "InPermissionType",
+    3,
+    4503599627370624
+   ],
+   [
+    "InSteamID",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "RemoveServerPermissionList",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [
+   [
+    "GEName",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "RemoveTargetGE",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [
+   [
+    "NameStr",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "ReplaceDefaultMaterial",
+  "back": 56,
+  "tip": "名字包含特定字符串的staticmesh对象，材质替换为默认材质",
+  "cat": null,
+  "meta": {
+   "Comment": "// 名字包含特定字符串的staticmesh对象，材质替换为默认材质\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "名字包含特定字符串的staticmesh对象，材质替换为默认材质"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "Reset_Abilities",
+  "back": 56,
+  "tip": "洗点（英文）",
+  "cat": null,
+  "meta": {
+   "Comment": "// 洗点（英文）\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "洗点（英文）"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ResetCloneDataServerID",
+  "back": 56,
+  "tip": "重置玩家克隆数据的服务器ID",
+  "cat": null,
+  "meta": {
+   "Comment": "// 重置玩家克隆数据的服务器ID\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "重置玩家克隆数据的服务器ID"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ResetDebugNPCRuQing",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [
+   [
+    "DLCMapName",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "ResetFristTransDLCMap",
+  "back": 56,
+  "tip": "重置首次传送到DLC地图",
+  "cat": null,
+  "meta": {
+   "Comment": "// 重置首次传送到DLC地图\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "重置首次传送到DLC地图"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ResetGongHuiServerID",
+  "back": 56,
+  "tip": "强制把公会的ServerID改为当前的",
+  "cat": null,
+  "meta": {
+   "Comment": "// 强制把公会的ServerID改为当前的\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "强制把公会的ServerID改为当前的"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ResetMuBiaoGAS",
+  "back": 56,
+  "tip": "重置目标GA系统的锁",
+  "cat": null,
+  "meta": {
+   "Comment": "// 重置目标GA系统的锁\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "重置目标GA系统的锁"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ResetNpc",
+  "back": 56,
+  "tip": "拉回NPC",
+  "cat": null,
+  "meta": {
+   "Comment": "// 拉回NPC\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "拉回NPC"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ResetOneBelowAnimal",
+  "back": 56,
+  "tip": "重置下方同归属动物到附近",
+  "cat": null,
+  "meta": {
+   "Comment": "// 重置下方同归属动物到附近\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "重置下方同归属动物到附近"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ResetOneFrontNpc",
+  "back": 56,
+  "tip": "重置前方野生NPC到出生位置(只能处理人型)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 重置前方野生NPC到出生位置(只能处理人型)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "重置前方野生NPC到出生位置(只能处理人型)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ResetPlayerGongHuiServer",
+  "back": 56,
+  "tip": "强制把指向玩家的公会的ServerID改为当前的",
+  "cat": null,
+  "meta": {
+   "Comment": "// 强制把指向玩家的公会的ServerID改为当前的\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "强制把指向玩家的公会的ServerID改为当前的"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ResetSpecailEventTriggerTime",
+  "back": 56,
+  "tip": "重置全服事件触发时间",
+  "cat": null,
+  "meta": {
+   "Comment": "// 重置全服事件触发时间\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "重置全服事件触发时间"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ResetSpecialEventTriggerCount",
+  "back": 56,
+  "tip": "重置全服事件触发次数",
+  "cat": null,
+  "meta": {
+   "Comment": "// 重置全服事件触发次数\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "重置全服事件触发次数"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ResetTargetChest",
+  "back": 56,
+  "tip": "重置面前的宝箱",
+  "cat": null,
+  "meta": {
+   "Comment": "// 重置面前的宝箱\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "重置面前的宝箱"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ResetTrainingState",
+  "back": 56,
+  "tip": "重置训练状态的族人",
+  "cat": null,
+  "meta": {
+   "Comment": "// 重置训练状态的族人\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "重置训练状态的族人"
+  }
+ },
+ {
+  "params": [
+   [
+    "inVal",
+    44,
+    4503599627370626
+   ]
+  ],
+  "flags": 132609,
+  "name": "RigidBodySleep",
+  "back": 56,
+  "tip": "调试世界对象刚体是否休眠",
+  "cat": null,
+  "meta": {
+   "Comment": "// 调试世界对象刚体是否休眠\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "调试世界对象刚体是否休眠"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "SaijiChuli",
+  "back": 56,
+  "tip": "赛季处理",
+  "cat": null,
+  "meta": {
+   "Comment": "// 赛季处理\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "赛季处理"
+  }
+ },
+ {
+  "params": [
+   [
+    "XingBie",
+    3,
+    4503599627370624
+   ],
+   [
+    "ShuLiang",
+    3,
+    4503599627370624
+   ],
+   [
+    "FaYuZhi",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SaiManZhuJuan",
+  "back": 56,
+  "tip": "塞满猪圈(params：性别、数量、发育值，缩放先不管)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 塞满猪圈(params：性别、数量、发育值，缩放先不管)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "塞满猪圈(params：性别、数量、发育值，缩放先不管)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "Save",
+  "back": 56,
+  "tip": "保存存档(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 保存存档(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "保存存档(英文)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "Select",
+  "back": 56,
+  "tip": "选中目标",
+  "cat": null,
+  "meta": {
+   "Comment": "// 选中目标\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "选中目标"
+  }
+ },
+ {
+  "params": [
+   [
+    "StrTime",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Set24hTime",
+  "back": 56,
+  "tip": "设置游戏内一天的时间到xx:xx",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置游戏内一天的时间到xx:xx\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置游戏内一天的时间到xx:xx"
+  }
+ },
+ {
+  "params": [
+   [
+    "InDengJi",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Set_All_Pros_Level",
+  "back": 56,
+  "tip": "熟练度等级(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 熟练度等级(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "熟练度等级(英文)"
+  }
+ },
+ {
+  "params": [
+   [
+    "LeiXing",
+    3,
+    4503599627370624
+   ],
+   [
+    "CurVal",
+    3,
+    4503599627370624
+   ],
+   [
+    "MaxVal",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Set_Proficiency_Maxval",
+  "back": 56,
+  "tip": "设置熟练度当前值/最大值(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置熟练度当前值/最大值(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置熟练度当前值/最大值(英文)"
+  }
+ },
+ {
+  "params": [
+   [
+    "bVal",
+    44,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetAIDebug",
+  "back": 56,
+  "tip": "设置AI调试标志",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置AI调试标志\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置AI调试标志"
+  }
+ },
+ {
+  "params": [
+   [
+    "Attr",
+    21,
+    4503599627370624
+   ],
+   [
+    "Val",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetAttr",
+  "back": 56,
+  "tip": "设置属性基础值",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置属性基础值\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置属性基础值"
+  }
+ },
+ {
+  "params": [
+   [
+    "scale",
+    10,
+    4503599627370624
+   ],
+   [
+    "pang",
+    10,
+    4503599627370624
+   ],
+   [
+    "shou",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetBodyType",
+  "back": 56,
+  "tip": "设置高矮胖瘦",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置高矮胖瘦\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置高矮胖瘦"
+  }
+ },
+ {
+  "params": [
+   [
+    "CapsuleOffsetZ",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetCapsuleOffset",
+  "back": 56,
+  "tip": "修改CapsuleOffset Z",
+  "cat": null,
+  "meta": {
+   "Comment": "// 修改CapsuleOffset Z\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "修改CapsuleOffset Z"
+  }
+ },
+ {
+  "params": [
+   [
+    "Value",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Add_Exp",
+  "back": 56,
+  "tip": "增加玩家经验(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 增加玩家经验(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "增加玩家经验(英文)"
+  }
+ },
+ {
+  "params": [
+   [
+    "NewCustomGameMode",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 537003521,
+  "name": "SetCustomGameMode",
+  "back": 56,
+  "tip": "设置自定义游戏模式",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置自定义游戏模式\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置自定义游戏模式"
+  }
+ },
+ {
+  "params": [
+   [
+    "Value",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Add_Exp_To_Target",
+  "back": 56,
+  "tip": "给指向目标增加意识经验(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 给指向目标增加意识经验(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "给指向目标增加意识经验(英文)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "SetDebugTarget",
+  "back": 56,
+  "tip": "给指向的目标设置Debug属性",
+  "cat": null,
+  "meta": {
+   "Comment": "// 给指向的目标设置Debug属性\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "给指向的目标设置Debug属性"
+  }
+ },
+ {
+  "params": [
+   [
+    "ReDuValue",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Add_Fever",
+  "back": 56,
+  "tip": "所在位置增加热度(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 所在位置增加热度(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "所在位置增加热度(英文)"
+  }
+ },
+ {
+  "params": [
+   [
+    "State",
+    3,
+    4503599627370624
+   ],
+   [
+    "Value",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetFaYuValue",
+  "back": 56,
+  "tip": "设置动物发育值",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置动物发育值\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置动物发育值"
+  }
+ },
+ {
+  "params": [
+   [
+    "Value",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Add_Hunting_Exp",
+  "back": 56,
+  "tip": "增加狩猎经验(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 增加狩猎经验(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "增加狩猎经验(英文)"
+  }
+ },
+ {
+  "params": [
+   [
+    "IsShow",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetHidePlayerMask",
+  "back": 56,
+  "tip": "隐藏或显示面具（0不显示 1显示）",
+  "cat": null,
+  "meta": {
+   "Comment": "// 隐藏或显示面具（0不显示 1显示）\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "隐藏或显示面具（0不显示 1显示）"
+  }
+ },
+ {
+  "params": [
+   [
+    "InTitle",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Add_Hunting_Title",
+  "back": 56,
+  "tip": "添加狩猎称号(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 添加狩猎称号(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "添加狩猎称号(英文)"
+  }
+ },
+ {
+  "params": [
+   [
+    "DaoTaMode",
+    3,
+    4503599627370624
+   ],
+   [
+    "bDelayNextFrame",
+    44,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetJianZhuDaoTaMode",
+  "back": 56,
+  "tip": "设置建筑倒塌方式",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置建筑倒塌方式\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置建筑倒塌方式"
+  }
+ },
+ {
+  "params": [
+   [
+    "Value",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Add_Mask_Exp",
+  "back": 56,
+  "tip": "增加面甲经验（英文）",
+  "cat": null,
+  "meta": {
+   "Comment": "// 增加面甲经验（英文）\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "增加面甲经验（英文）"
+  }
+ },
+ {
+  "params": [
+   [
+    "Mul",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetJianZhuFuLanMul",
+  "back": 56,
+  "tip": "设置建筑腐烂系数",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置建筑腐烂系数\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置建筑腐烂系数"
+  }
+ },
+ {
+  "params": [
+   [
+    "Value",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Add_Mask_Exp_To_Target",
+  "back": 56,
+  "tip": "给指向目标增加面具经验(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 给指向目标增加面具经验(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "给指向目标增加面具经验(英文)"
+  }
+ },
+ {
+  "params": [
+   [
+    "ToFileRadius",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetJianZhuToFileMode",
+  "back": 56,
+  "tip": "建筑转存文件模式(半径>0开启，<=0关闭)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 建筑转存文件模式(半径>0开启，<=0关闭)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "建筑转存文件模式(半径>0开启，<=0关闭)"
+  }
+ },
+ {
+  "params": [
+   [
+    "Value",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddExp",
+  "back": 56,
+  "tip": "增加玩家经验",
+  "cat": null,
+  "meta": {
+   "Comment": "// 增加玩家经验\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "增加玩家经验"
+  }
+ },
+ {
+  "params": [
+   [
+    "ServerFrame",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetJinZhiZhuanXiangFPS",
+  "back": 56,
+  "tip": "改变禁止技能转向的FPS设定",
+  "cat": null,
+  "meta": {
+   "Comment": "// 改变禁止技能转向的FPS设定\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "改变禁止技能转向的FPS设定"
+  }
+ },
+ {
+  "params": [
+   [
+    "Value",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddExpToTarget",
+  "back": 56,
+  "tip": "给指向目标增加意识经验",
+  "cat": null,
+  "meta": {
+   "Comment": "// 给指向目标增加意识经验\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "给指向目标增加意识经验"
+  }
+ },
+ {
+  "params": [
+   [
+    "PostType",
+    3,
+    4503599627370624
+   ],
+   [
+    "Value",
+    44,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetPost",
+  "back": 56,
+  "tip": "设置族人岗位 0 取消 1 新增",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置族人岗位 0 取消 1 新增\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置族人岗位 0 取消 1 新增"
+  }
+ },
+ {
+  "params": [
+   [
+    "GAName",
+    21,
+    4503599627370624
+   ],
+   [
+    "TagName",
+    20,
+    4503599761588610
+   ]
+  ],
+  "flags": 4326913,
+  "name": "AddGA",
+  "back": 56,
+  "tip": "添加技能",
+  "cat": null,
+  "meta": {
+   "Comment": "// 添加技能\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "添加技能"
+  }
+ },
+ {
+  "params": [
+   [
+    "RepeatMsgTimes",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetRepeatMsgTimes",
+  "back": 56,
+  "tip": "模拟外挂行为测试(高危行为)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 模拟外挂行为测试(高危行为)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "模拟外挂行为测试(高危行为)"
+  }
+ },
+ {
+  "params": [
+   [
+    "AddSeconds",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddGameWorldTime",
+  "back": 56,
+  "tip": "增减游戏时间",
+  "cat": null,
+  "meta": {
+   "Comment": "// 增减游戏时间\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "增减游戏时间"
+  }
+ },
+ {
+  "params": [
+   [
+    "MaxSize",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetRuntimeLogCacheSize",
+  "back": 56,
+  "tip": "设置运行时日志缓存大小",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置运行时日志缓存大小\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置运行时日志缓存大小"
+  }
+ },
+ {
+  "params": [
+   [
+    "GEName",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddGE",
+  "back": 56,
+  "tip": "给自己添加一个buff",
+  "cat": null,
+  "meta": {
+   "Comment": "// 给自己添加一个buff\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "给自己添加一个buff"
+  }
+ },
+ {
+  "params": [
+   [
+    "bShow",
+    44,
+    4503599627370624
+   ],
+   [
+    "SteamId",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetShowGuiShuJianZhu",
+  "back": 56,
+  "tip": "小地图显示所有的归属建筑点 bShow 1 显示 0 取消  SteamId",
+  "cat": null,
+  "meta": {
+   "Comment": "// 小地图显示所有的归属建筑点 bShow 1 显示 0 取消  SteamId\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "小地图显示所有的归属建筑点 bShow 1 显示 0 取消  SteamId"
+  }
+ },
+ {
+  "params": [
+   [
+    "GEName",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddGEToQiChenRen",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [
+   [
+    "GEName",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddGEToTarget",
+  "back": 56,
+  "tip": "给指向的目标添加一个buff",
+  "cat": null,
+  "meta": {
+   "Comment": "// 给指向的目标添加一个buff\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "给指向的目标添加一个buff"
+  }
+ },
+ {
+  "params": [
+   [
+    "LeiXing",
+    3,
+    4503599627370624
+   ],
+   [
+    "CurVal",
+    3,
+    4503599627370624
+   ],
+   [
+    "MaxVal",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetShuLianDuMaxVal",
+  "back": 56,
+  "tip": "设置熟练度当前值/最大值",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置熟练度当前值/最大值\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置熟练度当前值/最大值"
+  }
+ },
+ {
+  "params": [
+   [
+    "EventID",
+    3,
+    4503599627370624
+   ],
+   [
+    "Value",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetSpecialEventOpenOrClose",
+  "back": 56,
+  "tip": "设置服务器事件开启或关闭 0 关闭 1 开启",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置服务器事件开启或关闭 0 关闭 1 开启\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置服务器事件开启或关闭 0 关闭 1 开启"
+  }
+ },
+ {
+  "params": [
+   [
+    "LiXianTime",
+    10,
+    4503599627370624
+   ],
+   [
+    "ShengXiaoTime",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetTanHeHuiZhangTime",
+  "back": 56,
+  "tip": "设置弹劾会长时间",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置弹劾会长时间\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置弹劾会长时间"
+  }
+ },
+ {
+  "params": [
+   [
+    "InTitle",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddHuntingTitle",
+  "back": 56,
+  "tip": "添加狩猎称号",
+  "cat": null,
+  "meta": {
+   "Comment": "// 添加狩猎称号\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "添加狩猎称号"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "SetTargetKongZhiCeShi",
+  "back": 56,
+  "tip": "设置目标的控制属性",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置目标的控制属性\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置目标的控制属性"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "AddJinZhiXiuMianHere",
+  "back": 56,
+  "tip": "当前位置创建一个禁止休眠的对象",
+  "cat": null,
+  "meta": {
+   "Comment": "// 当前位置创建一个禁止休眠的对象\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "当前位置创建一个禁止休眠的对象"
+  }
+ },
+ {
+  "params": [
+   [
+    "Value",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetTimeOffset",
+  "back": 56,
+  "tip": "设置时间偏移",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置时间偏移\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置时间偏移"
+  }
+ },
+ {
+  "params": [
+   [
+    "Value",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddMaskExpToTarget",
+  "back": 56,
+  "tip": "给指向目标增加面具经验",
+  "cat": null,
+  "meta": {
+   "Comment": "// 给指向目标增加面具经验\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "给指向目标增加面具经验"
+  }
+ },
+ {
+  "params": [
+   [
+    "Value",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetTimePower",
+  "back": 56,
+  "tip": "设置时间流速倍率",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置时间流速倍率\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置时间流速倍率"
+  }
+ },
+ {
+  "params": [
+   [
+    "Value",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddMJExp",
+  "back": 56,
+  "tip": "增加面具经验",
+  "cat": null,
+  "meta": {
+   "Comment": "// 增加面具经验\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "增加面具经验"
+  }
+ },
+ {
+  "params": [
+   [
+    "NewTribeLvl",
+    3,
+    4503599627370624
+   ],
+   [
+    "TribeIndex",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetTribeLevel",
+  "back": 56,
+  "tip": "设置部落等级",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置部落等级\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置部落等级"
+  }
+ },
+ {
+  "params": [
+   [
+    "InMoneyType",
+    3,
+    4503599627370624
+   ],
+   [
+    "InMoney",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddMoney",
+  "back": 56,
+  "tip": "加钱",
+  "cat": null,
+  "meta": {
+   "Comment": "// 加钱\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "加钱"
+  }
+ },
+ {
+  "params": [
+   [
+    "InCan",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SetZhaoMuModify",
+  "back": 56,
+  "tip": "设置可修正招募",
+  "cat": null,
+  "meta": {
+   "Comment": "// 设置可修正招募\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "设置可修正招募"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShanHao",
+  "back": 56,
+  "tip": "重新创建playerstate",
+  "cat": null,
+  "meta": {
+   "Comment": "/// 重新创建playerstate\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "重新创建playerstate"
+  }
+ },
+ {
+  "params": [
+   [
+    "NGID",
+    3,
+    4503599627370624
+   ],
+   [
+    "bGood",
+    44,
+    4503599627370624
+   ],
+   [
+    "InLvl",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddNG",
+  "back": 56,
+  "tip": "加一条天赋",
+  "cat": null,
+  "meta": {
+   "Comment": "// 加一条天赋\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "加一条天赋"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShopVisit",
+  "back": 56,
+  "tip": "触发商店拜访",
+  "cat": null,
+  "meta": {
+   "Comment": "// 触发商店拜访\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "触发商店拜访"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "Show_Fever",
+  "back": 56,
+  "tip": "显示入侵热度信息表(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示入侵热度信息表(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示入侵热度信息表(英文)"
+  }
+ },
+ {
+  "params": [
+   [
+    "ReDuValue",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddReDu",
+  "back": 56,
+  "tip": "所在位置增加热度",
+  "cat": null,
+  "meta": {
+   "Comment": "// 所在位置增加热度\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "所在位置增加热度"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "Show_Map",
+  "back": 56,
+  "tip": "解锁所有地图信息(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 解锁所有地图信息(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "解锁所有地图信息(英文)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowAllSameGuiShuCharacter",
+  "back": 56,
+  "tip": "显示所有族人",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示所有族人\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示所有族人"
+  }
+ },
+ {
+  "params": [
+   [
+    "InPermissionType",
+    3,
+    4503599627370624
+   ],
+   [
+    "InSteamID",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddServerPermissionList",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [
+   [
+    "Value",
+    10,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddShouLieExp",
+  "back": 56,
+  "tip": "增加狩猎经验",
+  "cat": null,
+  "meta": {
+   "Comment": "// 增加狩猎经验\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "增加狩猎经验"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowAroundJianZhuNumber",
+  "back": 56,
+  "tip": "显示周围建筑数量",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示周围建筑数量\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示周围建筑数量"
+  }
+ },
+ {
+  "params": [
+   [
+    "ServerId",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddSwichServer",
+  "back": 56,
+  "tip": "增加跨服服务器ID",
+  "cat": null,
+  "meta": {
+   "Comment": "// 增加跨服服务器ID\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "增加跨服服务器ID"
+  }
+ },
+ {
+  "params": [
+   [
+    "ShowAll",
+    44,
+    4503599627370624
+   ],
+   [
+    "OnlyOpen",
+    44,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "ShowBaoXiangData",
+  "back": 56,
+  "tip": "查看宝箱刷新数据",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查看宝箱刷新数据\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查看宝箱刷新数据"
+  }
+ },
+ {
+  "params": [
+   [
+    "WenShenIndex",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddWenShen",
+  "back": 56,
+  "tip": "添加纹身(0添加所有)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 添加纹身(0添加所有)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "添加纹身(0添加所有)"
+  }
+ },
+ {
+  "params": [
+   [
+    "Msg",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "ShowCI",
+  "back": 56,
+  "tip": "ShowCharacterInfo",
+  "cat": null,
+  "meta": {
+   "Comment": "// ShowCharacterInfo\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "ShowCharacterInfo"
+  }
+ },
+ {
+  "params": [
+   [
+    "Index",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "AddZJ",
+  "back": 56,
+  "tip": "添加专精技能",
+  "cat": null,
+  "meta": {
+   "Comment": "// 添加专精技能\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "添加专精技能"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowComp",
+  "back": 56,
+  "tip": "显示所有组件",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示所有组件\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示所有组件"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ApplyGuiShuToViewActor",
+  "back": 56,
+  "tip": "对眼前的对象应用归属",
+  "cat": null,
+  "meta": {
+   "Comment": "// 对眼前的对象应用归属\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "对眼前的对象应用归属"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowComponents",
+  "back": 56,
+  "tip": "查看所有组件",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查看所有组件\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查看所有组件"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "BaoCun",
+  "back": 56,
+  "tip": "保存存档",
+  "cat": null,
+  "meta": {
+   "Comment": "// 保存存档\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "保存存档"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowConveyorAndPillarTotalNumber",
+  "back": 56,
+  "tip": "显示全服传输带及立柱的数量",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示全服传输带及立柱的数量\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示全服传输带及立柱的数量"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "Bath",
+  "back": 56,
+  "tip": "让目标去洗澡",
+  "cat": null,
+  "meta": {
+   "Comment": "// 让目标去洗澡\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "让目标去洗澡"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowCustomGameMode",
+  "back": 56,
+  "tip": "查看自定义游戏模式",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查看自定义游戏模式\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查看自定义游戏模式"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowFuShe",
+  "back": 56,
+  "tip": "显示辐射效果列表",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示辐射效果列表\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示辐射效果列表"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "BeginRuntimeLogging",
+  "back": 56,
+  "tip": "开始运行时日志记录（先清理旧的日志，然后开始记录新的日志）",
+  "cat": null,
+  "meta": {
+   "Comment": "// 开始运行时日志记录（先清理旧的日志，然后开始记录新的日志）\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "开始运行时日志记录（先清理旧的日志，然后开始记录新的日志）"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowGA",
+  "back": 56,
+  "tip": "显示角色身上所有GA",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示角色身上所有GA\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示角色身上所有GA"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowGE",
+  "back": 56,
+  "tip": "显示角色身上所有GE",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示角色身上所有GE\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示角色身上所有GE"
+  }
+ },
+ {
+  "params": [
+   [
+    "Index",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "BianShen",
+  "back": 56,
+  "tip": "变身技能更换时装模型",
+  "cat": null,
+  "meta": {
+   "Comment": "// 变身技能更换时装模型\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "变身技能更换时装模型"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowHandles",
+  "back": 56,
+  "tip": "显示 GlobalActiveGameplayEffectHandles::Map 数量",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示 GlobalActiveGameplayEffectHandles::Map 数量\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示 GlobalActiveGameplayEffectHandles::Map 数量"
+  }
+ },
+ {
+  "params": [
+   [
+    "MiMa",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "Change_Password",
+  "back": 56,
+  "tip": "修改管理员密码(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 修改管理员密码(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "修改管理员密码(英文)"
+  }
+ },
+ {
+  "params": [
+   [
+    "bSelf",
+    44,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "ShowInfo",
+  "back": 56,
+  "tip": "显示角色信息，品质、熟练度、天赋等",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示角色信息，品质、熟练度、天赋等\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示角色信息，品质、熟练度、天赋等"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowJianZhuTotalNumber",
+  "back": 56,
+  "tip": "显示全服总建筑数",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示全服总建筑数\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示全服总建筑数"
+  }
+ },
+ {
+  "params": [
+   [
+    "ControllerName",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "ChangeController",
+  "back": 56,
+  "tip": "对目标换controller",
+  "cat": null,
+  "meta": {
+   "Comment": "// 对目标换controller\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "对目标换controller"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowMap",
+  "back": 56,
+  "tip": "解锁所有地图信息",
+  "cat": null,
+  "meta": {
+   "Comment": "// 解锁所有地图信息\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "解锁所有地图信息"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ChaXunPSUniqueId",
+  "back": 56,
+  "tip": "查询自己的PS Guid",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查询自己的PS Guid\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查询自己的PS Guid"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowMubiaoFuShe",
+  "back": 56,
+  "tip": "显示目标辐射",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示目标辐射\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示目标辐射"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowMuBiaoGA",
+  "back": 56,
+  "tip": "显示目标身上所有GA",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示目标身上所有GA\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示目标身上所有GA"
+  }
+ },
+ {
+  "params": [
+   [
+    "SWClass",
+    17,
+    5629499534213248
+   ]
+  ],
+  "flags": 132609,
+  "name": "ChaZhaoSCGWeiZhi",
+  "back": 56,
+  "tip": "查找生成怪位置",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查找生成怪位置\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查找生成怪位置"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowMuBiaoGE",
+  "back": 56,
+  "tip": "显示目标身上所有GE",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示目标身上所有GE\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示目标身上所有GE"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "CheckBuLuo",
+  "back": 56,
+  "tip": "检查部落管理器刷怪情况",
+  "cat": null,
+  "meta": {
+   "Comment": "// 检查部落管理器刷怪情况\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "检查部落管理器刷怪情况"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowMyCollision",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ChengJiu",
+  "back": 56,
+  "tip": "解锁所有游戏内成就",
+  "cat": null,
+  "meta": {
+   "Comment": "// 解锁所有游戏内成就\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "解锁所有游戏内成就"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ChongGouJianZhuHookData",
+  "back": 56,
+  "tip": "重构建筑的Hook相关数据",
+  "cat": null,
+  "meta": {
+   "Comment": "// 重构建筑的Hook相关数据\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "重构建筑的Hook相关数据"
+  }
+ },
+ {
+  "params": [
+   [
+    "cls",
+    21,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "ShowObjectCount",
+  "back": 56,
+  "tip": "输出所有特定类型的对象数量",
+  "cat": null,
+  "meta": {
+   "Comment": "/// 输出所有特定类型的对象数量\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "输出所有特定类型的对象数量"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ChongZhiRenWu",
+  "back": 56,
+  "tip": "重置指引任务",
+  "cat": null,
+  "meta": {
+   "Comment": "// 重置指引任务\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "重置指引任务"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowPlayerGE",
+  "back": 56,
+  "tip": "显示角色身上所有GE",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示角色身上所有GE\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示角色身上所有GE"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "Clear_All_Npcs",
+  "back": 56,
+  "tip": "清理所有NPC(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 清理所有NPC(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "清理所有NPC(英文)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowReDu",
+  "back": 56,
+  "tip": "显示入侵热度信息表",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示入侵热度信息表\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示入侵热度信息表"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "Clear_Fever",
+  "back": 56,
+  "tip": "清理所有热度(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 清理所有热度(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "清理所有热度(英文)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowRuntimeLogStatus",
+  "back": 56,
+  "tip": "显示运行时日志系统状态",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示运行时日志系统状态\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示运行时日志系统状态"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ClearAllDebugShapes",
+  "back": 56,
+  "tip": "清除所有调试的形状",
+  "cat": null,
+  "meta": {
+   "Comment": "// 清除所有调试的形状\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "清除所有调试的形状"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowServerPermissionDetails",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ClearAllJinZhiXiuMian",
+  "back": 56,
+  "tip": "清理所有禁止休眠对象",
+  "cat": null,
+  "meta": {
+   "Comment": "// 清理所有禁止休眠对象\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "清理所有禁止休眠对象"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowShuShiValue",
+  "back": 56,
+  "tip": "显示当前位置的舒适值",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示当前位置的舒适值\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示当前位置的舒适值"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ClearAllNpc",
+  "back": 56,
+  "tip": "清理所有NPC",
+  "cat": null,
+  "meta": {
+   "Comment": "// 清理所有NPC\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "清理所有NPC"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowTag",
+  "back": 56,
+  "tip": "显示所有TAG",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示所有TAG\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示所有TAG"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ClearAllReDu",
+  "back": 56,
+  "tip": "清理所有热度",
+  "cat": null,
+  "meta": {
+   "Comment": "// 清理所有热度\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "清理所有热度"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowTargetGA",
+  "back": 56,
+  "tip": "显示目标身上所有GA",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示目标身上所有GA\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示目标身上所有GA"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ClearJingJi",
+  "back": 56,
+  "tip": "清理目标竞技状态",
+  "cat": null,
+  "meta": {
+   "Comment": "// 清理目标竞技状态\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "清理目标竞技状态"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowTargetGE",
+  "back": 56,
+  "tip": "显示目标身上所有GE",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示目标身上所有GE\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示目标身上所有GE"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ClearKongZhi",
+  "back": 56,
+  "tip": "清除控制状态",
+  "cat": null,
+  "meta": {
+   "Comment": "// 清除控制状态\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "清除控制状态"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ClearNG",
+  "back": 56,
+  "tip": "清空天赋",
+  "cat": null,
+  "meta": {
+   "Comment": "// 清空天赋\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "清空天赋"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ClearRuntimeLogs",
+  "back": 56,
+  "tip": "清空缓存的日志",
+  "cat": null,
+  "meta": {
+   "Comment": "// 清空缓存的日志\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "清空缓存的日志"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowYouHua",
+  "back": 56,
+  "tip": "显示角色身优化状态",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示角色身优化状态\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示角色身优化状态"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ClearSelect",
+  "back": 56,
+  "tip": "清除选中目标",
+  "cat": null,
+  "meta": {
+   "Comment": "// 清除选中目标\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "清除选中目标"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowZhanHengCount",
+  "back": 56,
+  "tip": "显示斩痕组件数量",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示斩痕组件数量\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示斩痕组件数量"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ShowZuRenAIInfo",
+  "back": 56,
+  "tip": "显示族人的AI调试信息",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示族人的AI调试信息\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示族人的AI调试信息"
+  }
+ },
+ {
+  "params": [
+   [
+    "InPermissionType",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "ClearServerPermissionList",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "CopyViewActorGuiShu",
+  "back": 56,
+  "tip": "复制眼前对象的归属",
+  "cat": null,
+  "meta": {
+   "Comment": "// 复制眼前对象的归属\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "复制眼前对象的归属"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "CountWorldSimulatingPhysics",
+  "back": 56,
+  "tip": "显示世界中激活的物理对象数量",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示世界中激活的物理对象数量\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示世界中激活的物理对象数量"
+  }
+ },
+ {
+  "params": [
+   [
+    "inVal",
+    44,
+    4503599627370626
+   ]
+  ],
+  "flags": 132609,
+  "name": "SimulatingPhysics",
+  "back": 56,
+  "tip": "调试世界对象是否模拟物理",
+  "cat": null,
+  "meta": {
+   "Comment": "// 调试世界对象是否模拟物理\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "调试世界对象是否模拟物理"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "SIS",
+  "back": 56,
+  "tip": "显示选中的建筑容器的物品统计",
+  "cat": null,
+  "meta": {
+   "Comment": "// 显示选中的建筑容器的物品统计\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "显示选中的建筑容器的物品统计"
+  }
+ },
+ {
+  "params": [
+   [
+    "ProfType",
+    3,
+    4503599627370624
+   ],
+   [
+    "InDengJi",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SLDDengJi",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [
+   [
+    "InDengJi",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SLDDengJiAll",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [
+   [
+    "ProfType",
+    3,
+    4503599627370624
+   ],
+   [
+    "InJingYan",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "SLDJingYan",
+  "back": 56,
+  "tip": "熟练度",
+  "cat": null,
+  "meta": {
+   "Comment": "// 熟练度\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "熟练度"
+  }
+ },
+ {
+  "params": [
+   [
+    "SWClass",
+    17,
+    5629499534213248
+   ],
+   [
+    "IsBaby",
+    44,
+    4503599627370624
+   ],
+   [
+    "DengJi",
+    3,
+    4503599627370624
+   ],
+   [
+    "bGuiShu",
+    44,
+    4503599627370624
+   ],
+   [
+    "Num",
+    3,
+    4503599627370624
+   ],
+   [
+    "PinZhi",
+    3,
+    4503599627370624
+   ],
+   [
+    "Uid",
+    25,
+    4503599627370624
+   ]
+  ],
+  "flags": 8521217,
+  "name": "CreateSWByClass",
+  "back": 56,
+  "tip": "创建生物",
+  "cat": null,
+  "meta": {
+   "Comment": "// 创建生物\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "创建生物"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "State",
+  "back": 56,
+  "tip": "角色状态值",
+  "cat": null,
+  "meta": {
+   "Comment": "// 角色状态值\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "角色状态值"
+  }
+ },
+ {
+  "params": [
+   [
+    "InRadius",
+    3,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "CuiHuiViewGongHuiJianZhuByRadius",
+  "back": 56,
+  "tip": "摧毁面对部落范围内的建筑(单位：米)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 摧毁面对部落范围内的建筑(单位：米)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "摧毁面对部落范围内的建筑(单位：米)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "SuDu",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "Take_Over_Target_Tribe",
+  "back": 56,
+  "tip": "获取所在部落会长权限(英文)",
+  "cat": null,
+  "meta": {
+   "Comment": "// 获取所在部落会长权限(英文)\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "获取所在部落会长权限(英文)"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "DebugActorLocation",
+  "back": 56,
+  "tip": null,
+  "cat": null,
+  "meta": {
+   "ModuleRelativePath": "Misc/HCheatManager.h"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "TameDongWu",
+  "back": 56,
+  "tip": "驯化动物",
+  "cat": null,
+  "meta": {
+   "Comment": "// 驯化动物\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "驯化动物"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "TestChuangJianGuaiDian",
+  "back": 56,
+  "tip": "测试周围可创建怪物点",
+  "cat": null,
+  "meta": {
+   "Comment": "// 测试周围可创建怪物点\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "测试周围可创建怪物点"
+  }
+ },
+ {
+  "params": [
+   [
+    "ClearError",
+    44,
+    4503599627370624
+   ]
+  ],
+  "flags": 132609,
+  "name": "DebugBaoGuoError",
+  "back": 56,
+  "tip": "调试错误包裹对象信息",
+  "cat": null,
+  "meta": {
+   "Comment": "// 调试错误包裹对象信息\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "调试错误包裹对象信息"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "TestGA",
+  "back": 56,
+  "tip": "查找技能放不出来的问题",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查找技能放不出来的问题\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查找技能放不出来的问题"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "DebugNavMesh",
+  "back": 56,
+  "tip": "调试寻路生成状态",
+  "cat": null,
+  "meta": {
+   "Comment": "// 调试寻路生成状态\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "调试寻路生成状态"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "TestMove",
+  "back": 56,
+  "tip": "查找卡移动的问题",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查找卡移动的问题\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查找卡移动的问题"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "TestXiuMian",
+  "back": 56,
+  "tip": "查询休眠状态",
+  "cat": null,
+  "meta": {
+   "Comment": "// 查询休眠状态\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "查询休眠状态"
+  }
+ },
+ {
+  "params": [],
+  "flags": 132609,
+  "name": "ToggleBuildVersion",
+  "back": 56,
+  "tip": "<summary>\n切换显示编译版本号\n</summary>",
+  "cat": null,
+  "meta": {
+   "Comment": "/// <summary>\n/// 切换显示编译版本号\n/// </summary>\n",
+   "ModuleRelativePath": "Misc/HCheatManager.h",
+   "ToolTip": "<summary>\n切换显示编译版本号\n</summary>"
+  }
+ }
+]

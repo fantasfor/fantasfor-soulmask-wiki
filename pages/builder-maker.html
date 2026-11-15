@@ -433,6 +433,39 @@
       min-width: 0;
     }
 
+    .outfit-toggle {
+      display: grid;
+      justify-items: center;
+      gap: 4px;
+      margin-top: -6px;
+    }
+
+    .outfit-toggle[hidden] {
+      display: none;
+    }
+
+    .outfit-caption {
+      color: #ecd760;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .outfit-sex {
+      display: flex;
+      gap: 4px;
+    }
+
+    .outfit-sex [aria-pressed="true"] {
+      border-color: var(--builder-cyan) !important;
+      color: var(--builder-text);
+    }
+
+    .builder-profile-image.is-outfit {
+      object-fit: contain;
+      filter: drop-shadow(0 0 18px rgba(236, 215, 96, 0.25)) drop-shadow(0 16px 20px rgba(0, 0, 0, 0.45));
+    }
+
     .builder-center .builder-profile-image {
       height: 340px;
     }
@@ -444,9 +477,42 @@
     }
 
     .slot-row-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 66px);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 6px;
+      max-width: 440px;
+    }
+
+    .slot-extra {
+      position: relative;
+    }
+
+    .slot-remove {
+      position: absolute;
+      top: -6px;
+      right: 0;
+      z-index: 2;
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      border: 1px solid rgba(255, 62, 80, 0.6);
+      border-radius: 50%;
+      background: #191a1a;
+      color: #ff6a78;
+      font-size: 0.8rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .slot-add {
+      border-style: dashed;
+      color: var(--builder-muted);
+      font-size: 1.3rem;
+    }
+
+    .slot-add:hover {
+      color: var(--builder-cyan);
     }
 
     .gear-picker-center {
@@ -1037,7 +1103,9 @@
     }
 
     .saved-build-btn {
-      width: 28px;
+      width: auto;
+      min-width: 28px;
+      padding: 0 8px;
       height: 28px;
       border: 1px solid rgba(255, 255, 255, 0.2);
       background: rgba(255, 255, 255, 0.02);
@@ -1376,7 +1444,40 @@
         grid-template-columns: auto auto;
       }
 
-      .builder-center .builder-profile-image {
+      .outfit-toggle {
+      display: grid;
+      justify-items: center;
+      gap: 4px;
+      margin-top: -6px;
+    }
+
+    .outfit-toggle[hidden] {
+      display: none;
+    }
+
+    .outfit-caption {
+      color: #ecd760;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .outfit-sex {
+      display: flex;
+      gap: 4px;
+    }
+
+    .outfit-sex [aria-pressed="true"] {
+      border-color: var(--builder-cyan) !important;
+      color: var(--builder-text);
+    }
+
+    .builder-profile-image.is-outfit {
+      object-fit: contain;
+      filter: drop-shadow(0 0 18px rgba(236, 215, 96, 0.25)) drop-shadow(0 16px 20px rgba(0, 0, 0, 0.45));
+    }
+
+    .builder-center .builder-profile-image {
         display: none;
       }
 
@@ -1406,7 +1507,7 @@
       <section class="builder-panel">
         <div class="panel-block">
           <div class="builder-title-wrap">
-            <h1 class="builder-title"><span id="builderHeaderName" data-i18n="builder.unnamed">Build sem nome</span> <span class="builder-title-edit">✎</span></h1>
+            <h1 class="builder-title"><span id="builderHeaderName" data-i18n="builder.unnamed">Build sem nome</span></h1>
             <p class="builder-subtitle">
               <span class="builder-meta-value" id="builderHeaderClass" data-i18n="builder.notSelected">Não selecionada</span>
               <span class="builder-header-master" id="builderHeaderMaster" data-i18n="builder.master">Mestre</span>
@@ -1425,7 +1526,14 @@
           </div>
           <div class="builder-picker armor-picker-inline" id="armorPickerInline" hidden></div>
           <div class="builder-center">
-            <img class="builder-profile-image" src="assets/img/builder/personagem.webp" alt="Personagem da build" data-i18n-alt="builder.characterAlt" />
+            <img class="builder-profile-image" id="builderProfileImage" src="assets/img/builder/personagem.webp" alt="Personagem da build" data-i18n-alt="builder.characterAlt" />
+            <div class="outfit-toggle" id="outfitToggle" hidden>
+              <span class="outfit-caption" id="outfitCaption"></span>
+              <div class="outfit-sex" role="group" aria-label="Versão" data-i18n-aria="builder.outfitSex">
+                <button type="button" class="map-btn map-btn-sm" data-sex="m" data-i18n="builder.male">Masculino</button>
+                <button type="button" class="map-btn map-btn-sm" data-sex="f" data-i18n="builder.female">Feminino</button>
+              </div>
+            </div>
             <div class="slot-row">
               <span class="slot-col-title" data-i18n="builder.gearTitle">Equipamento</span>
               <div class="slot-row-grid" id="builderGearRow"></div>

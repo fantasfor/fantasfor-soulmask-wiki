@@ -78,7 +78,7 @@ export async function initFarmingPage(root, params) {
           ${c.exp ? `<div><dt>${esc(t('farming.exp'))}</dt><dd>${esc(fmtNum(c.exp, 0))}</dd></div>` : ''}
         </dl>
         ${tempBar(c.temps)}
-        ${tipText(c) ? `<p class="farming-tip">💡 ${esc(tipText(c))}</p>` : ''}
+        ${tipText(c) ? `<p class="farming-tip">${esc(tipText(c))}</p>` : ''}
         <button type="button" class="farming-sim-btn" data-sim="${esc(c.id)}">${esc(t('farming.simulate'))}</button>
         ${pick(c, 'desc') ? `<p class="farming-desc">${escLines(pick(c, 'desc'))}</p>` : ''}
         ${c.harvest?.length ? `<h4 class="farming-subtitle">${esc(t('farming.harvest'))}</h4>
@@ -133,7 +133,7 @@ export async function initFarmingPage(root, params) {
         <div><dt>${esc(t('farming.simSeeds'))}</dt><dd>${esc(fmtNum(plots * cycles, 0))}</dd></div>
       </dl>
       ${drops ? `<h4 class="farming-subtitle">${esc(t('farming.simHarvest'))}</h4><ul class="farm-sim-drops">${drops}</ul>` : ''}
-      ${tipText(c) ? `<p class="farming-tip">💡 ${esc(tipText(c))}</p>` : ''}`;
+      ${tipText(c) ? `<p class="farming-tip">${esc(tipText(c))}</p>` : ''}`;
     // ranking das plantações para a temperatura escolhida
     const ranked = crops.map((x) => ({ x, r: tempRange(x, temp) }))
       .filter((o) => o.r && o.r.mult > 0)

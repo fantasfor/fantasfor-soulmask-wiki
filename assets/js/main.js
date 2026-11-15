@@ -19,6 +19,14 @@ import { initReportPage } from './pages/report.js';
 import { initSupportPage } from './pages/support.js';
 import { initBossesPage } from './pages/bosses.js';
 import { initComfortPage } from './pages/comfort.js';
+import { initProficiencyPage } from './pages/proficiency.js';
+import { initMasteryPage } from './pages/mastery.js';
+import { initEventsPage } from './pages/events.js';
+import { initCommandsPage } from './pages/commands.js';
+import { initServersPage } from './pages/servers.js';
+import { initWorkbenchPage } from './pages/workbench.js';
+import { initAttributesPage } from './pages/attributes.js';
+import { initRedCrystalsPage } from './pages/red-crystals.js';
 
 // página -> função de inicialização (recebe o elemento raiz e os parâmetros da URL)
 const PAGE_INIT = {
@@ -38,6 +46,14 @@ const PAGE_INIT = {
   apoie: initSupportPage,
   chefes: initBossesPage,
   conforto: initComfortPage,
+  proficiencia: initProficiencyPage,
+  maestria: initMasteryPage,
+  eventos: initEventsPage,
+  comandos: initCommandsPage,
+  servidores: initServersPage,
+  bancada: initWorkbenchPage,
+  atributos: initAttributesPage,
+  cristais: initRedCrystalsPage,
   gdmbot: () => initGdmbotStore()
 };
 
@@ -120,6 +136,26 @@ function setupSidebarSearch() {
   document.addEventListener('click', (e) => { if (!wrapper.contains(e.target)) clear(); });
 }
 
+// ------------------------------------------------------------------ menu em ordem alfabética (no idioma atual)
+function sortSidebar() {
+  document.querySelectorAll('#site-sidebar .nav-list[data-sort="alpha"]').forEach((ul) => {
+    [...ul.children]
+      .sort((a, b) => a.textContent.trim().localeCompare(b.textContent.trim(), locale(), { sensitivity: 'base' }))
+      .forEach((li) => ul.appendChild(li));
+  });
+}
+
+// ------------------------------------------------------------------ rodapé (direitos autorais)
+function renderFooter() {
+  const f = document.querySelector('#site-footer');
+  if (!f) return;
+  const year = new Date().getFullYear();
+  f.innerHTML = `
+    <p class="site-footer-main">${esc(t('footer.copyright', { year }))}</p>
+    <p>${esc(t('footer.rights'))}</p>
+    <p>${esc(t('footer.game'))}</p>`;
+}
+
 // ------------------------------------------------------------------ idioma
 function setupLangSwitch() {
   const update = () => document.querySelectorAll('.lang-switch-btn').forEach((b) => {
@@ -130,6 +166,8 @@ function setupLangSwitch() {
   window.addEventListener('langchange', () => {
     update();
     applyI18n(document.querySelector('#site-sidebar'));
+    sortSidebar();
+    renderFooter();
     updateDocumentTitle();
     loadPageFromHash({ keepScroll: true });
   });
@@ -137,7 +175,7 @@ function setupLangSwitch() {
 
 function updateDocumentTitle() {
   const link = document.querySelector(`a.nav-link[data-page="${currentPageName()}"]`);
-  document.title = link ? `Soulmask Database — ${link.textContent.trim()}` : 'Soulmask Database';
+  document.title = link ? `Soulmask Fantasfor Wiki — ${link.textContent.trim()}` : 'Soulmask Fantasfor Wiki';
 }
 
 // ------------------------------------------------------------------ troca de conteúdo
@@ -216,7 +254,11 @@ document.body.addEventListener('click', (ev) => {
 });
 
 // ------------------------------------------------------------------ home: feeds e notas
+// títulos de feeds externos às vezes trazem emoji (ex.: "🔴 AO VIVO"): o site não usa emoji
+const stripEmoji = (s) => String(s || '').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '').replace(/\s{2,}/g, ' ').trim();
+
 function createFeedItem(item) {
+  item = { ...item, title: stripEmoji(item.title) };
   const li = document.createElement('li');
   li.className = 'home-feed-item';
   li.innerHTML = `
@@ -336,44 +378,12 @@ async function fetchYouTubeFeed() {
   }
 }
 
-function decodeBase64Utf8(base64) {
-  try {
-    return decodeURIComponent(escape(atob(base64.replace(/\s/g, ''))));
-  } catch (e) {
-    return atob(base64.replace(/\s/g, ''));
-  }
-}
-
-function parseUpdateNotesMarkdown(markdown, limit = 4) {
-  return markdown.split(/^## \[/m).slice(1, limit + 1).map((section) => {
-    const lines = section.split('\n');
-    const m = lines[0].trim().match(/^([\d.]+)\] - ([0-9]{4}-[0-9]{2}-[0-9]{2})/);
-    const version = m ? m[1] : lines[0].trim().replace(/\].*$/, '');
-    const date = m ? m[2].split('-').reverse().join('/') : '';
-    const changes = lines.slice(1).map((l) => l.trim()).filter((l) => l.startsWith('- ')).map((l) => l.slice(2));
-    return { version, date, changes };
-  }).filter((u) => u.changes.length);
-}
-
-async function fetchUpdateNotes() {
-  try {
-    const res = await fetch('https://api.github.com/repos/fantasfor/Site/contents/Atualizacao.md?t=' + Date.now(), { cache: 'no-store', headers: { Accept: 'application/vnd.github.v3+json' } });
-    if (!res.ok) throw new Error('GitHub API ' + res.status);
-    const data = await res.json();
-    if (!data.content) throw new Error('sem conteúdo');
-    return decodeBase64Utf8(data.content);
-  } catch (apiError) {
-    const res = await fetch('https://raw.githubusercontent.com/fantasfor/Site/main/Atualizacao.md?t=' + Date.now(), { cache: 'no-store' });
-    if (!res.ok) throw new Error('Raw GitHub ' + res.status);
-    return await res.text();
-  }
-}
-
+// notas de atualização do site: assets/data/updates.json (pt/en), mais nova primeiro
 async function renderHomeUpdates() {
   const list = document.getElementById('home-updates-list');
   if (!list) return;
   try {
-    const updates = parseUpdateNotesMarkdown(await fetchUpdateNotes(), 4);
+    const updates = (await loadData('updates')).slice(0, 4);
     if (!updates.length) {
       list.innerHTML = `<article class="home-update-card"><h3>${esc(t('home.notesNone'))}</h3></article>`;
       return;
@@ -383,16 +393,15 @@ async function renderHomeUpdates() {
         <h3>${esc(t('home.notesTitle'))}</h3>
         ${updates.map((u) => `
           <div class="home-update-version">
-            <strong>${esc(u.version)}${u.date ? ' — ' + esc(u.date) : ''}</strong>
-            <ul>${u.changes.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>
+            <strong>${esc(u.version)}${u.date ? ` — ${esc(new Date(`${u.date}T12:00:00`).toLocaleDateString(locale()))}` : ''}</strong>
+            <ul>${(u[getLang()] || u.pt || []).map((c) => `<li>${esc(c)}</li>`).join('')}</ul>
           </div>`).join('')}
       </article>`;
   } catch (error) {
     console.warn('renderHomeUpdates', error);
-    list.innerHTML = `<article class="home-update-card"><h3>${esc(t('home.notesError'))}</h3><p style="margin:0;color:#d9d2c5;">${esc(error.message)}</p></article>`;
+    list.innerHTML = `<article class="home-update-card"><h3>${esc(t('home.notesError'))}</h3></article>`;
   }
 }
-
 async function renderHomeFeeds() {
   const steam = document.getElementById('soulmask-feed');
   const yt = document.getElementById('youtube-feed');
@@ -428,6 +437,8 @@ async function init() {
       console.error('Failed to load header', error);
     }
   }
+  sortSidebar();
+  renderFooter();
   initUI();
   setupLangSwitch();
   setupSidebarSearch();

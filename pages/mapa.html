@@ -8,10 +8,20 @@
 
   <div class="map-layout">
     <aside class="map-side">
+      <div class="map-switch" role="group" aria-label="Mapa" data-i18n-aria="map.whichMap">
+        <button type="button" class="map-btn map-btn-sm" data-map-switch="main" aria-pressed="true" data-i18n="map.mapMain">Floresta de Névoa Nuvem</button>
+        <button type="button" class="map-btn map-btn-sm" data-map-switch="dlc" aria-pressed="false" data-i18n="map.mapDlc">Areias Errantes (DLC)</button>
+      </div>
+      <div class="map-mode-box">
+        <label><span data-i18n="map.modeLabel">Modo de jogo</span>
+          <select class="map-input" id="map-mode"></select></label>
+        <p class="map-hint" id="map-mode-note"></p>
+      </div>
+      <input type="search" class="map-input" id="map-search" placeholder="Buscar item, lugar, inimigo, animal..." data-i18n-placeholder="map.search" aria-label="Buscar no mapa" data-i18n-aria="map.search" />
       <h2 class="map-side-title" data-i18n="map.gameMarkers">Marcadores do jogo</h2>
-      <div class="map-layers" id="map-layers" role="group" aria-label="Marcadores do jogo" data-i18n-aria="map.gameMarkers"></div>
-      <label class="map-side-title" for="map-creature" data-i18n="map.creatureSpawns">Onde nasce cada criatura</label>
-      <select class="map-input" id="map-creature"></select>
+      <div class="map-layers" id="map-layers"></div>
+      <h2 class="map-side-title" data-i18n="map.visits">Lugares visitados</h2>
+      <div class="map-visits" id="map-visits"></div>
       <h2 class="map-side-title" data-i18n="map.myMarkers">Meus marcadores</h2>
       <button type="button" class="map-btn primary" id="map-add" aria-pressed="false" data-i18n="map.add">+ Adicionar marcador</button>
       <p class="map-hint" id="map-hint" data-i18n="map.hint">Clique em "Adicionar marcador" e depois no mapa.</p>

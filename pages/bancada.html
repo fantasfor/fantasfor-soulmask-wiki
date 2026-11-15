@@ -1,0 +1,24 @@
+<section class="items-page db-page guide-page workbench-page">
+  <div class="items-header">
+    <h1 data-i18n="wb.title">Bancada de trabalho</h1>
+    <p class="items-subtitle" data-i18n="wb.subtitle">Escolha um item e veja tudo o que precisa para fabricá-lo: cada etapa, a bancada de cada uma e de onde vêm os materiais básicos.</p>
+  </div>
+
+  <section class="guide-tool" aria-labelledby="wb-pick-title">
+    <header class="guide-tool-head">
+      <div>
+        <h2 id="wb-pick-title" data-i18n="wb.pickTitle">Qual item você quer fabricar?</h2>
+        <p data-i18n="wb.pickHint">Digite o nome. Clique no nome de um animal ou inimigo para vê-lo no mapa interativo.</p>
+      </div>
+    </header>
+    <div class="wb-pick">
+      <input type="search" id="wb-search" class="items-search-input" autocomplete="off" placeholder="Ex.: Armadura de bronze" data-i18n-placeholder="wb.searchPh" aria-label="Item" />
+      <ul id="wb-suggest" class="wb-suggest" role="listbox" hidden></ul>
+    </div>
+    <label class="items-check"><input type="number" id="wb-qty" class="items-search-input wb-qty" min="1" max="999" value="1" /> <span data-i18n="wb.qty">Quantidade</span></label>
+  </section>
+
+  <div id="wb-result" class="wb-result" aria-live="polite">
+    <p class="guide-explain wb-empty" data-i18n="wb.empty">Escolha um item acima para ver a árvore de fabricação.</p>
+  </div>
+</section>

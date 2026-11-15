@@ -1,0 +1,40 @@
+[
+  {
+    "version": "1.0.0",
+    "date": "2026-11-14",
+    "pt": [
+      "Site completo em português e inglês",
+      "Novo mapa interativo com portais, tábuas, pirâmides, ruínas, baús, minérios, tribos, chefes e onde nasce cada animal e inimigo; busca, filtros e lugares visitados por save",
+      "Builder Maker refeito: slots com nome, armaduras avançadas e de ruínas, armas aprimoradas, roupa de transformação da máscara e seletor de talentos novo",
+      "Conta com login Google: builds, tier lists, favoritos e marcadores salvos na nuvem",
+      "Tier list da comunidade com estrelas e comentários; avaliação de talentos",
+      "Novas páginas: Armas, Receitas, Criaturas (com fotos), Chefes, Conforto, Plantio (com simulador) e Apoie",
+      "Reportar problema e enviar sugestão direto pelo site",
+      "Mapa interativo com os 2 mapas (Floresta de Névoa Nuvem e Areias Errantes), os 5 modos de jogo e a chance de drop de cada item",
+      "Novas páginas: Proficiência (com calculadora), Maestria de Armas, Eventos de invasão (horários por região), Comandos de console (busca por frase) e Servidores da comunidade",
+      "Bancada de trabalho: escolha um item e veja toda a árvore de fabricação até os materiais básicos, com onde conseguir cada um",
+      "Itens e Receitas agora são uma página só, e cada item mostra onde conseguir",
+      "Novas abas: Atributos (qualidade do NPC) e Cristais Vermelhos",
+      "Mapa interativo com os nomes das regiões, tipo e nível, iguais aos do mapa do jogo",
+      "Altares de invocação do Crocodilo de Sobek, Cão das Almas (Anúbis) e Escaravelho de Ônix no mapa das Areias Errantes",
+      "Eventos de invasão também no mapa das Areias Errantes; inimigos, animais, mecânicos e chefes de tribo com bolinhas coloridas no mapa"
+    ],
+    "en": [
+      "Full site in Portuguese and English",
+      "New interactive map with teleports, tablets, pyramids, ruins, chests, ores, tribes, bosses and where every animal and enemy spawns; search, filters and visited places per save",
+      "Builder Maker rebuilt: named slots, advanced and ruins armor, enhanced weapons, mask transformation outfit and a new talent picker",
+      "Google sign-in: builds, tier lists, favorites and markers saved to the cloud",
+      "Community tier lists with stars and comments; talent ratings",
+      "New pages: Weapons, Recipes, Creatures (with photos), Bosses, Comfort, Farming (with simulator) and Support",
+      "Report a problem or send a suggestion right from the site",
+      "Interactive map with both maps (Cloud Mist Forest and Shifting Sands), the 5 game modes and the drop chance of every item",
+      "New pages: Proficiency (with calculator), Weapon Mastery, Invasion Events (times by region), Console Commands (search by sentence) and community Servers",
+      "Workbench: pick an item and see its whole crafting tree down to base materials, with where to get each one",
+      "Items and Recipes are now a single page, and every item shows where to get it",
+      "New tabs: Attributes (NPC quality) and Red Crystals",
+      "Interactive map with region names, type and level, just like the in-game map",
+      "Summoning altars for the Sobek Crocodile, Anubis Hound and Onyx Scarab on the Shifting Sands map",
+      "Invasion events now on the Shifting Sands map too; enemies, animals, mechanical enemies and tribe bosses shown as colored dots"
+    ]
+  }
+]

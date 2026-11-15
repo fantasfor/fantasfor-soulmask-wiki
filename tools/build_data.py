@@ -459,7 +459,9 @@ class Attrs(object):
         if not label:
             STATS["atributo sem nome"] += 1
             label = {"pt": name, "en": name}
-        self.used[name] = {"pt": label["pt"], "en": label["en"], "pct": pct}
+        # "pct" do nome vale só para atributos que são sempre porcentagem; multiplicadores já vêm com op="mul"
+        # (antes, um uso multiplicativo marcava o atributo inteiro e um +0,4 de ATQ aparecia como +40%)
+        self.used[name] = {"pt": label["pt"], "en": label["en"], "pct": name in PCT_ATTRS}
         return {"a": name, "v": rnd(value), "op": "mul" if op.startswith("Multipl") else "add"}
 
 
@@ -792,11 +794,31 @@ def main():
     log("chefes:", len(bosses), "dificuldades:", sum(len(b["tiers"]) for b in bosses))
     comfort = build_comfort(items, cdo_cache, loc, icons, attrs)
     log("conforto: níveis", len(comfort["levels"]), "móveis", len(comfort["furniture"]))
+    # o valor de conforto também aparece no próprio item (página Itens e janela de detalhes)
+    for f in comfort["furniture"]:
+        if f.get("item") in items:
+            items[f["item"]]["comfort"] = f["value"]
+            if f.get("max", 1) > 1:
+                items[f["item"]]["comfortMax"] = f["max"]
 
     # ------------------------------------------------------------------ mapa do mundo
     build_world_map()
+    build_menu_icons()
     log("lendo marcadores do mapa (fases do jogo)...")
-    markers = build_map_markers(loc, {c["id"] for c in creatures})
+    markers = build_map_markers(loc, {c["id"] for c in creatures}, items)
+
+    # ------------------------------------------------------------------ guias: proficiência, maestria, eventos, modos
+    import build_guides
+    markers["modes"] = build_guides.build_modes(attrs)
+    proficiency = build_guides.build_proficiency(loc, attrs, icons)
+    mastery = build_guides.build_mastery(loc, icons, wtype_labels)
+    events = build_guides.build_events(loc)
+    events["modes"] = markers["modes"]
+    log("proficiências:", len(proficiency["types"]), "maestrias:", len(mastery["skills"]))
+    all_bags = {k: [r for r in v if r[0] in items] for k, v in load_drop_bags().items()}
+    sources = build_guides.build_item_sources(markers, creatures, bosses, all_bags, loc, crops)
+    red_crystals = build_guides.build_red_crystals(loc, attrs, items)
+    log("itens com fonte:", len(sources), "cristais vermelhos:", len(red_crystals["crystals"]))
 
     # ------------------------------------------------------------------ máscaras
     masks = build_masks(items, loc, icons)
@@ -811,9 +833,27 @@ def main():
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
         log("  ->", name, "%.0f KB" % (os.path.getsize(os.path.join(DATA_DIR, name)) / 1024))
 
-    items_list = sorted(items.values(), key=lambda x: (x["cat"], x["name_pt"]))
-    dump("items.json", items_list)
+    # armas aprimoradas não têm dano próprio (PropPackID vazio): herdam o da arma consumida na receita
+    by_weapon = {w["id"]: w for w in weapons}
+    for w in weapons:
+        if not w.get("enhanced") or any(s["a"] == "WuQiDamage" for s in w.get("stats", [])):
+            continue
+        for rc in recipes:
+            if rc["item"] != w["id"]:
+                continue
+            base = next((by_weapon[i] for g in rc["ing"] for i in g["ids"] if i in by_weapon), None)
+            dmg = next((s for s in (base or {}).get("stats", []) if s["a"] == "WuQiDamage"), None)
+            if dmg:
+                w["stats"] = [dict(dmg)] + w.get("stats", [])
+                w["dmgFrom"] = base["id"]
+                if base.get("qmul") and not w.get("qmul"):
+                    w["qmul"] = base["qmul"]
+                if w["id"] in items:
+                    items[w["id"]]["stats"] = w["stats"]
+                STATS["arma aprimorada com dano herdado"] += 1
+                break
     dump("weapons.json", sorted(weapons, key=lambda x: (x.get("wtype", ""), x.get("quality", 0), x["name_pt"])))
+    dump("items.json", sorted(items.values(), key=lambda x: (x["cat"], x["name_pt"])))
     dump("armor-sets.json", sets)
     dump("armor-pieces.json", sorted(armor_pieces.values(), key=lambda x: (SLOT_ORDER.index(x["slot"]) if x.get("slot") in SLOT_ORDER else 99, x["name_pt"])))
     dump("foods.json", sorted(foods, key=lambda x: (x.get("sub", "zz"), x["name_pt"])))
@@ -826,6 +866,11 @@ def main():
     dump("map-markers.json", markers)
     dump("bosses.json", bosses)
     dump("comfort.json", comfort)
+    dump("proficiency.json", proficiency)
+    dump("mastery.json", mastery)
+    dump("events.json", events)
+    dump("sources.json", sources)
+    dump("red-crystals.json", red_crystals)
     dump("meta.json", {
         "categories": CAT_LABEL,
         "attrs": dict(sorted(attrs.used.items())),
@@ -881,29 +926,227 @@ def _skeletal_meshes(pkg):
         depth += 1
 
 
-def creature_photo(pkg, cid):
-    """Foto da criatura: miniatura 3D do modelo (SkeletalMesh) ou, na falta, do próprio Blueprint."""
+def remove_background(img, clean=True):
+    """Tira o fundo do editor (céu cinza + chão xadrez) da miniatura com GrabCut (OpenCV).
+    Sem OpenCV, devolve a imagem como está."""
+    try:
+        import cv2
+        import numpy as np
+    except Exception:
+        return img
+    from PIL import Image
+    rgb = np.array(img.convert("RGB"))
+    h, w = rgb.shape[:2]
+    bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+    mask = np.full((h, w), cv2.GC_PR_BGD, np.uint8)
+    # roupas (clean=False) ocupam a imagem quase toda: área inicial maior para não cortar pés e cabeça
+    top, bottom = (0.15, 0.9) if clean else (0.03, 0.985)
+    mask[int(h * top):int(h * bottom), int(w * 0.08):int(w * 0.92)] = cv2.GC_PR_FGD
+    mask[:, :4] = cv2.GC_BGD
+    mask[:, -4:] = cv2.GC_BGD
+    mask[:4, :] = cv2.GC_BGD
+    mask[-4:, :] = cv2.GC_BGD
+    # sombra do editor no chão: azulada (matiz ~85-118), saturada e lisa; os bichos são marrons/cinzas.
+    hsv = cv2.cvtColor(rgb, cv2.COLOR_RGB2HSV)
+    lum = hsv[:, :, 2].astype(np.float32)
+    mean = cv2.blur(lum, (7, 7))
+    std = np.sqrt(np.maximum(cv2.blur(lum * lum, (7, 7)) - mean * mean, 0))
+    shadow = (hsv[:, :, 0] >= 85) & (hsv[:, :, 0] <= 118) & (hsv[:, :, 1] >= 45) & (std < 12)
+    shadow[: int(h * 0.3), :] = False
+    shadow = cv2.morphologyEx(shadow.astype(np.uint8), cv2.MORPH_OPEN, np.ones((3, 3), np.uint8)).astype(bool)
+    mask[shadow] = cv2.GC_BGD
+    bg, fg = np.zeros((1, 65), np.float64), np.zeros((1, 65), np.float64)
+    try:
+        cv2.grabCut(bgr, mask, None, bg, fg, 6, cv2.GC_INIT_WITH_MASK)
+    except Exception:
+        return img
+    alpha = np.where((mask == cv2.GC_FGD) | (mask == cv2.GC_PR_FGD), 255, 0).astype(np.uint8)
+    alpha[shadow] = 0
+    # pedaços do céu/chão do editor que ficaram grudados: áreas lisas com a cor das bordas da imagem
+    lab = cv2.cvtColor(rgb, cv2.COLOR_RGB2LAB).astype(np.float32)
+    refs = [np.median(lab[:6].reshape(-1, 3), axis=0), np.median(lab[-6:].reshape(-1, 3), axis=0),
+            np.median(lab[:, :6].reshape(-1, 3), axis=0), np.median(lab[:, -6:].reshape(-1, 3), axis=0)]
+    near_ref = np.zeros((h, w), bool)
+    for ref in refs:
+        near_ref |= np.linalg.norm(lab - ref, axis=2) < 14
+    sat = hsv[:, :, 1]
+    # sombra cinza: neutra, lisa, mais escura que o chão, na parte de baixo
+    floor_l = refs[1][0]
+    gray_shadow = (sat < 45) & (std < 6) & (lab[:, :, 0] < floor_l + 3)
+    gray_shadow[: int(h * 0.35), :] = False
+    # penumbra azulada (pouca saturação) que sobra em volta das patas
+    blue_shadow = (hsv[:, :, 0] >= 88) & (hsv[:, :, 0] <= 118) & (sat >= 18) & (std < 10)
+    blue_shadow[: int(h * 0.35), :] = False
+    cand = ((near_ref & (std < 5) & (sat < 40)) | gray_shadow | blue_shadow).astype(np.uint8)
+    if not clean:  # roupas: só tira o céu/chão liso, nada de regra de sombra (apagaria tecido azul)
+        cand = (near_ref & (std < 3) & (sat < 25)).astype(np.uint8)
+    # só sai o que encosta no fundo já removido (buracos dentro do bicho, ex.: pele do elefante, ficam)
+    bg_near = cv2.dilate((alpha == 0).astype(np.uint8), np.ones((5, 5), np.uint8)) > 0
+    n_c, lab_c = cv2.connectedComponents(cand)
+    touching = np.unique(lab_c[bg_near & (cand > 0)])
+    alpha[np.isin(lab_c, touching[touching > 0])] = 0
+    alpha = cv2.morphologyEx(alpha, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
+    # mantém só a maior mancha (o bicho) e suaviza a borda
+    n, labels, stats, _ = cv2.connectedComponentsWithStats(alpha)
+    if n > 2:
+        keep = 1 + int(np.argmax(stats[1:, cv2.CC_STAT_AREA]))
+        big = stats[keep, cv2.CC_STAT_AREA]
+        for i in range(1, n):
+            if i == keep:
+                continue
+            x, y, cw, ch, area = stats[i]
+            thin_line = ch <= 8 and cw > 30          # linha do horizonte do editor
+            part = labels == i
+            # parte solta com cor de sombra (cinza ou azulada, pouco saturada): sombra no chão
+            hue_med = float(np.median(hsv[:, :, 0][part]))
+            sat_med = float(np.median(sat[part]))
+            shadowy = sat_med < 40 or (88 <= hue_med <= 118 and sat_med < 140)
+            if area < big * 0.15 or thin_line or y <= 2 or (shadowy and y > h * 0.3):
+                alpha[part] = 0
+    alpha = cv2.GaussianBlur(alpha, (3, 3), 0)
+    if alpha.mean() < 1.5 or alpha.mean() > 200:  # recorte falhou (nada ou quase tudo sobrou)
+        return None
+    return Image.fromarray(np.dstack([rgb, alpha]), "RGBA")
+
+
+OUTFIT_DIR = os.path.join(os.path.dirname(IMG_DIR), "masks")
+OUTFIT_URL = "assets/img/masks/"
+
+
+def _crop_to_subject(img, pad=6):
+    """Corta a imagem (RGBA) em volta do que sobrou depois de tirar o fundo."""
+    bbox = img.getchannel("A").point(lambda v: 255 if v > 20 else 0).getbbox()
+    if not bbox:
+        return img
+    x0, y0, x1, y1 = bbox
+    return img.crop((max(0, x0 - pad), max(0, y0 - pad), min(img.width, x1 + pad), min(img.height, y1 + pad)))
+
+
+def _square(img, size=256):
+    """Centraliza a imagem num quadrado transparente (o bicho fica grande, sem distorcer)."""
+    from PIL import Image
+    side = max(img.width, img.height)
+    sq = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    sq.paste(img, ((side - img.width) // 2, (side - img.height) // 2))
+    return sq.resize((size, size), 1) if side > size else sq
+
+
+def mask_outfits():
+    """Roupa que o personagem veste ao usar a transformação de cada máscara.
+    Caminho: melhoria da máscara (BP_Mask_XiuFu02_<nó>) -> habilidade GA_Mask_BianShen_* ("Tag to Check"
+    = GameplayEffect.Mask.BianShen.2_<nó>, MeshIndex) -> BP_ZiYuanGuanLiQi.ShiZhuangMap[MeshIndex]
+    -> modelos masculino/feminino -> miniatura 3D sem o fundo do editor.
+    Retorna {nó: {"m": url, "f": url}}."""
+    mgr = Package.open("/Game/Blueprints/ZiYuanGuanLi/BP_ZiYuanGuanLiQi")
+    table = {}
+    for e in ((mgr.cdo() if mgr else None) or {}).get("ShiZhuangMap") or []:
+        if e.get("WaiGuanIndex") is not None:
+            table[int(e["WaiGuanIndex"])] = (e.get("WaiGuanMeshNan"), e.get("WaiGuanMeshNv"))
+    os.makedirs(OUTFIT_DIR, exist_ok=True)
+    by_node = {}
+    for gp in game_assets_under("/Game/Blueprints/GAS/Skill/Mask", "/Game/AdditionMap01/BluePrints/GAS/Skill/Mask"):
+        if "GA_Mask_BianShen_" not in gp:
+            continue
+        try:
+            cdo = Package.open(gp).cdo() or {}
+        except Exception:
+            continue
+        tag = ((cdo.get("Tag to Check") or {}).get("TagName")) or ""
+        mt = re.search(r"BianShen\.2_(\d{4})$", tag)
+        idx = cdo.get("MeshIndex")
+        if not mt or idx not in table:
+            continue
+        urls = {}
+        for sex, mesh in zip(("m", "f"), table[idx]):
+            if not mesh:
+                continue
+            name = "outfit_%d_%s" % (idx, sex)
+            out = os.path.join(OUTFIT_DIR, name + ".webp")
+            if not os.path.isfile(out) or FORCE_ICONS:
+                img = _embedded_thumbnail(Package.open(mesh.split(".")[0]))
+                if img is None:
+                    continue
+                cut = remove_background(img, clean=False) or img.convert("RGBA")
+                # algumas roupas são muito escuras: clareia um pouco para aparecer no fundo escuro do site
+                from PIL import ImageEnhance
+                rgb_part, a_part = cut.convert("RGB"), cut.getchannel("A")
+                rgb_part = ImageEnhance.Brightness(rgb_part).enhance(1.35)
+                rgb_part = ImageEnhance.Contrast(rgb_part).enhance(1.08)
+                cut = rgb_part.convert("RGBA")
+                cut.putalpha(a_part)
+                _crop_to_subject(cut).save(out, "WEBP", quality=88, method=4)
+            urls[sex] = OUTFIT_URL + name + ".webp"
+        if urls:
+            by_node[mt.group(1)] = urls
+            STATS["roupas de transformação"] += 1
+    return by_node
+
+
+def _subject_brightness(img):
+    """Brilho médio só do bicho (pixels visíveis); serve para descartar miniaturas sem textura."""
+    import numpy as np
+    a = np.array(img.convert("RGBA")).astype(np.float32)
+    vis = a[:, :, 3] > 128
+    if vis.sum() < 50:
+        return 0.0
+    return float(a[:, :, :3][vis].mean())
+
+
+# fotos de chefe em que a miniatura do modelo saiu ruim (só o rabo / só a bola): usa este Blueprint
+BOSS_PHOTO_BP = {"Sobek": "BP_Boss_Sobek", "Scarab": "BP_Building_Statue_Scarab"}
+
+
+def game_assets_under_named(root, name):
+    for gp in game_assets_under(root):
+        if gp.rsplit("/", 1)[-1] == name:
+            yield gp
+
+
+def creature_photo(pkg, cid, prefer_bp=False):
+    """Foto da criatura: miniatura 3D do modelo (SkeletalMesh) ou, na falta, do próprio Blueprint,
+    sem o fundo do editor."""
     if pkg is None:
         return None
     os.makedirs(PHOTO_DIR, exist_ok=True)
-    name = re.sub(r"[^a-z0-9_-]+", "_", cid.lower())
+    name = re.sub(r"[^a-z0-9_-]+", "_", cid.lower()) + "_t"   # _t = fundo transparente
     out = os.path.join(PHOTO_DIR, name + ".webp")
     if os.path.isfile(out) and not FORCE_ICONS:
         return PHOTO_URL + name + ".webp"
-    img = None
+    # candidatas: miniatura de cada modelo e a do próprio Blueprint; algumas vêm sem textura (toda preta),
+    # então fica a primeira com brilho normal (ou a mais clara)
+    cands = []
     try:
         for mesh in _skeletal_meshes(pkg):
-            img = _embedded_thumbnail(Package.open(mesh))
-            if img is not None:
-                break
-        if img is None:
-            img = _embedded_thumbnail(pkg)
+            im = _embedded_thumbnail(Package.open(mesh))
+            if im is not None:
+                cands.append(im)
+        im = _embedded_thumbnail(pkg)
+        if im is not None:
+            if prefer_bp:
+                cands.insert(0, im)
+            else:
+                cands.append(im)
     except Exception:
-        img = None
-    if img is None:
+        pass
+    if not cands:
         STATS["criatura sem foto"] += 1
         return None
-    img.convert("RGB").save(out, "WEBP", quality=82, method=4)
+    best, best_lum = None, -1
+    for im in cands:
+        cut = remove_background(im)
+        if cut is None:
+            continue
+        lum = _subject_brightness(cut)
+        if lum > best_lum:
+            best, best_lum = cut, lum
+        if lum >= 45:
+            best = cut
+            break
+    if best is None:
+        best = cands[0].convert("RGBA")
+    else:
+        best = _square(_crop_to_subject(best, pad=8))
+    best.save(out, "WEBP", quality=85, method=4)
     STATS["fotos de criaturas"] += 1
     return PHOTO_URL + name + ".webp"
 
@@ -972,6 +1215,44 @@ def _rng(m):
     lo = ((m or {}).get("LowerBound") or {}).get("Value")
     hi = ((m or {}).get("UpperBound") or {}).get("Value")
     return [int(lo or 0), int(hi or lo or 0)]
+
+
+def _group_cond(group):
+    """Condições do grupo de drop (TiaoJian) -> texto curto: E entre blocos com "&", OU dentro do bloco com "|".
+    Ex.: "IsNotSurvival" (moedas só fora do modo Sobrevivência), "Area_IsYuLin", "PVP_7Day+"."""
+    parts = []
+    for cc in group.get("ConditionAndCheckData") or []:
+        ors = []
+        for x in cc.get("ConditionOrCheck") or []:
+            n = re.sub(r"^(TJ_DL_|TJ_|BP_Condition_)", "", str(x).split(".")[-1])
+            ors.append(re.sub(r"_C$", "", n))
+        if ors:
+            parts.append("|".join(ors))
+    return "&".join(parts)
+
+
+def bag_rows(content, item_ids=None, g0=0):
+    """Pacote de drop (CaiJiBao) agrupado como no jogo: o jogo sorteia cada grupo pela chance do grupo e,
+    dentro dele, um item pelo peso.
+    -> [[item, mín, máx, chance do grupo %, chance no grupo %, nº do grupo, (condição)], ...]"""
+    out = []
+    for gi, group in enumerate(content or []):
+        cond = _group_cond(group)
+        infos = group.get("BaoNeiDaoJuInfos") or []
+        total = sum(i.get("DaoJuQuanZhong", 0) for i in infos) or 1
+        for i in infos:
+            iid = asset_name(i.get("DaoJuClass") or "")
+            if not iid or (item_ids is not None and iid not in item_ids):
+                continue
+            m = i.get("DaoJuMagnitude") or {}
+            lo = int(((m.get("LowerBound") or {}).get("Value")) or 0)
+            hi = int(((m.get("UpperBound") or {}).get("Value")) or lo)
+            row = [iid, lo, hi, round(group.get("SelectedRandomProbability", 100), 1),
+                   round(i.get("DaoJuQuanZhong", 0) * 100 / total, 1), g0 + gi]
+            if cond:
+                row.append(cond)
+            out.append(row)
+    return out
 
 
 def _pack_drops(content, items):
@@ -1104,6 +1385,11 @@ def build_bosses(items, armor_pieces, loc):
                     tier["drops"] = dr
                 if fin:
                     tier["final"] = fin
+                # mesma coisa, agrupada como o jogo sorteia (janela do mapa interativo)
+                g1 = bag_rows(packs.get(pk[0]), items)
+                g2 = bag_rows(packs.get(pk[1]), items, g0=1000)
+                if g1 or g2:
+                    tier["groups"] = g1 + g2
             parts = []
             for bw in bc.get("BuWeiConfigList") or pc.get("BuWeiConfigList") or []:
                 for d in _pack_drops(packs.get(bw.get("BuWeiDiaoLuoBao")), items):
@@ -1131,7 +1417,12 @@ def build_bosses(items, armor_pieces, loc):
             boss["sets"] = sets
         if "/AdditionMap01/" in altar:
             boss["dlc"] = True
-        photo = creature_photo(photo_pkg, "boss_" + boss["id"].lower())
+        override = BOSS_PHOTO_BP.get(boss["id"])
+        if override:
+            found = next(game_assets_under_named("/Game/AdditionMap01", override), None)
+            if found:
+                photo_pkg = Package.open(found)
+        photo = creature_photo(photo_pkg, "boss_" + boss["id"].lower(), prefer_bp=bool(override))
         if photo:
             boss["photo"] = photo
         bosses.append(boss)
@@ -1217,7 +1508,10 @@ def build_comfort(items, cdo_cache, loc, icons, attrs):
 MAP_LEVELS = {
     # id: (fase principal com o HWorldSettings, pasta das subfases)
     "main": ("/Game/Maps/Level01/Level01_Main", "Maps/Level01"),
+    "dlc": ("/Game/AdditionMap01/Maps/DLC_Level01/DLC_Level01_Main", "AdditionMap01/Maps/DLC_Level01"),
 }
+# desenho de cada mapa (UI/Map/*) -> assets/img/map/<arquivo>.webp
+MAP_IMAGES = {"main": ("/Game/UI/Map/Level01_Map", "world"), "dlc": ("/Game/AdditionMap01/UI/Map/DLC_Level01_Map", "dlc")}
 
 
 def _level_settings(main_path):
@@ -1231,10 +1525,11 @@ def _level_settings(main_path):
 
 def _marker_kind(c):
     """Classe do ator na fase -> (categoria, subtipo) do marcador, ou None para ignorar."""
-    if "ChuanSongMen" in c:
+    if ("ChuanSongMen" in c and not c.startswith("BP_Collections")) or c.startswith("BP_RegionalPortal_"):
         return "teleport", None
-    if c.startswith("BP_JianZhu_ShiBei"):
-        return "obelisk", None
+    m = re.match(r"BP_JianZhu_ShiBei(\d+)_C$", c)
+    if m:
+        return ("tabletAncient" if int(m.group(1)) < 100 else "tabletDivine"), None
     if c.startswith("BP_JianZhu_JingZiTaMen"):
         return "pyramid", None
     if c.startswith("BP_JianZhu_DiXiaCheng"):
@@ -1245,22 +1540,407 @@ def _marker_kind(c):
         return "maskAltar", None
     if c.startswith("BP_BaoXiang_Mask"):
         return "maskChest", None
-    if c.startswith("BP_BaoXiang"):
-        return "chest", None
+    if c.startswith("BP_BaoXiang") or c.startswith("BP_RuinsBox_") or c.startswith("BP_TribeBox_"):
+        return "chest", None   # BP_RuinsBox_* / BP_TribeBox_* = baús do mapa da DLC
     m = re.match(r"BP_JianZhu_KuangMai_([A-Za-z]+?)\d*_C$", c)
     if m:
         return "ore", m.group(1).lower()
     if c.startswith("BP_BuLuoGLQ"):
         return "tribe", None
+    if c.startswith(("BP_Building_RuinsRespawnPoint", "BP_Building_CentralCoreRespawnPoint")):
+        return "respawn", None
+    if c.startswith("BP_CrowdNPC_Firefly"):
+        return "firefly", None
+    if c.startswith("BP_RuQinSGQ"):
+        return "invasion", None   # ponto de onde saem as invasões
+    m = re.match(r"BP_Building_Summon_(Sobek|Scarab|JackalKing)", c)
+    if m:
+        return "summon", m.group(1)   # altar de invocação de chefe da DLC (Sobek, Escaravelho, Anúbis)
     if "ShuaGuaiQi" in c:
         return "spawn", None
     return None
 
 
-def build_map_markers(loc, creature_ids):
+# inimigo nomeado que é chefe (mesma regra do site: map-game.js BOSS_RE)
+BOSS_NAME_RE = re.compile(r"(^|[^a-zà-ú])(rei|l[ií]der|chefe|king|leader|boss|chief)([^a-zà-ú]|$)", re.I)
+
+MAP_ICON_DIR = os.path.join(os.path.dirname(IMG_DIR), "map", "icons")
+MAP_ICON_URL = "assets/img/map/icons/"
+J = "/Game/UI/resource/JianYingIcon/"
+MAP_CAT_ICONS = {
+    "teleport": J + "DiTuIcon/shenmizhimen",
+    "tabletAncient": J + "DiTuIcon/gudaishibei2",        # branca, como no mapa do jogo
+    "tabletDivine": J + "DiTuIcon/gudaishengshibei2",
+    "pyramid": J + "DiTuIcon/shanggujinzita",
+    "dungeon": J + "DiTuIcon/dixiacheng",
+    "ruin": J + "DiTuIcon/gudaiyizhi_1",
+    "maskAltar": J + "DiTuIcon/teshugudaiyizhi_1",
+    "maskChest": J + "XiangZiFenLeiicon/kaibaoxiang",
+    "chest": J + "shujukuicon/baoxiangdidian",
+    "tribe": J + "DiTuIcon/chengzhai_2",
+    "ore": J + "DiTuIcon/xiaoxingkuangchauang",
+    # bolinhas coloridas do jogo (DiTuBiaoJiIcon/shitubiaoji*): amarela = inimigos, vermelha = chefes de tribo,
+    # azul = animais, verde = mecânicos
+    "npc": J + "DiTuBiaoJiIcon/shitubiaoji2",
+    "boss": J + "DiTuBiaoJiIcon/shitubiaoji2",       # pintada de vermelho (MAP_CAT_TINT)
+    "animalDot": J + "DiTuBiaoJiIcon/shitubiaoji",
+    "mech": J + "DiTuBiaoJiIcon/shitubiaoji1",
+    "creature": J + "DiTuIcon/yeshoujingying",
+    "invasion": J + "DiTuBiaoJiIcon/lueduo",        # de onde saem as invasões ("saque")
+    "respawn": J + "DiTuIcon/chushengdian",         # ponto de renascimento
+}
+
+# Locais oficiais do mapa do jogo ("pontos de exploração", BP_MapQingBaoConfig / BP_DLC_MapInforConfig):
+# tipo do jogo -> categoria do site. Os que já vêm dos atores da fase (portal, pirâmide, masmorra)
+# só entram quando a fase não tem esses atores.
+TSD_CAT = {
+    "JINZITA": "pyramid", "CHUANSONGMEN": "teleport", "DIXIACHENG": "dungeon",
+    "YEWAI_YIZHI": "ruin", "YEWAI_YIJI": "bigRuin", "YIJI": "holyRuin", "SHEN_MIAO": "mystRuin",
+    "DIXIA_YIJI": "ruinDungeon", "UNDERGROUNDPALACE": "palace",
+    "BULUO_CHENGZHAI_SMALL": "camp", "BULUO_CHENGZHAI_MIDDLE": "barrack", "BULUO_CHENGZHAI_BIG": "fortress",
+    "CHAOXUE": "lair", "BEAST": "beast", "WORLDBOSS": "bossAltar", "ARENA": "arena",
+    "KUANGCHUANG_BIG": "mineL", "KUANGCHUANG_MIDDLE": "mineM", "KUANGCHUANG_SMALL": "mineS",
+    "SHIPCAMP": "shipCamp", "CAVE": "cave", "MYSTERYISLAND": "island", "FLOATING_ISLAND": "floatIsland",
+}
+TSD_FROM_ACTORS = {"pyramid", "teleport", "dungeon"}
+# inimigos mecânicos usam o ícone do item "Módulo de Armas"
+MECH_ICON_ITEM = "assets/img/game/daoju_item_mokuai_bingqi.webp"
+
+# eventos de invasão: pasta do spawner de evento (SGQ_ShiJian/...) -> tipo de esquadrão
+INVASION_NAMES = {
+    "king": ("Rei Saqueador da Região", "Plunderer King of the Region"),
+    "base": ("Ataque de tribo à base", "Tribe base raid"),
+}
+
+
+# variações do mesmo filhote que viram uma entrada só no filtro
+BABY_ALIAS = {"BP_DongWu_YangTuo_Special": "BP_DongWu_YangTuo", "BP_Monster_Chicken_F": "BP_Monster_Chicken"}
+
+
+def _squad_type(scg):
+    """Caminho do config de spawn de evento -> tipo de esquadrão de invasão (ou None)."""
+    s = str(scg or "")
+    if "/AdditionMap01/BluePrints/NPC/Event/" in s:
+        # Areias Errantes: mesma ideia, outra pasta (bandidos da areia no lugar dos saqueadores)
+        rel = s.split("/NPC/Event/")[1]
+        if rel.startswith("SandBandits/Ruins_Outside/"):
+            return "dungeon" if "_DXC" in rel else "plunderer"
+        if rel.startswith("Animal/Cub/"):
+            return "hunting"
+        if rel.startswith("Tribe/ResourcePoint/"):
+            return "prospecting"
+        if rel.startswith("Tribe/Patrol/") and "EnemyMount" not in rel:
+            return "transport"
+        return None   # montarias (Animal/Mount e Animal/<tribo>) e mercadores (Shop)
+    if "/SGQ_ShiJian/" not in s:
+        return None
+    rel = s.split("/SGQ_ShiJian/")[1]
+    if rel.startswith("Animal/Mount/") or "/Shop/" in rel:
+        return None   # montarias (vão junto com os saqueadores) e mercadores não são esquadrões
+    if rel.startswith("Robber/BP_SGQ_LDZ_Boss"):
+        return "king"
+    if "_DXC" in rel:
+        return "dungeon"
+    if rel.startswith("Animal/Cub/"):
+        return "hunting"
+    if rel.startswith("Tribe/ResourcePoint/"):
+        return "advProspecting" if "_Event_Boss_" in rel else "prospecting"
+    if rel.startswith("Tribe/Patrol/"):
+        return "transport"
+    if rel.startswith("Robber/Relic_Outside/"):
+        return "plunderer"
+    return None
+# Blueprint do animal (BP_DongWu_<X>) -> nome do ícone de mapa (dongwutubiao/ditubiaoji_<nome>)
+ANIMAL_ICON_ALIAS = {
+    "chajiaolin": "lu",            # antilocapra
+    "haiguai": "yezixie",          # caranguejo-dos-coqueiros
+    "huanglang": "lang",           # lobo da estepe
+    "xuelang": "lang",             # lobo ártico
+    "laoshu": "bianyishu",         # rato mutante
+    "ma": "yema",                  # mustangue
+    "mengmaxiang": "mengmaboss",   # mamute
+    "mulu": "lu",                  # cariacu
+    "xionglu": "lu",               # cariacu
+    "tuolu": "lu",                 # alce
+    "senran": "jumang",            # sucuri
+    "shizi": "xiongshi",           # leão selvagem
+    "souquan": "shuquan",          # cachorro do mato
+    "xianggui": "xiangui",         # tartaruga
+    "xuebao": "baozi",             # leopardo-das-neves
+    "yu": "shirenchang",           # piranha
+    "zongxiong": "xiong",          # urso pardo
+}
+
+# chefe de mundo -> ícone de chefe (dongwutubiao/ditubiaoji_<nome>)
+BOSS_ICONS = {"JianChiHu": "renchishouboss", "MoGuiWa": "guiwuwaboss", "JinGangYuan": "jingangyuanboss",
+              "JuFengJiu": "jufengjiuboss", "MengMaXiang": "mengmaboss"}
+DLC_BOSS_ICONS = {"Sobek": "DaoJu_Item_Head_Sobeck", "JackalKing": "DaoJu_Item_Head_JackalKing",
+                  "Scarab": "DaoJu_Item_Head_Scarab"}
+
+# baú da pirâmide -> chefe (assets/data/bosses.json)
+JZT_BOSS = {"RenChiShou": "JianChiHu", "GuiWuWa": "MoGuiWa", "JinGangYuan": "JinGangYuan",
+            "JuFengJiu": "JuFengJiu", "MengMaXiang": "MengMaXiang"}
+
+
+MAP_CAT_TINT = {"boss": (226, 48, 36)}   # ícone branco do jogo pintado nessa cor (vermelho)
+
+
+def map_icon(tex_path, size=64, tint=None):
+    """Ícone de mapa do jogo -> assets/img/map/icons/<nome>.webp (com cache).
+    tint=(r,g,b): pinta as partes claras do ícone nessa cor (as sombras continuam escuras)."""
+    os.makedirs(MAP_ICON_DIR, exist_ok=True)
+    name = tex_path.rsplit("/", 1)[-1].lower() + ("_tint%02x%02x%02x" % tint if tint else "")
+    out = os.path.join(MAP_ICON_DIR, name + ".webp")
+    if not os.path.isfile(out) or FORCE_ICONS:
+        pkg = Package.open(tex_path)
+        img = extract_texture(pkg) if pkg else None
+        if img is None:
+            return None
+        img = img.convert("RGBA")
+        if tint:
+            px = img.load()
+            top = max(sum(px[xx, yy][:3]) for yy in range(img.height) for xx in range(img.width)
+                      if px[xx, yy][3] > 128) or 765
+            for yy in range(img.height):
+                for xx in range(img.width):
+                    r, g, b, a = px[xx, yy]
+                    lum = min(1.0, (r + g + b) / top)   # o ponto mais claro vira a cor cheia
+                    px[xx, yy] = (int(tint[0] * lum), int(tint[1] * lum), int(tint[2] * lum), a)
+        img.thumbnail((size, size), 1)
+        img.save(out, "WEBP", quality=90, method=4)
+    return MAP_ICON_URL + name + ".webp"
+
+
+def load_drop_bags():
+    """Todas as 'bolsas de drop' (CaiJiBao/*): nome -> [[item, mín, máx, chance %], ...]."""
+    bags = {}
+    import itertools
+    for gp in itertools.chain(game_assets_under("/Game/Blueprints/DataTable/CaiJiBao"),
+                              game_assets_under("/Game/AdditionMap01/BluePrints/DataTable/Drop")):
+        try:
+            rows = Package.open(gp).datatable_rows()
+        except Exception:
+            continue
+        for key, r in rows.items():
+            # [item, mín, máx, chance do grupo %, chance do item no grupo %, nº do grupo]
+            out = bag_rows(r.get("DaoJuBaoContent"))
+            for name in {key, r.get("DaoJuBaoName")}:
+                if name and out:
+                    bags.setdefault(name, out)
+    return bags
+
+
+def build_foliage_types(loc, all_bags, item_ids):
+    """Tipos de vegetação/objeto coletável que viram marcador: depósitos de recurso (pasta Ore, ex.: ferro,
+    argila, gelo) e coletáveis especiais (pasta Special com bolsa final TaiZi_*, ex.: Torre Anti-radiação).
+    -> {"BP_Collections_Iron_Medium_C": {name_pt, name_en, g, icon, respawn, tool, bagRows}}"""
+    conf = (Package.open("/Game/Blueprints/ZhiBei/BP_ZhiBeiConfig").cdo() or {}).get("ZhiBeiPropConfigMap") or {}
+    item_icon = {}
+    for path, v in conf.items():
+        cls = path.split(".")[-1]
+        name = loc.get(v.get("FoliageMapName"))
+        if not name:
+            continue
+        tools = list((v.get("GongJuCaiJiDaoJuMap") or {}).items())
+        if "/Ore/" in path:
+            g = "deposit"
+        elif "/Special/" in path:
+            g = "collect"
+        else:
+            continue
+        # bolsa "de verdade": a da melhor ferramenta (as primeiras picaretas só tiram pedra comum)
+        cands = [(ti, e.get(key)) for ti, (tool, e) in enumerate(tools)
+                 for key in ("CaiJiDaoJuBaoName", "FinalCaiJiDaoJuBaoName")
+                 if e.get(key) and e.get(key) != "None" and e.get(key) in all_bags]
+        special = [c for c in cands if not c[1].startswith("Common")]
+        tool_lv, bag = (special or cands or [(0, None)])[0]
+        rows = [r for r in all_bags.get(bag, []) if not item_ids or r[0] in item_ids] if bag else []
+        t = {"g": g}
+        bi(t, "name", name)
+        if rows:
+            t["bagRows"] = rows
+            best = max(rows, key=lambda r: (r[3] * r[4], r[2]))
+            t["item"] = best[0]
+        if v.get("ZhiBeiEnableRebornAfterCollect") and v.get("ZhiBeiRebornTimeAfterCollect"):
+            t["respawn"] = int(v["ZhiBeiRebornTimeAfterCollect"])
+        if g == "deposit" and tools:
+            m = re.search(r"GaoZi_(\d)", tools[tool_lv][0])
+            if m and int(m.group(1)) > 1:
+                t["tool"] = int(m.group(1))
+        item_icon[cls] = t
+    return item_icon
+
+
+def _foliage_positions(p, e, end):
+    """Instâncias de um componente de vegetação (FoliageInstancedStaticMeshComponent):
+    depois das propriedades vem PerInstanceSMData = [tamanho 64][quantidade][matriz 4x4 por instância]."""
+    blob = p.b[end:end + 32]
+    i = blob.find(struct.pack("<i", 64))
+    if i < 0:
+        return []
+    n = struct.unpack_from("<i", blob, i + 4)[0]
+    base = end + i + 8
+    if n <= 0 or base + n * 64 > e["offset"] + e["size"] + 64:
+        return []
+    out = []
+    for k in range(n):
+        x, y, z = struct.unpack_from("<3f", p.b, base + k * 64 + 48)
+        out.append((x, y, z))
+    return out
+
+
+MAP_TAG_WIDGETS = {"main": "/Game/Blueprints/UI/Map/WBP_MapTag_LevelMain01",
+                   "dlc": "/Game/Blueprints/UI/Map/WBP_MapTag_LevelMain02"}
+
+
+def map_regions(loc, mid):
+    """Nomes das regiões escritos sobre o mapa do jogo (ex.: "Olho das Areias / (Cânion) / Nível: 41–50").
+    Vêm do widget WBP_MapTag_LevelMain0X: cada região é uma VerticalBox com 3 textos, posicionada num
+    canvas de 4096 px sobre o desenho do mapa. -> [{x, y (0..1024), name, type, lv}]"""
+    p = Package.open(MAP_TAG_WIDGETS.get(mid, ""))
+    if not p:
+        return []
+    slot_content, texts, boxes, canvas = {}, {}, {}, []
+    for e in p.exports:
+        c = p.export_class(e)
+        if c not in ("TextBlock", "CanvasPanelSlot", "VerticalBoxSlot", "VerticalBox"):
+            continue
+        v = p.read_export_props(e)[0]
+        if c == "VerticalBoxSlot":
+            slot_content[str(v.get("Parent")) + ":" + e["name"]] = str(v.get("Content"))
+        elif c == "TextBlock":
+            texts[e["name"]] = v.get("Text")
+        elif c == "VerticalBox":
+            boxes[e["name"]] = v.get("Slots") or []
+        else:
+            canvas.append(v)
+    out, seen = [], set()
+    for v in canvas:
+        box = str(v.get("Content")).rsplit(":", 1)[-1]
+        off = (v.get("LayoutData") or {}).get("Offsets") or {}
+        key = (round(off.get("Left", 0)), round(off.get("Top", 0)))
+        if not box.startswith("VerticalBox") or key in seen:
+            continue
+        seen.add(key)
+        r = {"x": round(key[0] / 4, 1), "y": round(key[1] / 4, 1)}
+        for sp in boxes.get(box, []):
+            t = loc.get(texts.get(slot_content.get(str(sp), "").rsplit(":", 1)[-1]))
+            if not t:
+                continue
+            if re.match(r"(N[ií]vel|Level)", t["en"]) or re.match(r"N[ií]vel", t["pt"]):
+                r["lv"] = re.sub(r"^[^\d]*", "", t["en"]).replace("-", "–")
+            elif t["en"].startswith("("):
+                r["type"] = {k: s.strip("() ") for k, s in t.items()}
+            else:
+                r["name"] = t
+        if r.get("name"):
+            out.append(r)
+    STATS["regiões no mapa"] += len(out)
+    return out
+
+
+def build_map_markers(loc, creature_ids, items=None):
     """Marcadores do mapa interativo, lidos das fases do jogo (.umap): portais, estelas, pirâmides,
     ruínas, baús, minérios, tribos e onde nasce cada criatura. Coordenadas em 0..1024 sobre o desenho."""
-    out = {"maps": {}}
+    out = {"maps": {}, "icons": {}, "creatureIcons": {}, "bossIcons": {}, "bags": {}, "babyNames": {}}
+    for cat, tex in MAP_CAT_ICONS.items():
+        url = map_icon(tex, tint=MAP_CAT_TINT.get(cat))
+        if url:
+            out["icons"][cat] = url
+    if os.path.isfile(os.path.join(IMG_DIR, "daoju_item_firefly.webp")):
+        out["icons"]["firefly"] = IMG_URL + "daoju_item_firefly.webp"   # item "Vaga-lume"
+    # nomes dos tipos de invasão (os mesmos da página Eventos de invasão)
+    import build_guides
+    out["invasionTypes"] = {sid: {"name_pt": pt, "name_en": en, "sched": True} for sid, pt, en, _t in build_guides.SQUADS_BRT}
+    for sid, (pt, en) in INVASION_NAMES.items():
+        out["invasionTypes"][sid] = {"name_pt": pt, "name_en": en}
+    # ícone de cada animal: dongwutubiao/ditubiaoji_<nome>. O nome do ícone nem sempre é o do Blueprint
+    # (ex.: XueBao/leopardo-das-neves usa "baozi", Yu/piranha usa "shirenchang"): ANIMAL_ICON_ALIAS corrige.
+    animal_dir = J + "dongwutubiao/"
+    for cid in creature_ids:
+        key = re.sub(r"^BP_DongWu_", "", cid).split("_")[0].lower()
+        for cand in (ANIMAL_ICON_ALIAS.get(key), key):
+            if cand and Package.open(animal_dir + "ditubiaoji_" + cand):
+                url = map_icon(animal_dir + "ditubiaoji_" + cand)
+                if url:
+                    out["creatureIcons"][cid] = url
+                    break
+        else:
+            STATS["animal sem ícone no mapa"] += 1
+    # ícone de cada chefe de mundo (silhuetas de chefe do próprio jogo)
+    for boss_id, icon in BOSS_ICONS.items():
+        url = map_icon(J + "dongwutubiao/ditubiaoji_" + icon)
+        if url:
+            out["bossIcons"][boss_id] = url
+    # chefes da DLC não têm silhueta de mapa: usa o ícone da cabeça do chefe (troféu do jogo)
+    for boss_id, icon in DLC_BOSS_ICONS.items():
+        url = map_icon("/Game/UI/Icon/jianzhuicon/" + icon, size=96)
+        if url:
+            out["bossIcons"][boss_id] = url
+    all_bags = load_drop_bags()
+    item_ids = set(items or [])
+    chest_bag = {}
+
+    def use_bag(name):
+        """Registra a bolsa de drop (se existir) e devolve o nome, ou None."""
+        if not name:
+            return None
+        if name not in out["bags"]:
+            rows = [r for r in all_bags.get(name, []) if not item_ids or r[0] in item_ids]
+            if not rows:
+                return None
+            out["bags"][name] = rows
+        return name
+
+    def bag_of(cls_path):
+        if cls_path not in chest_bag:
+            pkg = Package.open(cls_path)
+            cdo = (pkg.cdo() if pkg else None) or {}
+            name = cdo.get("BaoXiangDiaoLuoID")
+            rows = [r for r in all_bags.get(name, []) if not item_ids or r[0] in item_ids] if name else []
+            if rows:
+                out["bags"][name] = rows
+            chest_bag[cls_path] = name if rows else None
+        return chest_bag[cls_path]
+
+    # o que se coleta de cada animal: tabela do próprio jogo (BP_ShengWuCollectData) com a bolsa normal
+    # e a bolsa extra/final; se o animal não estiver nela, tenta pelo nome do Blueprint (DT_ShengWuCaiJiBao)
+    out["creatureBags"] = {}
+    collect_conf = (Package.open("/Game/Blueprints/ZiYuanGuanLi/BP_ShengWuCollectData").cdo() or {}).get("ShengWuPropConfigSoftMap") or {}
+    for path, conf in collect_conf.items():
+        cid = asset_name(path)
+        m = (conf or {}).get("ShengWuCollectDaoJuMap") or {}
+        first = next(iter(m.values()), None) if m else None
+        if cid not in creature_ids or not first:
+            continue
+        rows = [r for r in all_bags.get(first.get("CaiJiDaoJuBaoName"), []) if not item_ids or r[0] in item_ids]
+        fin = [r for r in all_bags.get(first.get("CaiJiFinalDaoJuBaoName"), []) if not item_ids or r[0] in item_ids]
+        rows = rows + [r[:5] + [r[5] + 1000] + r[6:] for r in fin]
+        if rows:
+            out["bags"]["cr:" + cid] = rows
+            out["creatureBags"][cid] = "cr:" + cid
+    lower_bags = {k.lower(): k for k in all_bags}
+    for cid in creature_ids:
+        if cid in out["creatureBags"]:
+            continue
+        base = re.sub(r"^BP_(DongWu|Monster)_", "", cid)
+        for cand in (base, re.sub(r"_(JY|JingYing|Elite)$", "", base)):
+            key = lower_bags.get(cand.lower())
+            name = use_bag(key) if key else None
+            if name:
+                out["creatureBags"][cid] = name
+                break
+        else:
+            STATS["animal sem drop"] += 1
+
+    # coletáveis e depósitos de recurso (vegetação "BP_Collections_*", BP_ZhiBeiConfig)
+    foliage = build_foliage_types(loc, all_bags, item_ids)
+    out["foliage"] = {k: {kk: vv for kk, vv in v.items() if kk != "bagRows"} for k, v in foliage.items()}
+    for k, v in foliage.items():
+        if v.get("bagRows"):
+            out["bags"]["fol:" + k] = v["bagRows"]
+            out["foliage"][k]["bag"] = "fol:" + k
+
     for mid, (main_path, folder) in MAP_LEVELS.items():
         ws = _level_settings(main_path)
         qx, qy = ws.get("MapQiDian") or [-408028.0, -408144.0]
@@ -1297,17 +1977,24 @@ def build_map_markers(loc, creature_ids):
                     for g in info.get("SGBList") or []:
                         cls = g.get("GuaiWuClass")
                         if cls:
-                            res.append((cls, g.get("SCGZuiXiaoDengJi") or 0, g.get("SCGZuiDaDengJi") or 0))
+                            bag = g.get("DiaoLuoBaoID")
+                            # ShiFouFaYu ("cresce"): filhote que nasce pequeno (ou ovo)
+                            baby = str(g.get("ShiFouFaYu")) == "True" or asset_name(cls).endswith("_Egg")
+                            res.append((cls, g.get("SCGZuiXiaoDengJi") or 0, g.get("SCGZuiDaDengJi") or 0,
+                                        bag if bag and bag != "None" else None, baby))
                 spawn_cache[scg] = res
             return spawn_cache[scg]
 
         points = []
+        squad_seen = {}
+        scg_default = {}
         base = os.path.join(CONTENT_DIR, *folder.split("/"))
         files = []
         for root, _d, fs in os.walk(base):
             files += [os.path.join(root, f) for f in fs if f.endswith(".umap")]
         for f in sorted(files):
-            if any(x in f for x in ("_Main.umap", "Weather", "_Far.umap")):
+            # o mapa base guarda os atores nas subfases; o da DLC guarda muitos na própria fase principal
+            if any(x in f for x in ("Weather", "_Far.umap", "StartScene")) or (mid == "main" and "_Main.umap" in f):
                 continue
             gp = "/Game/" + os.path.relpath(f[:-5], CONTENT_DIR).replace(os.sep, "/")
             try:
@@ -1319,6 +2006,19 @@ def build_map_markers(loc, creature_ids):
             paths = None
             for e in p.exports:
                 c = p.export_class(e) or ""
+                if c in foliage:
+                    # depósitos de recurso e coletáveis: instâncias de vegetação
+                    try:
+                        fprops, fend = p.read_export_props(e)
+                        rl = fprops.get("RelativeLocation") or [0.0, 0.0, 0.0]
+                        for fx, fy, fz in _foliage_positions(p, e, fend):
+                            x = round((fx + rl[0] - qx) / size * 1024, 1)
+                            y = round((fy + rl[1] - qy) / size * 1024, 1)
+                            if 0 <= x <= 1024 and 0 <= y <= 1024:
+                                points.append(["fol", x, y, int(round(fz + rl[2])), c])
+                    except Exception:
+                        STATS["vegetação com erro"] += 1
+                    continue
                 kind = _marker_kind(c)
                 if not kind or p.ref_name(e["outer"]) != "PersistentLevel":
                     continue
@@ -1340,47 +2040,170 @@ def build_map_markers(loc, creature_ids):
                     continue
                 x = round((xyz[0] - qx) / size * 1024, 1)
                 y = round((xyz[1] - qy) / size * 1024, 1)
+                z = int(round(xyz[2]))
                 if not (0 <= x <= 1024 and 0 <= y <= 1024):
                     continue
                 cat, sub = kind
                 cls_path = p.ref_path(e["class_index"]) or ""
                 if cat == "spawn":
-                    for cls, lo, hi in spawn_info(props.get("SCGClass")):
-                        cid = asset_name(cls)
-                        if cid in creature_ids:
-                            points.append(["creature", x, y, cid, lo, hi])
+                    # config de spawn: no ponto ou, se não estiver nele, no Blueprint do spawner (ex.: ovos)
+                    if not props.get("SCGClass") and cls_path.startswith("/Game/"):
+                        if cls_path not in scg_default:
+                            pkg = Package.open(cls_path.split(".")[0])
+                            scg_default[cls_path] = ((pkg.cdo() if pkg else None) or {}).get("SCGClass")
+                        props["SCGClass"] = scg_default[cls_path]
+                    # pontos de evento (SGQ_ShiJian): bando que aparece por evento -> categoria própria
+                    scg_s = str(props.get("SCGClass") or "")
+                    is_event = "/SGQ_ShiJian/" in scg_s or "/AdditionMap01/BluePrints/NPC/Event/" in scg_s
+                    sq = _squad_type(props.get("SCGClass")) if is_event else None
+                    if sq:
+                        # um marcador por ponto de esquadrão (sem repetir o mesmo lugar: normal + elite)
+                        info = spawn_info(props.get("SCGClass"))
+                        key = (sq, round(x), round(y))
+                        if key not in squad_seen:
+                            squad_seen[key] = len(points)
+                            points.append(["invasion", x, y, z, sq,
+                                           min((i[1] for i in info), default=0), max((i[2] for i in info), default=0)])
                         else:
-                            points.append(["npc", x, y, label(actor_name(cls)), lo, hi])
+                            q = points[squad_seen[key]]
+                            for i in info:
+                                q[5] = min(q[5], i[1]) if q[5] else i[1]
+                                q[6] = max(q[6], i[2])
+                    for cls, lo, hi, bag, baby in spawn_info(props.get("SCGClass")):
+                        cid = asset_name(cls)
+                        bag = use_bag(bag)
+                        # filhotes também nascem com a Equipe de Caça (onça, leopardo-das-neves...)
+                        if baby and (not is_event or sq == "hunting"):
+                            # filhote / ovo: categoria própria (para domesticar)
+                            cid = BABY_ALIAS.get(cid, cid)
+                            if cid not in creature_ids and cid not in out["babyNames"]:
+                                out["babyNames"][cid] = actor_name(cls) or {"pt": cid, "en": cid}
+                            key = ("baby", cid, round(x), round(y))
+                            if key not in squad_seen:
+                                squad_seen[key] = True
+                                points.append(["baby", x, y, z, cid, lo, hi])
+                            continue
+                        if is_event:
+                            # pontos de evento não vão para o mapa; só reis/líderes nomeados continuam (chefes)
+                            nm = actor_name(cls)
+                            if cid not in creature_ids and nm and BOSS_NAME_RE.search("%s %s" % (nm["pt"], nm["en"])):
+                                points.append(["npc", x, y, z, label(nm), lo, hi, bag])
+                            continue
+                        if cid in creature_ids:
+                            points.append(["creature", x, y, z, cid, lo, hi, bag])
+                        else:
+                            points.append(["npc", x, y, z, label(actor_name(cls)), lo, hi, bag])
                     continue
-                if cat == "ore":
-                    points.append([cat, x, y, sub])
+                if cat in ("ore", "summon"):
+                    points.append([cat, x, y, z, sub])
                     continue
-                lvl = re.search(r"_(\d{2})[A-Z]", c)
-                pt = [cat, x, y, label(actor_name(cls_path.split(":")[0]) if cls_path.startswith("/Game/") else None)]
-                if cat == "chest" and lvl:
-                    pt.append(int(lvl.group(1)))
+                if cat == "invasion":
+                    # BP_RuQinSGQ: tribo próxima que ataca a base do jogador
+                    points.append(["invasion", x, y, z, "base", 0, 0])
+                    continue
+                lvl = re.search(r"_(\d{2})[A-Z]", c) or re.search(r"_T(\d)_", c)
+                game_cls = cls_path.split(":")[0] if cls_path.startswith("/Game/") else None
+                pt = [cat, x, y, z, label(actor_name(game_cls) if game_cls else None)]
+                if cat in ("chest", "maskChest"):
+                    pt.append(int(lvl.group(1)) if lvl else 0)
+                    pt.append(bag_of(game_cls) if game_cls else None)
+                    jzt = re.search(r"JZT_\d+_(?:ZhongShu_)?([A-Za-z]+)_C$", c)
+                    if jzt:
+                        pt.append(JZT_BOSS.get(jzt.group(1)))
                 points.append(pt)
-        out["maps"][mid] = {"image": "assets/img/map/world.webp", "labels": labels, "points": points}
+        # locais oficiais do mapa (ruínas, acampamentos, covis, minas, arenas...) e estelas
+        conf_cls = ((Package.open("/Game/Blueprints/ZiYuanGuanLi/BP_ZiYuanGuanLiQi").cdo() or {})
+                    .get("MapQingBaoConfigClassMap") or {}).get(main_path.rsplit("/", 1)[-1])
+        qconf = (Package.open(conf_cls.split(".")[0]).cdo() or {}) if conf_cls else {}
+        if qconf:
+            have = {p[0] for p in points}
+            points[:] = [p for p in points if p[0] != "ruin"]   # ruínas: a lista oficial substitui as portas
+            icon_map = (qconf.get("AllTanSuoDianIconMap") or {}).get("TanSuoDianIconMap") or {}
+            tsd_loc = (qconf.get("AllTanSuoPointLocationMap") or {}).get("TanSuoDianLocationMap") or {}
+            for k, v in ((qconf.get("AllTanSuoDianInfoMap") or {}).get("TanSuoDianInfoMap") or {}).items():
+                tt = (v.get("TSDType") or "").split("::")[-1].replace("ETSD_TYPE_", "")
+                cat = TSD_CAT.get(tt)
+                xyz = tsd_loc.get(k)
+                if not cat or not xyz or (cat in TSD_FROM_ACTORS and cat in have):
+                    continue
+                if cat not in out["icons"] and icon_map.get("ETanSuoDianType::ETSD_TYPE_" + tt):
+                    url = map_icon(icon_map["ETanSuoDianType::ETSD_TYPE_" + tt].split(".")[0])
+                    if url:
+                        out["icons"][cat] = url
+                x = round((xyz[0] - qx) / size * 1024, 1)
+                y = round((xyz[1] - qy) / size * 1024, 1)
+                if 0 <= x <= 1024 and 0 <= y <= 1024:
+                    points.append([cat, x, y, int(round(xyz[2])), label(loc.get(v.get("TSDName")))])
+            # estelas (antigas e sagradas), quando a fase não tem os atores delas
+            if not {"tabletAncient", "tabletDivine"} & have:
+                for path, xyz in ((qconf.get("AllShiBeiLocationList") or {}).get("ShiBeiLocationMap") or {}).items():
+                    x = round((xyz[0] - qx) / size * 1024, 1)
+                    y = round((xyz[1] - qy) / size * 1024, 1)
+                    if 0 <= x <= 1024 and 0 <= y <= 1024:
+                        points.append(["tabletDivine" if "HolyTablet" in path else "tabletAncient", x, y, int(round(xyz[2])), -1])
+        # cada pirâmide recebe o chefe do baú de pirâmide mais próximo
+        jzt = [p for p in points if p[0] in ("chest", "maskChest") and len(p) > 7 and p[7]]
+        for p in points:
+            if p[0] == "pyramid" and jzt:
+                near = min(jzt, key=lambda q: (q[1] - p[1]) ** 2 + (q[2] - p[2]) ** 2)
+                if (near[1] - p[1]) ** 2 + (near[2] - p[2]) ** 2 < 40 ** 2:
+                    p.append(near[7])
+        # formato do ponto: [categoria, x, y, z(mundo), ...]  x/y em 0..1024 sobre o desenho
+        out["maps"][mid] = {"image": "assets/img/map/%s.webp" % MAP_IMAGES[mid][1], "world": [qx, qy, size],
+                            "labels": labels, "points": points, "regions": map_regions(loc, mid)}
         STATS["marcadores do mapa"] += len(points)
     return out
+
+
+MENU_ICONS = {  # botões da página inicial que não tinham ícone -> ícones da interface do jogo
+    "itens": "ZuoCeGongNeng/wupin_1",
+    "armaduras": "shujukuicon/fangju_1",
+    "armas": "ZuoCeGongNeng/wuqijieshao_1",
+    "receitas": "ZuoCeGongNeng/zhizuo_1",
+    "chefes": "DiTuIcon/shijieboss",
+    "mapa": "ZuoCeGongNeng/lutu_1",
+    "tierlist": "ZuoCeGongNeng/chenghao_1",
+    "gdmbot": "ZuoCeGongNeng/nengli_1",
+    "reportar": "ZuoCeGongNeng/rizhi_1",
+    "proficiencia": "ZuoCeGongNeng/shuliandu_1",
+    "maestria": "ZuoCeGongNeng/zhuanjing_1",
+    "eventos": "ZuoCeGongNeng/buluoshijian_1",
+    "comandos": "ZuoCeGongNeng/wenben_1",
+    "servidores": "ZuoCeGongNeng/buluoxinxi_1",
+    "bancada": "ZuoCeGongNeng/zhizuo_1",
+    "atributos": "ZuoCeGongNeng/jingli_1",
+}
+
+
+def build_menu_icons():
+    out_dir = os.path.join(os.path.dirname(IMG_DIR), "menu-icons")
+    for name, tex in MENU_ICONS.items():
+        out = os.path.join(out_dir, name + ".webp")
+        if os.path.isfile(out) and not FORCE_ICONS:
+            continue
+        pkg = Package.open("/Game/UI/resource/JianYingIcon/" + tex)
+        img = extract_texture(pkg) if pkg else None
+        if img is not None:
+            img.convert("RGBA").save(out, "WEBP", quality=90, method=4)
 
 
 def build_world_map():
     """Mapa do mundo do jogo (UI/Map/Level01_Map, 4096x4096) para a página do mapa interativo."""
     out_dir = os.path.join(os.path.dirname(IMG_DIR), "map")
     os.makedirs(out_dir, exist_ok=True)
-    out = os.path.join(out_dir, "world.webp")
-    if os.path.isfile(out) and not FORCE_ICONS:
-        return
-    pkg = Package.open("/Game/UI/Map/Level01_Map")
-    img = extract_texture(pkg) if pkg else None
-    if img is None:
-        log("AVISO: mapa do mundo não encontrado")
-        return
-    img = img.convert("RGB")
-    img.save(out, "WEBP", quality=78, method=4)
-    img.resize((1024, 1024), 1).save(os.path.join(out_dir, "world-small.webp"), "WEBP", quality=80, method=4)
-    log("mapa do mundo:", img.size)
+    for mid, (tex, fname) in MAP_IMAGES.items():
+        out = os.path.join(out_dir, fname + ".webp")
+        if os.path.isfile(out) and not FORCE_ICONS:
+            continue
+        pkg = Package.open(tex)
+        img = extract_texture(pkg) if pkg else None
+        if img is None:
+            log("AVISO: mapa não encontrado:", tex)
+            continue
+        img = img.convert("RGB")
+        img.save(out, "WEBP", quality=78, method=4)
+        img.resize((1024, 1024), 1).save(os.path.join(out_dir, fname + "-small.webp"), "WEBP", quality=80, method=4)
+        log("mapa", mid, img.size)
 
 
 # ====================================================================== auxiliares
@@ -1655,6 +2478,7 @@ def build_masks(items, loc, icons):
         if nm:
             by_name.setdefault(nm["pt"], cdo)
 
+    outfits = mask_outfits()
     out = []
     for it in items.values():
         if it["cat"] != "mask":
@@ -1662,6 +2486,12 @@ def build_masks(items, loc, icons):
         m = dict(it)
         node = by_item.get(it["id"]) or by_name.get(it.get("name_pt"))
         if node:
+            # roupa de transformação: a melhoria da máscara que ativa a habilidade de transformação
+            for xf in node.get("DuLiXiuFuNodeList", []) or []:
+                nid = re.search(r"_(\d{4})(?:\.|$)", xf or "")
+                if nid and nid.group(1) in outfits:
+                    m["outfit"] = outfits[nid.group(1)]
+                    break
             bi(m, "lore", loc.get(node.get("MJGZNodeMiaoShu")))
             buffs = []
             for ge in node.get("GE_MaskList", []) or []:

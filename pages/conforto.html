@@ -3,6 +3,26 @@
     <h1 data-i18n="comfort.title">Conforto</h1>
     <p class="items-subtitle" data-i18n="comfort.subtitle">Quanto conforto cada móvel dá, os 10 níveis de conforto e o bônus de Humor Agradável de cada um.</p>
   </div>
+  <section class="comfort-tool" aria-labelledby="comfort-tool-title">
+    <header class="comfort-tool-head">
+      <div>
+        <span class="comfort-tool-tag" data-i18n="comfort.toolTag">Ferramenta</span>
+        <h2 id="comfort-tool-title" data-i18n="comfort.checkTitle">Calculadora de conforto</h2>
+        <p data-i18n="comfort.checkHint">Adicione as decorações que você já colocou perto da cama para ver seu nível de conforto.</p>
+      </div>
+      <button type="button" class="map-btn map-btn-sm" id="comfort-clear" data-i18n="comfort.checkClear">Limpar</button>
+    </header>
+    <div class="comfort-tool-grid">
+      <div class="comfort-tool-pick">
+        <input type="search" id="comfort-tool-search" class="items-search-input" placeholder="Buscar decoração para adicionar..." data-i18n-placeholder="comfort.toolSearch" aria-label="Buscar decoração" data-i18n-aria="comfort.toolSearch" />
+        <div class="comfort-tool-results" id="comfort-tool-results"></div>
+      </div>
+      <div class="comfort-tool-mine">
+        <div id="comfort-check" aria-live="polite"></div>
+        <ul class="comfort-tool-list" id="comfort-tool-list"></ul>
+      </div>
+    </div>
+  </section>
   <h2 class="comfort-section-title" data-i18n="comfort.levelsTitle">Níveis de conforto</h2>
   <p class="comfort-howto" id="comfort-howto"></p>
   <div id="comfort-levels" class="comfort-levels"></div>

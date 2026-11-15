@@ -1,6 +1,8 @@
-# Soulmask Database — Fantasfor Wiki
+# Soulmask Fantasfor Wiki
 
 Site estático da wiki Soulmask (SPA com roteamento por hash) — rápido, acessível e pronto para GitHub Pages.
+
+> **Todos os direitos reservados.** Este repositório é público só para publicar o site; o código, o design e os textos não podem ser copiados nem reutilizados sem autorização. Veja [LICENSE](LICENSE). Soulmask e seus dados, imagens e ícones pertencem à CampFire Studio e à Qooland Games; este é um site de fã sem vínculo oficial.
 
 ## Estrutura do projeto
 

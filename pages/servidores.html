@@ -1,0 +1,45 @@
+<section class="items-page db-page guide-page servers-page">
+  <script type="application/json" id="serversConfig">
+    { "apiBase": "https://gdmbot-loja.netlify.app/api", "boostAmounts": [10, 20, 50, 100], "boostDays": 30, "maxPerUser": 3 }
+  </script>
+  <div class="items-header srv-header">
+    <div>
+      <h1 data-i18n="srv.title">Servidores</h1>
+      <p class="items-subtitle" data-i18n="srv.subtitle">Encontre um servidor de Soulmask para jogar ou divulgue o seu. Avalie com estrelas os servidores em que você jogou.</p>
+    </div>
+    <button type="button" class="tier-btn primary" id="srv-add" data-i18n="srv.add">+ Adicionar meu servidor</button>
+  </div>
+  <p class="srv-status" id="srv-status" aria-live="polite" hidden></p>
+
+  <section class="srv-featured" id="srv-featured" aria-label="Servidores em destaque" data-i18n-aria="srv.featured"></section>
+
+  <div class="items-filters srv-filters">
+    <input type="search" id="srv-search" class="items-search-input" placeholder="Buscar servidor..." data-i18n-placeholder="srv.search" aria-label="Buscar servidor" data-i18n-aria="srv.search" />
+    <select id="srv-mode" class="items-search-input" aria-label="Modo" data-i18n-aria="srv.mode">
+      <option value="" data-i18n="srv.allModes">Todos os modos</option>
+      <option value="pvp">PvP</option><option value="pve">PvE</option><option value="pvpve">PvPvE</option>
+    </select>
+    <select id="srv-region" class="items-search-input" aria-label="Região" data-i18n-aria="srv.region">
+      <option value="" data-i18n="srv.allRegions">Todas as regiões</option>
+      <option value="SouthAmerica" data-i18n="events.reg.SouthAmerica">América do Sul</option>
+      <option value="America" data-i18n="events.reg.America">América do Norte</option>
+      <option value="Europe" data-i18n="events.reg.Europe">Europa</option>
+      <option value="Asia" data-i18n="events.reg.Asia">Ásia</option>
+      <option value="Oceania" data-i18n="events.reg.Oceania">Oceania</option>
+    </select>
+    <select id="srv-sort" class="items-search-input" aria-label="Ordenar" data-i18n-aria="tier.sort">
+      <option value="rating" data-i18n="tier.sortRating">Melhor avaliadas</option>
+      <option value="votes" data-i18n="tier.sortVotes">Mais avaliadas</option>
+      <option value="recent" data-i18n="tier.sortRecent">Mais recentes</option>
+    </select>
+    <div class="items-stats"><span id="srv-count" data-i18n="site.loading">Carregando...</span></div>
+  </div>
+  <div id="srv-grid" class="srv-grid"></div>
+
+  <div class="tier-viewer" id="srv-viewer" hidden>
+    <section class="tier-viewer-dialog srv-dialog" role="dialog" aria-modal="true" aria-labelledby="srv-viewer-title">
+      <button type="button" class="tier-viewer-close" data-close aria-label="Fechar" data-i18n-aria="common.close">&times;</button>
+      <div id="srv-viewer-body"></div>
+    </section>
+  </div>
+</section>

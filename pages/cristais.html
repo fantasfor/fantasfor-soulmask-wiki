@@ -1,0 +1,40 @@
+<section class="items-page db-page guide-page crystals-page">
+  <div class="items-header">
+    <h1 data-i18n="rc.title">Cristais Vermelhos</h1>
+    <p class="items-subtitle" data-i18n="rc.subtitle">Módulos que se encaixam na máscara para melhorar atributos ou habilidades. Veja o efeito de cada um, quanto ele cresce com a qualidade e onde conseguir.</p>
+  </div>
+
+  <section class="guide-explain">
+    <h2 data-i18n="rc.howTitle">Como funcionam</h2>
+    <ul class="rc-how">
+      <li data-i18n="rc.how1">Cada cristal tem um efeito principal (ex.: Autorreparo aumenta a recuperação de vida).</li>
+      <li data-i18n="rc.how2">A qualidade (de branco a vermelho) multiplica o efeito principal: o valor sorteado fica entre o mínimo e o máximo da qualidade.</li>
+      <li data-i18n="rc.how3">A partir do verde, o cristal ganha atributos extras sorteados (até 3 no vermelho). Os cristais de maestria e de experiência não têm extras.</li>
+      <li data-i18n="rc.how4">Cada cristal ocupa carga na máscara, e a carga também aumenta com a qualidade.</li>
+    </ul>
+  </section>
+
+  <section class="guide-tool" aria-labelledby="rc-list-title">
+    <header class="guide-tool-head">
+      <div>
+        <h2 id="rc-list-title" data-i18n="rc.listTitle">Todos os cristais</h2>
+        <p data-i18n="rc.listHint">Escolha a qualidade para ver os valores. Clique em "Onde conseguir" para ver quem dropa o cristal.</p>
+      </div>
+    </header>
+    <div class="items-filters rc-filters">
+      <input type="search" id="rc-search" class="items-search-input" placeholder="Buscar cristal ou efeito..." data-i18n-placeholder="rc.search" aria-label="Buscar" />
+    </div>
+    <div id="rc-quality" class="guide-chips" role="tablist"></div>
+    <div id="rc-list" class="rc-grid" aria-live="polite"></div>
+  </section>
+
+  <section class="guide-tool" aria-labelledby="rc-extra-title">
+    <header class="guide-tool-head">
+      <div>
+        <h2 id="rc-extra-title" data-i18n="rc.extraTitle">Atributos extras sorteados</h2>
+        <p id="rc-extra-hint"></p>
+      </div>
+    </header>
+    <div id="rc-extra" class="guide-table-wrap"></div>
+  </section>
+</section>

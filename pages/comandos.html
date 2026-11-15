@@ -1,0 +1,24 @@
+<section class="items-page db-page guide-page commands-page">
+  <div class="items-header">
+    <h1 data-i18n="cmd.title">Comandos de console</h1>
+    <p class="items-subtitle" data-i18n="cmd.subtitle">Todos os comandos GM do jogo explicados. Escreva o que você quer fazer e o site acha o comando.</p>
+  </div>
+
+  <section class="guide-explain">
+    <h2 data-i18n="cmd.howTitle">Como usar</h2>
+    <ol class="guide-steps">
+      <li data-i18n-html="cmd.how1">Abra o console do jogo com a tecla <strong>`</strong> ou <strong>~</strong> (à esquerda do 1).</li>
+      <li data-i18n-html="cmd.how2">Em servidor, entre como admin primeiro: <code>gm Key suasenha</code> (a senha é a do <code>-adminpsw=</code> do servidor).</li>
+      <li data-i18n-html="cmd.how3">Digite <code>gm</code> + o comando + os valores, separados por espaço. Ex.: <code>gm AddExp 10000</code>.</li>
+      <li data-i18n-html="cmd.how4">Os comandos marcados como <strong>RCON</strong> são do console do servidor (janela do servidor ou programa de RCON), sem o <code>gm</code>.</li>
+    </ol>
+  </section>
+
+  <div class="cmd-search">
+    <input type="search" id="cmd-search" class="items-search-input" placeholder="O que você quer fazer? Ex.: quero invocar um lacaio, quero remover talento" data-i18n-placeholder="cmd.search" aria-label="Buscar comando" data-i18n-aria="cmd.searchAria" autocomplete="off" />
+    <div class="cmd-examples" id="cmd-examples"></div>
+  </div>
+  <div class="guide-chips cmd-cats" id="cmd-cats" role="group"></div>
+  <div class="items-stats"><span id="db-count" data-i18n="site.loading">Carregando...</span></div>
+  <div id="db-container" class="cmd-list"></div>
+</section>

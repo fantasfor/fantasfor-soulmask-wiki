@@ -8,3 +8,49 @@
   --transition:200ms;
 }
 body{background:var(--bg);color:var(--text)}
+
+/* tema escuro também nos controles nativos (listas suspensas, barras de rolagem, calendário) */
+:root {
+  color-scheme: dark;
+}
+
+select,
+select option,
+select optgroup {
+  background-color: #191a1a;
+  color: var(--text);
+}
+
+select option:checked,
+select option:hover {
+  background-color: #2a3a42;
+  color: #fff;
+}
+
+/* barra de rolagem no estilo do site */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3a3d40 #111212;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111212;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid #111212;
+  background: #3a3d40;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #686e73;
+}
+
+::-webkit-scrollbar-corner {
+  background: #111212;
+}

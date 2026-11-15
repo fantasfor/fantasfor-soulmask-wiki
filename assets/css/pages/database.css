@@ -407,7 +407,7 @@ button.item-card {
   margin: -16px -16px 0;
   object-fit: contain;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, #b9bcc0 0 14%, #7e858c 14% 100%);
+  background: radial-gradient(ellipse at 50% 70%, rgba(144, 209, 238, 0.14), rgba(0, 0, 0, 0) 70%);
 }
 
 .creature-card .item-card-title {
@@ -1494,4 +1494,306 @@ a.comfort-item-name:hover {
 
 .support-card[hidden] {
   display: none;
+}
+
+/* roupa de transformação da máscara */
+.mask-outfits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.mask-outfits figure {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: radial-gradient(ellipse at 50% 70%, rgba(236, 215, 96, 0.14), rgba(0, 0, 0, 0) 70%);
+}
+
+.mask-outfits img {
+  height: 220px;
+  width: auto;
+  object-fit: contain;
+}
+
+.mask-outfits figcaption {
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Conforto: meu conforto (decorações colocadas) */
+.comfort-check {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 22px;
+  padding: 16px 18px;
+  border: 1px solid #686e73;
+  background: #191a1a;
+  box-shadow: 0 0 18px rgba(144, 209, 238, 0.08);
+}
+
+.comfort-check-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.comfort-check-head h2 {
+  margin: 0;
+  font-family: "Cinzel", serif;
+  font-size: 1.05rem;
+}
+
+.comfort-check-head p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.comfort-check-body {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px 22px;
+  align-items: center;
+}
+
+.comfort-check-total {
+  display: grid;
+  justify-items: center;
+  padding: 6px 16px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.comfort-check-total strong {
+  color: #ecd760;
+  font-family: "Cinzel", serif;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.comfort-check-total span,
+.comfort-check-body small {
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.comfort-check-level {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.comfort-check-level div {
+  display: grid;
+  gap: 4px;
+}
+
+.comfort-check-level span:not(.comfort-level-n):not(.comfort-check-bar) {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.comfort-check-bar {
+  display: block;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.comfort-check-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #8a7b2e, #ecd760);
+}
+
+.comfort-check-body .comfort-level-buff,
+.comfort-check-body small {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.comfort-qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.comfort-qty .map-btn-sm {
+  min-height: 26px;
+  width: 26px;
+  padding: 0;
+}
+
+.comfort-qty output {
+  min-width: 22px;
+  color: var(--muted);
+  font-weight: 700;
+  text-align: center;
+}
+
+.comfort-qty.is-on output {
+  color: #39d98a;
+}
+
+.comfort-qty output.is-over {
+  color: #ecd760;
+}
+
+@media (max-width: 700px) {
+  .comfort-check-body {
+    grid-template-columns: 1fr;
+  }
+
+  .comfort-check-total {
+    border-right: 0;
+  }
+}
+
+/* Calculadora de conforto: ferramenta separada da lista */
+.comfort-tool {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 28px;
+  padding: 18px;
+  border: 1px solid #686e73;
+  background: #191a1a;
+  box-shadow: 0 0 18px rgba(144, 209, 238, 0.08);
+}
+
+.comfort-tool-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.comfort-tool-head h2 {
+  margin: 2px 0 4px;
+  font-family: "Cinzel", serif;
+  font-size: 1.15rem;
+}
+
+.comfort-tool-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.comfort-tool-tag {
+  color: var(--accent);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.comfort-tool-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 16px;
+}
+
+.comfort-tool-pick,
+.comfort-tool-mine {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.comfort-tool-results {
+  display: grid;
+  gap: 4px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.comfort-tool-add {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.comfort-tool-add:hover,
+.comfort-tool-add:focus-visible {
+  border-color: var(--accent);
+  background: rgba(144, 209, 238, 0.08);
+  outline: none;
+}
+
+.comfort-tool-add.is-added {
+  border-left: 3px solid #39d98a;
+}
+
+.comfort-tool-add small,
+.comfort-tool-sub {
+  color: #ecd760;
+}
+
+.comfort-tool-add .comfort-icon,
+.comfort-tool-row .comfort-icon {
+  width: 34px;
+  height: 34px;
+}
+
+.comfort-tool-list {
+  display: grid;
+  gap: 4px;
+  max-height: 300px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.comfort-tool-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.comfort-tool-name {
+  display: grid;
+  overflow: hidden;
+  font-size: 0.82rem;
+}
+
+.comfort-tool-name small {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.comfort-tool-empty {
+  padding: 14px;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  .comfort-tool-grid {
+    grid-template-columns: 1fr;
+  }
 }

@@ -1,25 +1,8 @@
 // Mapa interativo: mapa oficial do jogo (UI/Map/Level01_Map, extraído por tools/build_data.py)
 // com zoom (Leaflet) e marcadores do próprio jogador (salvos no navegador e na conta, se logado).
 import { t, pick } from '../i18n.js';
-import { esc, loadData, loadIndex, L as Lbl } from '../data.js';
-
-// marcadores do jogo (assets/data/map-markers.json, lidos das fases .umap por tools/build_data.py)
-const GAME_CATS = {
-  teleport: { color: '#4fe3ff', r: 7, on: true },
-  obelisk: { color: '#ecd760', r: 5, on: true },
-  pyramid: { color: '#ff5d5d', r: 9, on: true },
-  dungeon: { color: '#ff8c3a', r: 8, on: true },
-  ruin: { color: '#b974ff', r: 5, on: true },
-  maskAltar: { color: '#ff7ad9', r: 7, on: true },
-  maskChest: { color: '#ff7ad9', r: 5, on: true },
-  tribe: { color: '#f3efe8', r: 7, on: true },
-  chest: { color: '#d9a441', r: 3, on: false },
-  iron: { color: '#c0c6cc', r: 4, on: false },
-  copper: { color: '#d9824b', r: 4, on: false },
-  tin: { color: '#9fb4c7', r: 4, on: false },
-  coal: { color: '#555555', r: 4, on: false },
-  npc: { color: '#e63946', r: 2.5, on: false }
-};
+import { esc } from '../data.js';
+import { initGameLayers } from './map-game.js';
 
 const LEAFLET_JS = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
 const LEAFLET_CSS = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
@@ -27,12 +10,12 @@ const STORAGE_KEY = 'soulmask-map-markers';
 const SIZE = 1024; // coordenadas do mapa (o desenho tem 4096 px)
 
 export const MARKER_CATS = {
-  resource: { color: '#39d98a', icon: '⛏' },
-  base: { color: '#90d1ee', icon: '🏠' },
-  boss: { color: '#e63946', icon: '☠' },
-  ruin: { color: '#b974ff', icon: '🏛' },
-  tribe: { color: '#ecd760', icon: '⚑' },
-  other: { color: '#f3efe8', icon: '●' }
+  resource: { color: '#39d98a', icon: '' },
+  base: { color: '#90d1ee', icon: '' },
+  boss: { color: '#e63946', icon: '' },
+  ruin: { color: '#b974ff', icon: '' },
+  tribe: { color: '#ecd760', icon: '' },
+  other: { color: '#f3efe8', icon: '' }
 };
 
 let leafletPromise = null;
@@ -66,7 +49,23 @@ function writeMarkers(list) {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) { /* ignora */ }
 }
 
-export async function initMapPage(root) {
+// os dois mapas do jogo: Floresta da Névoa (base) e Areias Movediças (DLC)
+export const MAPS = { main: 'assets/img/map/world.webp', dlc: 'assets/img/map/dlc.webp' };
+const MAP_KEY = 'map_current';
+
+export async function initMapPage(root, params) {
+  let mapId = params?.get('map');
+  if (!MAPS[mapId]) { try { mapId = localStorage.getItem(MAP_KEY); } catch (e) { mapId = null; } }
+  if (!MAPS[mapId]) mapId = 'main';
+  try { localStorage.setItem(MAP_KEY, mapId); } catch (e) { /* ignora */ }
+  root.querySelectorAll('[data-map-switch]').forEach((b) => {
+    b.setAttribute('aria-pressed', String(b.dataset.mapSwitch === mapId));
+    b.addEventListener('click', () => {
+      if (b.dataset.mapSwitch === mapId) return;
+      try { localStorage.setItem(MAP_KEY, b.dataset.mapSwitch); } catch (e) { /* ignora */ }
+      location.hash = `#mapa?map=${b.dataset.mapSwitch}`;
+    });
+  });
   const canvas = root.querySelector('#map-canvas');
   const addBtn = root.querySelector('#map-add');
   const hint = root.querySelector('#map-hint');
@@ -85,12 +84,19 @@ export async function initMapPage(root) {
   const bounds = [[0, 0], [SIZE, SIZE]];
   const map = L.map(canvas, {
     crs: L.CRS.Simple, minZoom: -1, maxZoom: 3, zoomSnap: 0.5, attributionControl: false, preferCanvas: true,
-    maxBounds: [[-SIZE * 0.25, -SIZE * 0.25], [SIZE * 1.25, SIZE * 1.25]]
+    maxBounds: [[-SIZE * 0.7, -SIZE * 0.7], [SIZE * 1.7, SIZE * 1.7]]
   });
-  L.imageOverlay('assets/img/map/world.webp', bounds).addTo(map);
+  L.imageOverlay(MAPS[mapId], bounds).addTo(map);
   map.fitBounds(bounds);
 
-  let markers = readMarkers();
+  // marcadores antigos (sem "map") são do mapa base
+  const onThisMap = (m) => (m.map || 'main') === mapId;
+  let allMarkers = readMarkers();
+  let markers = allMarkers.filter(onThisMap);
+  const saveAll = () => {
+    allMarkers = [...allMarkers.filter((m) => !onThisMap(m)), ...markers];
+    writeMarkers(allMarkers);
+  };
   const hidden = new Set();
   const layer = L.layerGroup().addTo(map);
   let adding = false;
@@ -138,7 +144,7 @@ export async function initMapPage(root) {
 
   function remove(id) {
     markers = markers.filter((m) => m.id !== id);
-    writeMarkers(markers);
+    saveAll();
     map.closePopup();
     render();
   }
@@ -162,9 +168,10 @@ export async function initMapPage(root) {
       name: dialog.elements.name.value.trim().slice(0, 60),
       cat: dialog.elements.cat.value,
       note: dialog.elements.note.value.trim().slice(0, 300),
+      map: mapId,
       ...pending
     });
-    writeMarkers(markers);
+    saveAll();
     pending = null;
     dialog.hidden = true;
     render();
@@ -192,87 +199,5 @@ export async function initMapPage(root) {
   render();
   // o Leaflet precisa recalcular o tamanho depois da animação de troca de página
   setTimeout(() => map.invalidateSize(), 350);
-  initGameLayers(L, map, root);
-}
-
-// ------------------------------------------------------------------ marcadores do jogo
-async function initGameLayers(L, map, root) {
-  const layersEl = root.querySelector('#map-layers');
-  const creatureSel = root.querySelector('#map-creature');
-  let data; let creatures;
-  try {
-    [data, creatures] = await Promise.all([loadData('map-markers'), loadIndex('creatures')]);
-  } catch (e) {
-    layersEl.innerHTML = `<p class="map-hint">${esc(t('common.errorLoading', { msg: e.message }))}</p>`;
-    return;
-  }
-  const m = data.maps.main;
-  const renderer = L.canvas({ padding: 0.3 });
-  const lab = (i) => (i >= 0 && m.labels[i] ? Lbl(m.labels[i]) : '');
-  const catOf = (p) => (p[0] === 'ore' ? p[3] : p[0]);
-  const groups = {};
-  const counts = {};
-  const state = {};
-  try { Object.assign(state, JSON.parse(localStorage.getItem('map_layers') || '{}')); } catch (e) { /* ignora */ }
-  Object.keys(GAME_CATS).forEach((k) => { groups[k] = L.layerGroup(); counts[k] = 0; if (state[k] === undefined) state[k] = GAME_CATS[k].on; });
-
-  const levels = (p) => (p[4] ? ` · ${t('common.level')} ${p[4]}${p[5] && p[5] !== p[4] ? `–${p[5]}` : ''}` : '');
-  function popup(p) {
-    const cat = catOf(p);
-    let title = t(`map.game.${cat}`);
-    if (p[0] === 'chest') title = `${lab(p[3]) || title}${p[4] ? ` · ${t('common.level')} ${p[4]}` : ''}`;
-    else if (p[0] === 'npc') title = `${lab(p[3]) || title}${levels(p)}`;
-    else if (p[0] !== 'ore' && lab(p[3])) title = `${lab(p[3])}`;
-    return `<strong>${esc(title)}</strong><br><small>${esc(t(`map.game.${cat}`))}</small>`;
-  }
-
-  m.points.forEach((p) => {
-    if (p[0] === 'creature') return;
-    const cat = catOf(p);
-    const conf = GAME_CATS[cat];
-    if (!conf) return;
-    counts[cat] += 1;
-    L.circleMarker([SIZE - p[2], p[1]], { renderer, radius: conf.r, color: '#000', weight: 1, fillColor: conf.color, fillOpacity: 0.9 })
-      .bindPopup(() => popup(p)).addTo(groups[cat]);
-  });
-
-  function renderLayers() {
-    layersEl.innerHTML = Object.keys(GAME_CATS).filter((k) => counts[k]).map((k) => `
-      <button type="button" class="map-filter" data-layer="${k}" aria-pressed="${state[k]}" style="--pin:${GAME_CATS[k].color}">
-        <span class="map-dot" style="background:${GAME_CATS[k].color}"></span> ${esc(t(`map.game.${k}`))} <small>${counts[k]}</small></button>`).join('');
-    Object.keys(groups).forEach((k) => {
-      if (state[k] && counts[k]) groups[k].addTo(map); else groups[k].remove();
-    });
-  }
-  layersEl.addEventListener('click', (e) => {
-    const b = e.target.closest('[data-layer]');
-    if (!b) return;
-    state[b.dataset.layer] = !state[b.dataset.layer];
-    try { localStorage.setItem('map_layers', JSON.stringify(state)); } catch (err) { /* ignora */ }
-    renderLayers();
-  });
-  renderLayers();
-
-  // criaturas: escolha uma para ver onde ela nasce
-  const spawns = {};
-  m.points.filter((p) => p[0] === 'creature').forEach((p) => { (spawns[p[3]] ||= []).push(p); });
-  const ids = Object.keys(spawns).filter((id) => creatures.has(id))
-    .sort((a, b) => pick(creatures.get(a), 'name').localeCompare(pick(creatures.get(b), 'name')));
-  creatureSel.innerHTML = `<option value="">${esc(t('map.pickCreature'))}</option>`
-    + ids.map((id) => `<option value="${esc(id)}">${esc(pick(creatures.get(id), 'name'))} (${spawns[id].length})</option>`).join('');
-  const creatureLayer = L.layerGroup().addTo(map);
-  creatureSel.addEventListener('change', () => {
-    creatureLayer.clearLayers();
-    const id = creatureSel.value;
-    if (!id) return;
-    const c = creatures.get(id);
-    const name = pick(c, 'name');
-    const pts = spawns[id];
-    pts.forEach((p) => {
-      L.circleMarker([SIZE - p[2], p[1]], { renderer, radius: 5, color: '#000', weight: 1, fillColor: '#39d98a', fillOpacity: 0.95 })
-        .bindPopup(`<strong>${esc(name)}</strong>${esc(levels(p))}<br><a href="#criaturas?q=${encodeURIComponent(name)}">${esc(t('map.seeCreature'))}</a>`)
-        .addTo(creatureLayer);
-    });
-    if (pts.length) map.fitBounds(L.latLngBounds(pts.map((p) => [SIZE - p[2], p[1]])).pad(0.2), { maxZoom: 1 });
-  });
+  initGameLayers(L, map, root, mapId, params?.get('q') || '');
 }

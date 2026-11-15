@@ -240,3 +240,830 @@
   max-width: none !important;
   max-height: none !important;
 }
+
+/* ícones do jogo nos marcadores */
+.map-game-icon span {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  border: 2px solid var(--pin);
+  border-radius: 50%;
+  background: rgba(11, 10, 9, 0.85);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+.map-game-icon img {
+  width: 78%;
+  height: 78%;
+  object-fit: contain;
+}
+
+.map-legend-icon {
+  width: 16px;
+  height: 16px;
+  padding: 1px;
+  border: 1px solid var(--pin);
+  border-radius: 50%;
+  background: #0b0a09;
+  vertical-align: middle;
+}
+
+.map-popup-cat {
+  color: var(--muted);
+}
+
+.map-popup small {
+  display: block;
+  margin-top: 6px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.68rem;
+}
+
+.map-loot {
+  display: grid;
+  gap: 2px;
+  max-height: 220px;
+  margin: 4px 0 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.map-loot li {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: center;
+  font-size: 0.78rem;
+}
+
+.map-loot img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.map-loot span {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.map-boss {
+  display: grid;
+  gap: 2px;
+  margin-top: 6px;
+}
+
+.map-boss-photo {
+  width: 120px;
+  height: 90px;
+  object-fit: contain;
+}
+
+/* ---------------------------------------------------------------- painel de filtros */
+.map-side {
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.map-layers {
+  display: grid;
+  gap: 6px;
+}
+
+.map-group {
+  border: 1px solid #686e73;
+  background: #191a1a;
+}
+
+.map-group summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.map-group summary::-webkit-details-marker {
+  display: none;
+}
+
+.map-group summary::after {
+  content: "+";
+  color: var(--muted);
+}
+
+.map-group[open] summary::after {
+  content: "-";
+}
+
+.map-group summary small {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.map-group-list {
+  display: grid;
+  gap: 2px;
+  max-height: 260px;
+  padding: 4px 8px 8px;
+  overflow-y: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.map-check {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.map-check input {
+  accent-color: #1aecec;
+}
+
+.map-check img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.map-check span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-check small {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.map-group-check {
+  grid-template-columns: auto minmax(0, 1fr);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.74rem;
+}
+
+.map-visits {
+  display: grid;
+  gap: 6px;
+}
+
+.map-visit-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  gap: 4px;
+}
+
+.map-visit-row select {
+  padding: 4px 6px;
+}
+
+.map-btn-sm {
+  min-height: 30px;
+  padding: 0 8px;
+  font-size: 0.74rem;
+}
+
+.map-icon-layer {
+  position: absolute;
+  pointer-events: none;
+}
+
+.map-hover-icon,
+.map-hover-icon .leaflet-interactive {
+  cursor: pointer !important;
+}
+
+/* ---------------------------------------------------------------- janela de informações (visual Fantasfor) */
+.map-info-popup .leaflet-popup-content-wrapper {
+  padding: 0;
+  border: 2px solid #686e73;
+  border-radius: 0;
+  background: linear-gradient(180deg, #161616, #0d0d0d);
+  color: var(--text);
+  box-shadow: 0 0 0 3px #0b0a09, 0 0 0 4px rgba(255, 255, 255, 0.06), 0 18px 40px rgba(0, 0, 0, 0.7);
+}
+
+.map-info-popup .leaflet-popup-tip {
+  border: 2px solid #686e73;
+  background: #0d0d0d;
+}
+
+.map-info-popup .leaflet-popup-content {
+  width: 310px !important;
+  margin: 0;
+}
+
+.map-info-popup a.leaflet-popup-close-button {
+  top: 8px;
+  right: 8px;
+  color: var(--muted);
+}
+
+.mp {
+  --tone: var(--accent);
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  font-size: 0.8rem;
+}
+
+.mp-tone-boss { --tone: #ff6b5b; }
+.mp-tone-chest { --tone: #ecd760; }
+.mp-tone-animal { --tone: #39d98a; }
+.mp-tone-enemy { --tone: #e8836d; }
+.mp-tone-ore { --tone: #c0c6cc; }
+
+/* cabeçalho: ícone num losango (como os botões da página inicial) */
+.mp-head {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  margin: -14px -14px 0;
+  padding: 14px 30px 12px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--tone) 22%, transparent), transparent 75%);
+}
+
+.mp-diamond {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: 6px;
+  border: 2px solid var(--tone);
+  background: #191a1a;
+  box-shadow: inset 0 0 0 2px #191a1a, inset 0 0 0 3px rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+}
+
+.mp-diamond img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  transform: rotate(-45deg);
+}
+
+.mp-head strong {
+  display: block;
+  font-family: Cinzel, serif;
+  font-size: 1.02rem;
+  line-height: 1.2;
+}
+
+.mp-head small {
+  display: block;
+  margin-top: 2px;
+  color: var(--tone);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* níveis do chefe: losangos I / II / III */
+.mp-tiers {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  padding: 4px 0;
+}
+
+.mp-tier {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid #686e73;
+  background: #191a1a;
+  color: var(--muted);
+  font: inherit;
+  font-family: Cinzel, serif;
+  font-weight: 700;
+  cursor: pointer;
+  transform: rotate(45deg);
+}
+
+.mp-tier span {
+  transform: rotate(-45deg);
+}
+
+.mp-tier[aria-selected="true"],
+.mp-tier:hover {
+  border-color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 18%, #191a1a);
+  color: var(--text);
+}
+
+.mp-hero {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.mp-hero img {
+  width: 96px;
+  height: 80px;
+  object-fit: contain;
+  background: radial-gradient(ellipse at 50% 65%, color-mix(in srgb, var(--tone) 22%, transparent), transparent 70%);
+}
+
+.mp-hero-solo {
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
+
+.mp-hero-solo img {
+  width: 170px;
+  height: 120px;
+}
+
+.mp-hero strong {
+  font-size: 0.92rem;
+}
+
+.mp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.mp-chips span {
+  padding: 1px 7px;
+  border: 1px solid color-mix(in srgb, var(--tone) 55%, transparent);
+  color: var(--text);
+  font-size: 0.7rem;
+}
+
+.mp-block h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  color: var(--tone);
+  font-family: Cinzel, serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mp-block h4::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--tone) 60%, transparent), transparent);
+}
+
+.mp-scroll {
+  max-height: 190px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+/* itens para invocar: espaços de inventário */
+.mp-slots {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.mp-slot {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.mp-slot-box {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #686e73;
+  background: #191a1a;
+}
+
+.mp-slot:hover .mp-slot-box {
+  border-color: var(--accent);
+  background: rgba(144, 209, 238, 0.1);
+}
+
+.mp-slot-box img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.mp-slot-box b {
+  position: absolute;
+  right: 2px;
+  bottom: 0;
+  color: #fff;
+  font-size: 0.7rem;
+  text-shadow: 0 1px 2px #000, 0 0 3px #000;
+}
+
+.mp-slot-name {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.64rem;
+  line-height: 1.15;
+  text-align: center;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+/* recompensas: barra de chance */
+.mp-drops {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mp-drops li {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.mp-drop-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #3a3d40;
+  background: #191a1a;
+}
+
+.mp-drop-icon img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.mp-drop-main {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.mp-drop-main a {
+  overflow: hidden;
+  color: var(--text);
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mp-drop-main a:hover {
+  color: var(--accent);
+}
+
+.mp-bar {
+  display: block;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mp-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--tone) 60%, #000), var(--tone));
+}
+
+.mp-drop-side {
+  display: grid;
+  justify-items: end;
+  line-height: 1.15;
+}
+
+.mp-drop-side strong {
+  font-size: 0.78rem;
+}
+
+.mp-drop-side small,
+.mp-drop-side em {
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-style: normal;
+}
+
+.mp-link {
+  justify-self: center;
+  color: var(--accent);
+}
+
+/* rodapé: coordenadas, copiar gm go e o interruptor de visitado */
+.mp-foot {
+  display: grid;
+  gap: 8px;
+  margin: 0 -14px -14px;
+  padding: 10px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.map-coords-hover {
+  padding: 4px 10px;
+  border: 1px solid #686e73;
+  background: rgba(13, 13, 13, 0.85);
+  color: #90d1ee;
+  font-family: Consolas, monospace;
+  font-size: 0.8rem;
+  white-space: pre;
+  pointer-events: none;
+}
+
+.map-coords-hover[hidden] {
+  display: none;
+}
+
+.mp-coords {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mp-coords span {
+  padding: 2px 8px;
+  border: 1px solid #3a3d40;
+  color: var(--muted);
+  font-family: Consolas, monospace;
+  font-size: 0.72rem;
+}
+
+.mp-coords .map-btn-sm {
+  margin-left: auto;
+}
+
+.mp-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+
+.mp-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mp-switch i {
+  position: relative;
+  width: 30px;
+  height: 16px;
+  border: 1px solid #686e73;
+  background: #191a1a;
+  transition: background 160ms ease;
+}
+
+.mp-switch i::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  background: var(--muted);
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.mp-switch input:checked + i {
+  border-color: #39d98a;
+  background: rgba(57, 217, 138, 0.18);
+}
+
+.mp-switch input:checked + i::after {
+  background: #39d98a;
+  transform: translateX(14px);
+}
+
+.mp-switch input:focus-visible + i {
+  outline: 2px solid var(--accent);
+}
+/* janela do mapa com mais respiro */
+.map-info-popup .leaflet-popup-content {
+  width: 340px !important;
+}
+
+.mp {
+  gap: 14px;
+  padding: 16px 18px;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.mp-head {
+  margin: -16px -18px 0;
+  padding: 16px 34px 14px 20px;
+}
+
+.mp-tiers {
+  padding: 6px 0 2px;
+}
+
+.mp-hero {
+  gap: 14px;
+}
+
+.mp-block h4 {
+  margin-bottom: 10px;
+}
+
+.mp-slots {
+  gap: 12px 8px;
+}
+
+.mp-drops {
+  gap: 9px;
+}
+
+.mp-drops li {
+  gap: 10px;
+}
+
+.mp-bar {
+  height: 5px;
+}
+
+.mp-scroll {
+  max-height: 210px;
+  padding-right: 6px;
+}
+
+.mp-foot {
+  gap: 10px;
+  margin: 2px -18px -16px;
+  padding: 12px 18px 14px;
+}
+
+/* troca de mapa (base / DLC) e modo de jogo */
+.map-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.map-switch .map-btn[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: rgba(144, 209, 238, 0.14);
+  color: #fff;
+}
+
+.map-mode-box {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid #686e73;
+  background: #191a1a;
+}
+
+.map-mode-box label {
+  display: grid;
+  gap: 3px;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.map-mode-box .map-hint {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.72rem;
+}
+
+.mp-drops li.mp-drops-head {
+  color: var(--muted);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mp-drops li.mp-drops-head span:last-child {
+  text-align: right;
+}
+
+.mp-mode-note {
+  margin: 6px 0 0;
+  color: #ecd760;
+  font-size: 0.72rem;
+}
+
+/* tabela de drop agrupada (grupo · chance no grupo · quantidade · item) */
+.mp-gt {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.mp-gt th {
+  padding: 3px 6px;
+  color: var(--muted);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.mp-gt td {
+  padding: 3px 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+
+.mp-gt tr.mp-gt-first td {
+  border-top: 1px solid #3a3d40;
+}
+
+.mp-gt-g {
+  border-right: 1px solid #3a3d40;
+  background: rgba(144, 209, 238, 0.06);
+  color: #ecd760;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.mp-gt-p {
+  color: #39d98a;
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.mp-gt-q {
+  color: #d9d2c5;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.mp-gt-i a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.mp-gt-i a:hover span {
+  color: var(--accent);
+}
+
+.mp-gt-i img {
+  flex: none;
+  width: 22px;
+  height: 22px;
+}
+
+.mp-gt-hint {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.4;
+}
+
+.mp-gt tr.mp-gt-cond td {
+  padding: 4px 6px 2px;
+  border-top: 1px solid #3a3d40;
+  color: #ecb43c;
+  font-size: 0.68rem;
+  font-style: italic;
+}
+
+.mp-chips-pad {
+  margin: 0 0 8px;
+}
+
+.mp-note {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}

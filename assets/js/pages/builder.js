@@ -18,6 +18,7 @@ const STORAGE_KEY = 'soulmask_builder_builds_v3';
 const OLD_STORAGE_KEY = 'soulmask_builder_builds_v2';
 const DRAFT_KEY = 'soulmask_builder_draft_v3';
 const MAX_TALENT_SLOTS = 8;
+const MAX_WEAPONS = 6;
 const POSITIVE_START = 2;
 const FOOD_SLOTS = ['staple', 'drink', 'meat', 'veg', 'recreational', 'other', 'other'];
 const FOOD_LABELS = { staple: 'builder.food.staple', drink: 'builder.food.drink', meat: 'builder.food.meat', veg: 'builder.food.veg', recreational: 'builder.food.recreational', other: 'builder.food.other' };
@@ -431,9 +432,32 @@ export async function initBuilderPage(root, params) {
   }
 
   // ---------------------------------------------------------------- armas e máscara
+  // roupa de transformação da máscara escolhida (masks.json: outfit.m / outfit.f) no lugar do personagem
+  const DEFAULT_PORTRAIT = 'assets/img/builder/personagem.webp';
+  function renderOutfit() {
+    const img = root.querySelector('#builderProfileImage');
+    const box = root.querySelector('#outfitToggle');
+    const m = masksIdx.get(state.mask);
+    const sex = state.outfitSex === 'f' ? 'f' : 'm';
+    const url = m?.outfit?.[sex] || m?.outfit?.m;
+    img.src = url || DEFAULT_PORTRAIT;
+    img.classList.toggle('is-outfit', Boolean(url));
+    box.hidden = !url;
+    if (url) {
+      root.querySelector('#outfitCaption').textContent = t('builder.outfitOf', { name: pick(m, 'name') });
+      box.querySelectorAll('[data-sex]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.sex === sex)));
+    }
+  }
+
   function renderGear() {
-    el.gearRow.innerHTML = state.weapons.map((id, i) => slotCell(`data-gear="weapon" data-index="${i}"`, weaponsIdx.get(id), t('builder.weaponSlot', { n: i + 1 }))).join('')
-      + slotCell('data-gear="mask" data-index="0"', masksIdx.get(state.mask), t('builder.mask'));
+    renderOutfit();
+    // Arma 1 e 2 fixas; as extras (botão +) podem ser removidas
+    el.gearRow.innerHTML = state.weapons.map((id, i) => {
+      const cell = slotCell(`data-gear="weapon" data-index="${i}"`, weaponsIdx.get(id), t('builder.weaponSlot', { n: i + 1 }));
+      return i < 2 ? cell : cell.replace('<div class="slot-cell">', `<div class="slot-cell slot-extra"><button type="button" class="slot-remove" data-remove-weapon="${i}" aria-label="${esc(t('builder.removeWeaponSlot'))}" title="${esc(t('builder.removeWeaponSlot'))}">&times;</button>`);
+    }).join('')
+      + slotCell('data-gear="mask" data-index="0"', masksIdx.get(state.mask), t('builder.mask'))
+      + (state.weapons.length < MAX_WEAPONS ? `<div class="slot-cell"><button type="button" class="armor-slot slot-add" data-add-weapon aria-label="${esc(t('builder.addWeapon'))}" title="${esc(t('builder.addWeapon'))}">+</button><span class="slot-cell-label">${esc(t('builder.addWeapon'))}</span></div>` : '');
   }
 
   function renderClassWeapons() {
@@ -584,7 +608,8 @@ export async function initBuilderPage(root, params) {
     state.optionalGroups = Array.from({ length: extra }, (_, i) => (['tribe', 'title', 'positive'].includes(state.optionalGroups[i]) ? state.optionalGroups[i] : null));
     state.talents = Array.from({ length: MAX_TALENT_SLOTS + extra }, (_, i) => (talentIdx.has(state.talents[i]) ? state.talents[i] : null));
     state.foods = Array.from({ length: FOOD_SLOTS.length }, (_, i) => (foodsIdx.has(state.foods[i]) ? state.foods[i] : null));
-    state.weapons = [0, 1].map((i) => (weaponsIdx.has(state.weapons?.[i]) ? state.weapons[i] : null));
+    const savedWeapons = Array.isArray(state.weapons) ? state.weapons.slice(0, MAX_WEAPONS) : [];
+    state.weapons = Array.from({ length: Math.max(2, savedWeapons.length) }, (_, i) => (weaponsIdx.has(savedWeapons[i]) ? savedWeapons[i] : null));
     state.mask = masksIdx.has(state.mask) ? state.mask : null;
     const armor = {};
     SLOTS.forEach((s) => { if (pieces.has(state.armor?.[s])) armor[s] = state.armor[s]; });
@@ -612,8 +637,8 @@ export async function initBuilderPage(root, params) {
           <p class="saved-build-date">${esc(fmt(b.updatedAt))}</p>
         </button>
         <div class="saved-build-actions">
-          <button type="button" class="saved-build-btn" data-action="load" data-id="${esc(b.id)}" aria-label="${esc(t('builder.edit'))}">✎</button>
-          <button type="button" class="saved-build-btn delete" data-action="delete" data-id="${esc(b.id)}" aria-label="${esc(t('builder.delete'))}">🗑</button>
+          <button type="button" class="saved-build-btn" data-action="load" data-id="${esc(b.id)}" aria-label="${esc(t('builder.edit'))}" title="${esc(t('builder.edit'))}">${esc(t('builder.edit'))}</button>
+          <button type="button" class="saved-build-btn delete" data-action="delete" data-id="${esc(b.id)}" aria-label="${esc(t('builder.delete'))}" title="${esc(t('builder.delete'))}">${esc(t('builder.delete'))}</button>
         </div>
       </article>`).join('');
   }
@@ -731,7 +756,26 @@ export async function initBuilderPage(root, params) {
     const opts = [...foodsIdx.values()].filter((f) => (sub === 'other' ? !['staple', 'drink', 'meat', 'veg', 'recreational'].includes(f.sub) : f.sub === sub) && f.effects?.length);
     openPicker(el.foodPicker, opts, state.foods[i], (id) => { state.foods[i] = id; renderAll(); }, t('builder.removeFood'));
   });
+  root.querySelector('#outfitToggle').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-sex]');
+    if (!b) return;
+    state.outfitSex = b.dataset.sex;
+    renderOutfit();
+    saveDraft();
+  });
   el.gearRow.addEventListener('click', (e) => {
+    if (e.target.closest('[data-add-weapon]')) {
+      if (state.weapons.length < MAX_WEAPONS) state.weapons.push(null);
+      renderAll();
+      return;
+    }
+    const rm = e.target.closest('[data-remove-weapon]');
+    if (rm) {
+      state.weapons.splice(Number(rm.dataset.removeWeapon), 1);
+      closePickers(null);
+      renderAll();
+      return;
+    }
     const b = e.target.closest('[data-gear]');
     if (!b) return;
     if (b.dataset.gear === 'mask') {

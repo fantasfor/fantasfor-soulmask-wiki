@@ -361,3 +361,72 @@
     height: 64px;
   }
 }
+
+/* grupos recolhíveis (peças sem conjunto) */
+.arm-fold summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.arm-fold summary::-webkit-details-marker {
+  display: none;
+}
+
+.arm-fold summary::after {
+  content: " +";
+  color: var(--muted);
+}
+
+.arm-fold[open] summary::after {
+  content: " -";
+}
+
+.arm-fold summary small {
+  color: var(--muted);
+}
+
+.arm-kind-dungeonLoose { color: #b974ff; }
+.arm-kind-tribe { color: #90d1ee; }
+
+/* tribos: uma seção por tribo, com tipos de traje */
+.arm-subfold {
+  margin: 4px 0 6px;
+  border-left: 2px solid rgba(144, 209, 238, 0.25);
+  padding-left: 8px;
+}
+
+.arm-subfold summary {
+  padding: 4px 0;
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+
+.arm-subfold summary::-webkit-details-marker {
+  display: none;
+}
+
+.arm-subfold summary::after {
+  content: " +";
+  color: var(--muted);
+}
+
+.arm-subfold[open] summary::after {
+  content: " -";
+}
+
+.arm-subfold summary small {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.arm-cat {
+  margin: 8px 0 4px;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

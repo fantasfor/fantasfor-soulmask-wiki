@@ -1,8 +1,18 @@
 // Conforto: níveis (GE_ShuShiDu*) e valor de conforto de cada móvel (assets/data/comfort.json, gerado de BP_JianZhuGuanLiQi)
+// + Calculadora de conforto (ferramenta à parte): o jogador adiciona as decorações que já colocou e vê o nível.
 import { t, tCount, pick } from '../i18n.js';
 import { loadData, esc, normalize, fmtNum, iconImg, statList, fmtDuration, openItemModal } from '../data.js';
 
+const CHECK_KEY = 'soulmask-comfort-check';
+const readCheck = () => { try { return JSON.parse(localStorage.getItem(CHECK_KEY) || '{}') || {}; } catch (e) { return {}; } };
+const writeCheck = (v) => { try { localStorage.setItem(CHECK_KEY, JSON.stringify(v)); } catch (e) { /* ignora */ } };
+
 export async function initComfortPage(root, params) {
+  const checkEl = root.querySelector('#comfort-check');
+  const toolSearch = root.querySelector('#comfort-tool-search');
+  const toolResults = root.querySelector('#comfort-tool-results');
+  const toolList = root.querySelector('#comfort-tool-list');
+  const clearBtn = root.querySelector('#comfort-clear');
   const howto = root.querySelector('#comfort-howto');
   const levelsEl = root.querySelector('#comfort-levels');
   const search = root.querySelector('#db-search');
@@ -35,6 +45,96 @@ export async function initComfortPage(root, params) {
       ${statList(meta, l.stats)}
     </article>`).join('');
 
+  // ---------------------------------------------------------------- calculadora (ferramenta à parte)
+  let placed = readCheck();
+  const byId = new Map(data.furniture.map((f) => [f.id, f]));
+  Object.keys(placed).forEach((id) => { if (!byId.has(id)) delete placed[id]; });
+  const counted = (f) => Math.min(placed[f.id] || 0, f.max || 1);
+
+  function renderSummary() {
+    const total = data.furniture.reduce((s, f) => s + counted(f) * f.value, 0);
+    const level = [...data.levels].reverse().find((l) => total >= l.min) || null;
+    const next = data.levels.find((l) => l.min > total) || null;
+    const base = level ? level.min : 0;
+    const pct = next ? Math.max(0, Math.min(100, ((total - base) / (next.min - base)) * 100)) : 100;
+    checkEl.innerHTML = `
+      <div class="comfort-check-body">
+        <div class="comfort-check-total"><strong>${esc(fmtNum(total, 0))}</strong><span>${esc(t('comfort.checkPoints'))}</span></div>
+        <div class="comfort-check-level">
+          <span class="comfort-level-n">${esc(level ? level.n : 0)}</span>
+          <div>
+            <strong>${esc(level ? pick(level, 'name') : t('comfort.checkNone'))}</strong>
+            <span>${esc(next ? t('comfort.checkNext', { n: fmtNum(next.min - total, 0), name: pick(next, 'name') }) : t('comfort.checkMax'))}</span>
+            <span class="comfort-check-bar"><i style="width:${pct}%"></i></span>
+          </div>
+        </div>
+        ${level && pick(level, 'buff') ? `<p class="comfort-level-buff">${esc(pick(level, 'buff'))}</p>` : ''}
+      </div>`;
+    clearBtn.disabled = !Object.keys(placed).length;
+  }
+
+  function renderMine() {
+    const ids = Object.keys(placed).filter((id) => byId.has(id))
+      .sort((a, b) => pick(byId.get(a), 'name').localeCompare(pick(byId.get(b), 'name')));
+    toolList.innerHTML = ids.length ? ids.map((id) => {
+      const f = byId.get(id);
+      const n = placed[id];
+      const over = n > (f.max || 1);
+      return `<li class="comfort-tool-row">
+        ${iconImg(f, 'comfort-icon')}
+        <span class="comfort-tool-name">${esc(pick(f, 'name'))}<small>+${esc(fmtNum(f.value, 0))} ${esc(t('comfort.each'))}${f.max > 1 ? ` · ${esc(t('comfort.maxCount', { n: f.max }))}` : ''}</small></span>
+        <span class="comfort-qty is-on">
+          <button type="button" class="map-btn map-btn-sm" data-step="-1" data-id="${esc(id)}" aria-label="${esc(t('comfort.less'))}">-</button>
+          <output class="${over ? 'is-over' : ''}" title="${esc(over ? t('comfort.overMax', { n: f.max }) : '')}">${n}</output>
+          <button type="button" class="map-btn map-btn-sm" data-step="1" data-id="${esc(id)}" aria-label="${esc(t('comfort.more'))}">+</button>
+        </span>
+        <strong class="comfort-tool-sub">+${esc(fmtNum(counted(f) * f.value, 0))}</strong>
+      </li>`;
+    }).join('') : `<li class="comfort-tool-empty">${esc(t('comfort.toolEmpty'))}</li>`;
+  }
+
+  function renderPick() {
+    const q = normalize(toolSearch.value);
+    const list = data.furniture.filter((f) => !q || normalize(`${f.name_pt} ${f.name_en}`).includes(q))
+      .sort((a, b) => b.value - a.value || pick(a, 'name').localeCompare(pick(b, 'name')))
+      .slice(0, q ? 60 : 24);
+    toolResults.innerHTML = list.map((f) => `
+      <button type="button" class="comfort-tool-add${placed[f.id] ? ' is-added' : ''}" data-add="${esc(f.id)}" title="${esc(t('comfort.toolAdd'))}">
+        ${iconImg(f, 'comfort-icon')}
+        <span>${esc(pick(f, 'name'))}</span>
+        <small>+${esc(fmtNum(f.value, 0))}</small>
+      </button>`).join('') || `<p class="comfort-tool-empty">${esc(t('comfort.none'))}</p>`;
+  }
+
+  function setQty(id, n) {
+    if (!byId.has(id)) return;
+    const v = Math.max(0, Math.min(99, n));
+    if (v) placed[id] = v; else delete placed[id];
+    writeCheck(placed);
+    renderSummary();
+    renderMine();
+    renderPick();
+  }
+
+  toolSearch.addEventListener('input', renderPick);
+  toolResults.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-add]');
+    if (b) setQty(b.dataset.add, (placed[b.dataset.add] || 0) + 1);
+  });
+  toolList.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-step]');
+    if (b) setQty(b.dataset.id, (placed[b.dataset.id] || 0) + Number(b.dataset.step));
+  });
+  clearBtn.addEventListener('click', () => {
+    if (!window.confirm(t('comfort.checkClearConfirm'))) return;
+    placed = {};
+    writeCheck(placed);
+    renderSummary();
+    renderMine();
+    renderPick();
+  });
+
+  // ---------------------------------------------------------------- lista padrão de móveis
   function row(f) {
     const icon = iconImg(f, 'comfort-icon');
     return `
@@ -67,4 +167,7 @@ export async function initComfortPage(root, params) {
     openItemModal(link.dataset.itemId);
   });
   render();
+  renderSummary();
+  renderMine();
+  renderPick();
 }

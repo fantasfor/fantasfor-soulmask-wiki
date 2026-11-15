@@ -1,0 +1,24 @@
+<section class="items-page db-page guide-page mastery-page">
+  <div class="items-header">
+    <h1 data-i18n="mastery.title">Maestria de Armas</h1>
+    <p class="items-subtitle" data-i18n="mastery.subtitle">Todas as habilidades especiais de cada arma, como conseguir e a chance de cada uma.</p>
+  </div>
+
+  <section class="guide-explain">
+    <h2 data-i18n="mastery.howTitle">Como conseguir uma habilidade de maestria</h2>
+    <ol class="guide-steps">
+      <li data-i18n-html="mastery.how1">Suba a <a href="#proficiencia">proficiência</a> da arma. Ao chegar nos níveis <strong>30, 60, 90 e 120</strong> o jogo faz um sorteio.</li>
+      <li data-i18n-html="mastery.how2">Em cada um desses níveis há a chance mostrada abaixo (normalmente <strong>50%</strong>) de ganhar uma habilidade. Se ganhar, ela é sorteada da lista daquele nível, pelo peso de cada uma.</li>
+      <li data-i18n-html="mastery.how3">Algumas habilidades ficam mais comuns nos níveis mais altos. As marcadas como <strong>fixas</strong> são garantidas ao chegar no nível indicado.</li>
+      <li data-i18n-html="mastery.how4">A habilidade usa a tecla de habilidade da arma. Com o comando <code>gm AddZJ número</code> você ganha uma habilidade direto (veja <a href="#comandos">Comandos</a>).</li>
+    </ol>
+  </section>
+
+  <div class="guide-chips mastery-tabs" id="mastery-tabs" role="tablist"></div>
+  <div id="mastery-chances" class="mastery-chances"></div>
+  <div class="items-filters">
+    <input type="search" id="db-search" class="items-search-input" placeholder="Buscar habilidade..." data-i18n-placeholder="mastery.search" aria-label="Buscar habilidade" data-i18n-aria="mastery.search" />
+    <div class="items-stats"><span id="db-count" data-i18n="site.loading">Carregando...</span></div>
+  </div>
+  <div id="db-container" class="mastery-grid"></div>
+</section>

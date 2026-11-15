@@ -59,6 +59,8 @@ export async function initMasksPage(root, params) {
           </div>
           <button type="button" class="mask-detail-close" data-close aria-label="${esc(t('common.close'))}">&times;</button>
         </header>
+        ${m.outfit ? `<h3 class="mask-upgrades-title">${esc(t('masks.outfit'))}</h3>
+          <div class="mask-outfits">${['m', 'f'].filter((s) => m.outfit[s]).map((s) => `<figure><img src="${esc(m.outfit[s])}" alt="" loading="lazy" /><figcaption>${esc(t(s === 'm' ? 'builder.male' : 'builder.female'))}</figcaption></figure>`).join('')}</div>` : ''}
         ${m.upgrades?.length ? `<h3 class="mask-upgrades-title">${esc(t('masks.upgrades'))}</h3><ul class="mask-upgrades">${m.upgrades.map(upgradeHtml).join('')}</ul>` : ''}
       </article>`;
   }

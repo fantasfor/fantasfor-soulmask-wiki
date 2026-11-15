@@ -1,7 +1,7 @@
-<section class="items-page">
+<section class="items-page db-page">
   <div class="items-header">
-    <h1 data-i18n="items.title">Itens</h1>
-    <p class="items-subtitle" data-i18n="items.subtitle">Explore e filtre todos os itens disponíveis no Soulmask</p>
+    <h1 data-i18n="items.title">Itens e Receitas</h1>
+    <p class="items-subtitle" data-i18n="items.subtitle">Todos os itens do Soulmask, com a receita de cada um, a bancada onde é feito e onde conseguir.</p>
   </div>
 
   <div class="items-filters">
@@ -9,15 +9,21 @@
       type="text"
       id="items-search"
       class="items-search-input"
-      placeholder="Buscar itens..."
+      placeholder="Buscar itens ou materiais..."
       data-i18n-placeholder="items.search"
       aria-label="Buscar itens"
       data-i18n-aria="items.search"
     />
 
-    <select id="items-category-filter" class="items-filter-select" aria-label="Filtrar por categoria">
+    <select id="items-category-filter" class="items-filter-select" aria-label="Filtrar por categoria" data-i18n-aria="common.allCategories">
       <option value="" data-i18n="common.allCategories">Todas as categorias</option>
     </select>
+
+    <select id="items-bench-filter" class="items-filter-select" aria-label="Bancada" data-i18n-aria="recipes.allBenches">
+      <option value="" data-i18n="recipes.allBenches">Todas as bancadas</option>
+    </select>
+
+    <label class="items-check"><input type="checkbox" id="items-craftable" /> <span data-i18n="items.onlyCraftable">Só fabricáveis</span></label>
 
     <div class="items-stats">
       <span id="items-count" data-i18n="site.loading">Carregando...</span>

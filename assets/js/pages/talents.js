@@ -1,6 +1,6 @@
 import { t, tCount, pick } from '../i18n.js';
 import { loadData, esc, escLines, normalize, renderChunked, L } from '../data.js';
-import { loadFirebase, getUser, onUser, requireUser } from '../cloud.js';
+import { loadFirebase, getUser, onUser } from '../cloud.js';
 import { summarize, starsDisplay, starsInput } from '../ratings.js';
 
 // avaliações dos talentos: coleção talentRatings/{id} = { ratings: { uid: 1..5 } }
@@ -66,7 +66,7 @@ export async function initTalentsPage(root, params) {
     const mine = u ? ratings.get(x.id)?.[u.uid] || 0 : 0;
     return `<div class="talent-card-rating" data-rate="${esc(x.id)}">
       ${starsDisplay(r.avg, r.count)}
-      <span class="talent-rate-input" title="${esc(t(u ? 'rating.yourRating' : 'rating.loginToRate'))}">${starsInput(mine)}</span>
+      ${u ? `<span class="talent-rate-input" title="${esc(t('rating.yourRating'))}">${starsInput(mine)}</span>` : `<span class="talent-rate-login">${esc(t('rating.loginToRate'))}</span>`}
     </div>`;
   }
 
@@ -133,7 +133,7 @@ export async function initTalentsPage(root, params) {
   sortSel.addEventListener('change', render);
 
   async function rate(id, stars, box) {
-    const u = await requireUser();
+    const u = getUser(); // só quem está logado vota
     if (!u) return;
     try {
       const fb = await loadFirebase();
