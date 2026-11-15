@@ -47,8 +47,113 @@ def _strip_num(s):
     return re.sub(r"\s*[+\-]?\d+(?:[.,]\d+)?\s*%?\s*$", "", s or "").strip()
 
 
+# efeito do talento (ENaturalGiftEffect) -> proficiência que ele reforça (além do ProfExpInc, que traz a lista pronta)
+TALENT_EFFECT_PROF = {
+    "DaoDamageInc": "Dao", "ShuangDaoDamageInc": "ShuangDao", "MaoDamageInc": "Mao", "ChuiDamageInc": "Chui",
+    "QuanTaoDamageInc": "QuanTao", "GongDamageInc": "Gong", "JianDamageInc": "DaJian", "BianDamageInc": "Bian",
+    "WuQiPinZhiInc": "WuQi", "WuQiSuDu": "WuQi", "MakeWeaponExtraProp": "WuQi",
+    "JiaZhouPinZhiInc": "JiaZhou", "JiaZhouSuDu": "JiaZhou", "MakeEquipExtraProp": "JiaZhou",
+    "QiJuPinZhiInc": "QiJu", "QiJuSuDu": "QiJu", "LianJinSuDu": "LianJin", "PengRenSuDu": "PengRen",
+    "PaoMuSuDu": "PaoMu", "RongLianSuDu": "RongLian", "RouPiSuDu": "RouPi", "FangZhiSuDu": "FangZhi",
+    "ZhiTaoSuDu": "ZhiTao", "ZuoWuSpeed": "ZhongZhi", "ZuoWuCaiJiInc": "ZhongZhi",
+}
+
+
+def _prof_talents(loc, icons):
+    """Talentos (DT_GiftZongBiao) que aumentam a EXP de proficiência ou um bônus da proficiência.
+    Volta {proficiência: [{id, kind, vals, name, icon}]}; id = menor ID do talento (como em talents.json)."""
+    rows = Package.open("/Game/Blueprints/DataTable/NaturalGift/DT_GiftZongBiao").datatable_rows() or {}
+    groups = {}
+    for k, r in rows.items():
+        if not k.isdigit():
+            continue
+        eff = _tail(r.get("NGEffect"))
+        if eff == "ProfExpInc":
+            profs = [_tail(p) for p in r.get("NGProfTypeList") or []]
+            kind = "exp"
+        elif eff in TALENT_EFFECT_PROF:
+            profs = [TALENT_EFFECT_PROF[eff]]
+            kind = "quality" if "PinZhi" in eff or "ExtraProp" in eff else "bonus"
+        else:
+            continue
+        if not profs:
+            continue
+        rid = int(k)
+        title = r.get("Title") or {}
+        key = (rid // 10, title.get("text", "") if isinstance(title, dict) else "")
+        g = groups.setdefault(key, {"rows": [], "profs": profs, "kind": kind})
+        g["rows"].append((rid, r))
+    out = {}
+    for g in groups.values():
+        g["rows"].sort(key=lambda x: x[0])
+        rid, first = g["rows"][0]
+        name = loc.get(first.get("Title"))
+        if not name:
+            continue
+        vals = [round(r.get("NGEffectVal") or 0, 4) for _, r in g["rows"]]
+        kind = g["kind"]
+        was_exp = kind == "exp"
+        if vals and all(v < 0 for v in vals):
+            kind = "neg"            # talento que atrapalha (ex.: "Redução de Dano do Martelo")
+        e = {"id": str(rid), "kind": kind, "name_pt": name["pt"], "name_en": name["en"]}
+        if any(vals) and was_exp:
+            e["vals"] = vals        # % de EXP de proficiência (os outros efeitos usam escalas diferentes)
+        ic = icons.get(first.get("Pic"))
+        if ic:
+            e["icon"] = ic
+        for p in g["profs"]:
+            p = TABLE_ALIAS.get(p, p)
+            out.setdefault(p, []).append(e)
+    for p in out:
+        out[p].sort(key=lambda e: ({"quality": 0, "bonus": 1, "exp": 2, "neg": 3}[e["kind"]], e["name_pt"]))
+    return out
+
+
+def build_npc_quality(attrs):
+    """Qualidade do NPC (10 a 15): base humana (DT_Attr_ManRen_1) x coeficiente da cor (PinZhi/PinZhi_1..6)."""
+    base_rows = Package.open("/Game/Blueprints/DataTable/AttrMetaData/DT_Attr_ManRen_1").datatable_rows() or {}
+    base = {k.split(".")[-1]: v.get("BaseValue") for k, v in base_rows.items()}
+    tiers, scaled = [], []
+    for n in range(1, 7):
+        p = Package.open("/Game/Blueprints/DataTable/AttrMetaData/PinZhi/PinZhi_%d" % n)
+        rows = (p.datatable_rows() if p else None) or {}
+        coef = {}
+        for r in rows.values():
+            a = _tail(r.get("AttrType"))
+            lo, hi = (r.get("CoefInterval") or [1, 1])[:2]
+            coef[a] = [round(lo, 4), round(hi, 4)]
+            if a not in scaled:
+                scaled.append(a)
+        tiers.append({"n": n, "coef": coef})
+    keys = scaled + ["SpeedRate", "MaxHuXi"]
+    return {"base": {k: base.get(k) for k in keys if base.get(k) is not None}, "scaled": scaled, "tiers": tiers}
+
+
+def build_fertilizers(items, cdo_cache, loc, crops):
+    """Fertilizantes: itens com FeiLiaoConfigList (tipo de adubo -> pontos), EXP de Plantio e aceleração."""
+    out = []
+    for iid, (pkg, cdo, _native) in cdo_cache.items():
+        cfg = cdo.get("FeiLiaoConfigList")
+        if not cfg or iid not in items:
+            continue
+        it = items[iid]
+        f = {"id": iid, "name_pt": it["name_pt"], "name_en": it["name_en"],
+             "desc_pt": it.get("desc_pt", ""), "desc_en": it.get("desc_en", ""), "icon": it.get("icon"),
+             "types": {str(int(re.sub(r"\D", "", _tail(c.get("FeiLiaoType")) or "0") or 0)): c.get("FeiLiaoVal") for c in cfg}}
+        if cdo.get("FeiLiaoProfExp"):
+            f["exp"] = cdo["FeiLiaoProfExp"]
+        if cdo.get("ZuoWuJiaSu"):
+            f["boost"] = {"pct": round(cdo["ZuoWuJiaSu"], 4), "time": cdo.get("ZuoWuJiaSuTime") or 0}
+        if it.get("recipes"):
+            f["craft"] = True
+        f["crops"] = [c["id"] for c in crops if c.get("fert") and str(c["fert"]["type"]) in f["types"]]
+        out.append(f)
+    return sorted(out, key=lambda f: (len(f["types"]), min(int(k) for k in f["types"])))
+
+
 def build_proficiency(loc, attrs, icons):
     root = os.path.join(CONTENT_DIR, "Blueprints", "DataTable", "Proficiency")
+    talents_by_prof = _prof_talents(loc, icons)
     types = []
     for folder, group in GROUP_OF.items():
         d = os.path.join(root, folder)
@@ -80,6 +185,10 @@ def build_proficiency(loc, attrs, icons):
                 un = []
                 for u in r.get("UnlockProfBenefitConfigList") or []:
                     item = {"key": _tail(u.get("ProfBenefit")), "val": round(u.get("ProfBenefitVal") or 0, 4)}
+                    # bônus de qualidade do marco vem por material (o campo do jogo é "TeShuProBenefitVal", sem o "f")
+                    tq = u.get("TeShuProBenefitVal") or u.get("TeShuProfBenefitVal") or []
+                    if any(tq):
+                        item["tq"] = [round(x, 4) for x in tq]
                     txt = loc.get(u.get("DescText"))
                     if txt:
                         item["text_pt"], item["text_en"] = txt["pt"], txt["en"]
@@ -95,6 +204,11 @@ def build_proficiency(loc, attrs, icons):
                 # o texto do marco (sem o número) é o mais fiel; sem marco, usa o BenefitTextMap do jogo
                 u = next((i for ms in miles for i in ms["items"] if i["key"] == k and i.get("text_pt")), None)
                 nm = {"pt": _strip_num(u["text_pt"]), "en": _strip_num(u["text_en"])} if u else None
+                if k.endswith("PinZhiInc"):
+                    # o texto do marco cita um só material; o bônus por nível (130/140/150) vale para todos
+                    b["quality"] = True
+                    nm = _src(loc, WBP + "BenefitTextMap(%d" % BENEFIT_ENUM.get(k, -1)) \
+                        or _src(loc, WBP.replace("WBP_ShuLianDu", "WBP_ShuLianDu_Plus") + "BenefitTextMap(%d" % BENEFIT_ENUM.get(k, -1)) or nm
                 if not nm:
                     nm = _src(loc, WBP + "BenefitTextMap(%d" % BENEFIT_ENUM.get(k, -1))
                 if nm:
@@ -111,6 +225,17 @@ def build_proficiency(loc, attrs, icons):
                 t["gain_pt"], t["gain_en"] = gain["pt"], gain["en"]
             if any(teshu):
                 t["quality"] = teshu
+                # nome de cada material (índice da lista) = texto do marco que dá qualidade a ele
+                labels = [None] * max(len(x or []) for x in teshu)
+                for ms in miles:
+                    for i in ms["items"]:
+                        for n, v in enumerate(i.get("tq") or []):
+                            if v and n < len(labels) and not labels[n] and i.get("text_pt"):
+                                labels[n] = {"pt": _strip_num(i["text_pt"]), "en": _strip_num(i["text_en"])}
+                t["qualityTiers"] = labels
+            tal = talents_by_prof.get(tid) or talents_by_prof.get(m.group(1))
+            if tal:
+                t["talents"] = tal
             types.append(t)
     classes = []
     for table, zi in CLASS_TABLES:

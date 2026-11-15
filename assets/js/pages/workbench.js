@@ -33,6 +33,12 @@ export async function initWorkbenchPage(root, params) {
     const b = benches[(r.benches || [])[0]];
     return b ? pick(b, 'name') : t('wb.byHand');
   };
+  // nome da bancada com o ícone dela (fabricar à mão fica sem ícone)
+  const benchHtml = (r) => {
+    const b = benches[(r.benches || [])[0]];
+    const icon = b?.icon ? `<img src="${esc(b.icon)}" alt="" loading="lazy" width="64" height="64" />` : '';
+    return `${icon}<span>${esc(benchName(r))}</span>`;
+  };
   const recipeOf = (id) => {
     const rs = recipesOf.get(id) || [];
     return { rs, ri: Math.min(choice[id] || 0, rs.length - 1), r: rs[Math.min(choice[id] || 0, rs.length - 1)] };
@@ -50,17 +56,17 @@ export async function initWorkbenchPage(root, params) {
     const crafts = Math.ceil(qty / (r.count || 1));
     const next = new Set(path); next.add(id);
     const kids = r.ing.map((g, gi) => {
-      if (g.ids.length < 2) return `<li>${itemNode(g.ids[0], crafts * g.n, depth + 1, next)}</li>`;
+      if (g.ids.length < 2) return `<li class="wb-node">${itemNode(g.ids[0], crafts * g.n, depth + 1, next)}</li>`;
       const key = `${id}#${gi}`;
       const sel = Math.min(groupPick[key] || 0, g.ids.length - 1);
       const n = crafts * g.n;
-      return `<li><div class="wb-choose">
+      return `<li class="wb-node"><div class="wb-choose">
           <div class="wb-choose-head">&#9670; ${esc(t('wb.chooseOne'))}</div>
           ${g.ids.map((oid, oi) => `<button type="button" class="wb-opt${oi === sel ? ' is-on' : ''}" data-group="${esc(key)}" data-idx="${oi}">
             ${iconImg(items.get(oid), 'wb-opt-icon')}<span class="wb-opt-name">${esc(name(oid))}</span><span class="wb-opt-n">×${esc(fmtNum(n, 0))}</span></button>`).join('')}
         </div>${expand(g.ids[sel], n, depth + 1, next)}</li>`;
     }).join('');
-    return `<ul>${kids}</ul>`;
+    return `<ul class="wb-branch">${kids}</ul>`;
   }
 
   function itemNode(id, qty, depth, path) {
@@ -69,7 +75,7 @@ export async function initWorkbenchPage(root, params) {
         <button type="button" class="wb-frame${r ? '' : ' wb-frame-leaf'}" data-item-link="${esc(id)}" title="${esc(name(id))}">${iconImg(items.get(id), 'wb-icon')}</button>
         <span class="wb-name">${esc(name(id))}</span>
         <span class="wb-n">×${esc(fmtNum(qty, 0))}</span>
-        ${r ? `<span class="wb-bench">${esc(benchName(r))}</span>` : ''}
+        ${r ? `<span class="wb-bench">${benchHtml(r)}</span>` : ''}
         ${rs.length > 1 ? `<select class="wb-alt" data-alt="${esc(id)}" aria-label="${esc(t('wb.otherRecipe'))}">${rs.map((x, i) => `<option value="${i}" ${i === ri ? 'selected' : ''}>${esc(t('wb.recipeN', { n: i + 1 }))}</option>`).join('')}</select>` : ''}
       </div>${expand(id, qty, depth, path)}`;
   }
@@ -78,7 +84,7 @@ export async function initWorkbenchPage(root, params) {
     if (!current) return;
     totals.clear();
     const qty = Math.max(1, Math.min(999, Number(qtyEl.value) || 1));
-    const tree = `<ul><li>${itemNode(current, qty, 0, new Set())}</li></ul>`;
+    const tree = `<ul class="wb-branch wb-root"><li class="wb-node">${itemNode(current, qty, 0, new Set())}</li></ul>`;
     const base = [...totals.entries()].sort((a, b) => name(a[0]).localeCompare(name(b[0])));
     out.innerHTML = `
       <section class="guide-tool wb-tree-box">

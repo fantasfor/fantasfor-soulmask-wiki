@@ -1,7 +1,9 @@
 import { t, pick } from '../i18n.js';
 import { loadData, loadIndex, esc, escLines, normalize, L } from '../data.js';
 import { loadFirebase, getUser, onUser, requireUser, publicName } from '../cloud.js';
-import { summarize, starsDisplay, starsInput } from '../ratings.js';
+import { summarize, starsDisplay } from '../ratings.js';
+import { reviewsHtml, bindReviews, cardStats, score } from '../social.js';
+import { favButton, bindFavButtons } from '../favorites.js';
 
 const RANKS = [
   { name: 'A', color: '#e5c85c' },
@@ -39,7 +41,7 @@ function writeJSON(key, v) {
   try { localStorage.setItem(key, JSON.stringify(v)); } catch (e) { /* ignora */ }
 }
 
-export async function initTierListPage(root) {
+export async function initTierListPage(root, params) {
   const board = root.querySelector('#tier-list-board');
   const pools = {
     armadura: root.querySelector('#tier-list-armor-pool'),
@@ -216,15 +218,13 @@ export async function initTierListPage(root) {
     list.sort((a, b) => {
       if (sort === 'recent') return (b.d.updatedAt?.seconds || 0) - (a.d.updatedAt?.seconds || 0);
       if (sort === 'votes') return b.r.count - a.r.count || b.r.avg - a.r.avg;
-      // média bayesiana: poucas notas não dominam o topo
-      const score = (x) => (x.r.avg * x.r.count + 3 * 2) / (x.r.count + 2);
-      return score(b) - score(a);
+      return score(b.d) - score(a.d);
     });
     grid.innerHTML = list.length ? list.map(({ d, r }) => `
       <button type="button" class="tier-card" data-doc="${esc(d.id)}">
         <span class="tier-card-head">
           <strong class="tier-card-title">${esc(d.title)}</strong>
-          ${starsDisplay(r.avg, r.count, { compact: true })}
+          <span class="social-card-stats">${cardStats(d)}</span>
         </span>
         <span class="tier-card-meta">${d.photo ? `<img src="${esc(d.photo)}" alt="" referrerpolicy="no-referrer" />` : ''}${esc(d.author)} · ${esc(t('tier.reviewsN', { n: r.count }))}</span>
         ${preview(d)}
@@ -248,10 +248,7 @@ export async function initTierListPage(root) {
     if (!doc) { viewer.hidden = true; return; }
     const u = getUser();
     const r = summarize(doc.ratings);
-    const mineReview = u ? doc.ratings?.[u.uid] : null;
     const own = u && u.uid === doc.uid;
-    const reviews = Object.entries(doc.ratings || {}).map(([uid, x]) => ({ uid, ...x })).filter((x) => x.s)
-      .sort((a, b) => (b.t || 0) - (a.t || 0));
     viewerBody.innerHTML = `
       <header class="tier-viewer-head">
         <span class="tier-list-eyebrow">${esc(t(CATEGORY_LABEL[doc.category] || 'tier.title'))}</span>
@@ -263,54 +260,20 @@ export async function initTierListPage(root) {
       <div class="tier-list-board tier-viewer-board">${fullBoard(doc)}</div>
       <div class="tier-viewer-actions">
         <button type="button" class="tier-btn" data-act="copy">${esc(t('tier.copyToMine'))}</button>
+        <button type="button" class="tier-btn" data-act="link">${esc(t('social.copyLink'))}</button>
+        ${favButton(`post:tierlists/${doc.id}`)}
         ${own ? `<button type="button" class="tier-btn danger" data-act="delete">${esc(t('tier.delete'))}</button>` : ''}
       </div>
-      <section class="tier-review-box">
-        <h3>${esc(t('tier.rateTitle'))}</h3>
-        ${own ? `<p class="tier-muted">${esc(t('tier.ownList'))}</p>` : !u ? `<p class="tier-muted">${esc(t('rating.loginToRate'))}</p>` : `
-          <form class="tier-review-form" data-review>
-            ${starsInput(mineReview?.s || 0)}
-            <textarea class="tier-entry-input tier-textarea" name="comment" maxlength="300" rows="2" placeholder="${esc(t('tier.commentPlaceholder'))}">${esc(mineReview?.c || '')}</textarea>
-            <div class="tier-publish-actions">
-              <button type="submit" class="tier-btn primary">${esc(t(u ? 'tier.sendReview' : 'tier.loginToReview'))}</button>
-              <span class="tier-muted" data-review-status aria-live="polite"></span>
-            </div>
-          </form>`}
-        <ul class="tier-reviews">${reviews.map((x) => `
-          <li>
-            <span class="tier-review-head"><strong>${esc(x.n || t('account.anonymous'))}</strong>${starsDisplay(x.s, 1, { compact: true })}</span>
-            ${x.c ? `<p>${escLines(x.c)}</p>` : ''}
-          </li>`).join('') || `<li class="tier-muted">${esc(t('tier.noReviews'))}</li>`}</ul>
-      </section>`;
+      ${reviewsHtml(doc, { title: t('tier.rateTitle'), ownText: t('tier.ownList'), placeholder: t('tier.commentPlaceholder') })}`;
     viewer.hidden = false;
   }
+  bindReviews(viewer, { coll: 'tierlists', getDoc: () => openDoc, onChange: () => { renderViewer(); renderCommunity(); } });
+  bindFavButtons(viewer);
 
   function openViewer(id) {
     openDoc = communityDocs.find((d) => d.id === id) || null;
     renderViewer();
     viewer.querySelector('.tier-viewer-close')?.focus();
-  }
-
-  async function sendReview(form) {
-    const status = form.querySelector('[data-review-status]');
-    const u = getUser();
-    if (!u || !openDoc) return;
-    const stars = Number(form.dataset.stars || openDoc.ratings?.[u.uid]?.s || 0);
-    if (!stars) { status.textContent = t('tier.pickStars'); return; }
-    const review = { s: stars, n: publicName(u), t: Date.now() };
-    const c = form.elements.comment.value.trim().slice(0, 300);
-    if (c) review.c = c;
-    status.textContent = t('account.syncing');
-    try {
-      const fb = await loadFirebase();
-      await fb.store.updateDoc(fb.store.doc(fb.db, 'tierlists', openDoc.id), { [`ratings.${u.uid}`]: review });
-      openDoc.ratings = { ...(openDoc.ratings || {}), [u.uid]: review };
-      renderViewer();
-      renderCommunity();
-    } catch (e) {
-      console.warn('review', e);
-      status.textContent = t('tier.saveError');
-    }
   }
 
   async function publish() {
@@ -387,18 +350,13 @@ export async function initTierListPage(root) {
 
   viewer.addEventListener('click', async (e) => {
     if (e.target === viewer || e.target.closest('[data-close]')) { openDoc = null; renderViewer(); return; }
-    const star = e.target.closest('[data-star]');
-    if (star) {
-      const form = star.closest('form');
-      form.dataset.stars = star.dataset.star;
-      form.querySelectorAll('[data-star]').forEach((b) => {
-        const on = Number(b.dataset.star) <= Number(star.dataset.star);
-        b.classList.toggle('is-on', on);
-        b.setAttribute('aria-checked', String(b === star));
-      });
+    const act = e.target.closest('[data-act]')?.dataset.act;
+    if (act === 'link' && openDoc) {
+      const url = `${location.origin}${location.pathname}#tier-list?lista=${encodeURIComponent(openDoc.id)}`;
+      try { await navigator.clipboard.writeText(url); } catch (err) { window.prompt('URL', url); }
+      e.target.closest('[data-act]').textContent = t('map.copied');
       return;
     }
-    const act = e.target.closest('[data-act]')?.dataset.act;
     if (act === 'copy' && openDoc) {
       const cat = openDoc.category;
       if (catalogs[cat]) {
@@ -427,12 +385,6 @@ export async function initTierListPage(root) {
         alert(t('tier.saveError'));
       }
     }
-  });
-  viewer.addEventListener('submit', (e) => {
-    const form = e.target.closest('[data-review]');
-    if (!form) return;
-    e.preventDefault();
-    sendReview(form);
   });
   const onKey = (e) => {
     if (!root.isConnected) { document.removeEventListener('keydown', onKey); return; }
@@ -495,5 +447,28 @@ export async function initTierListPage(root) {
     fillPublishForm();
     if (openDoc) renderViewer();
   });
+
+  // link direto para uma lista da comunidade: #tier-list?lista=ID (usado também pela página Comunidade)
+  const linked = params?.get?.('lista');
+  if (linked) {
+    view = 'community';
+    const cat = linked.split('_').pop();
+    const btn = catButtons.find((b) => b.dataset.category === cat);
+    if (btn) {
+      category = cat;
+      catButtons.forEach((x) => { x.classList.toggle('is-active', x === btn); x.setAttribute('aria-pressed', String(x === btn)); });
+    }
+    render();
+    await fetchCommunity();
+    if (!communityDocs.some((d) => d.id === linked)) {
+      try {
+        const fb = await loadFirebase();
+        const snap = await fb.store.getDoc(fb.store.doc(fb.db, 'tierlists', linked));
+        if (snap.exists()) communityDocs.push({ id: snap.id, ...snap.data() });
+      } catch (e) { /* lista apagada ou sem acesso */ }
+    }
+    openViewer(linked);
+    return;
+  }
   render();
 }

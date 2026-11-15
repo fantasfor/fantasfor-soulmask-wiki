@@ -440,6 +440,72 @@ button.item-card {
   color: var(--text);
 }
 
+/* Criaturas: recursos clicáveis; Criaturas e Máscaras: botão que abre o Mapa interativo */
+.creature-drops {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.creature-drops-title {
+  font-size: 0.68rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.creature-drops-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.creature-drops-list .ing-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.db-map-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: start;
+  justify-self: start;
+  min-height: 34px;
+  margin-top: 12px;
+  padding: 0 14px;
+  border: 1px solid var(--accent);
+  background: rgba(144, 209, 238, 0.1);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.db-map-btn:hover,
+.db-map-btn:focus-visible {
+  background: rgba(144, 209, 238, 0.22);
+}
+
+.mask-where {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+}
+
+.mask-where .db-map-btn {
+  margin-top: 8px;
+}
+
+.mask-where-note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
 /* Receitas */
 .recipes-grid {
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -838,6 +904,56 @@ button.item-card {
 
 .farming-facts small {
   color: var(--muted);
+}
+
+.farming-facts small a {
+  color: var(--accent);
+}
+
+/* Plantio: fertilizantes */
+.farm-fert {
+  margin-bottom: 18px;
+}
+
+.farm-fert-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+.farm-fert-card {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #3a3d40;
+  background: #141515;
+}
+
+.farm-fert-card.is-universal {
+  border-color: #ecd760;
+}
+
+.farm-fert-crops {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+}
+
+.farm-fert-crop {
+  padding: 2px 8px;
+  border: 1px solid #3a3d40;
+  background: #111212;
+  color: #d9d2c5;
+  font: inherit;
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+
+.farm-fert-crop:hover,
+.farm-fert-crop:focus-visible {
+  border-color: var(--accent);
 }
 
 .temp-bar {
@@ -1905,6 +2021,20 @@ a.comfort-item-name:hover {
 
 .comfort-tool-add.is-added {
   border-left: 3px solid #39d98a;
+}
+
+.comfort-tool-add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.comfort-qty output.is-max {
+  color: #39d98a;
+}
+
+.comfort-qty button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .comfort-tool-add small,

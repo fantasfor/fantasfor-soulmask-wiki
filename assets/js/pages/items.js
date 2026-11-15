@@ -1,7 +1,7 @@
 // Itens e Receitas: todos os itens, com a receita de cada um (materiais e bancada) no próprio cartão.
 // A antiga página Receitas (#receitas) agora abre esta, já filtrada pela bancada.
 import { t, tCount, pick } from '../i18n.js';
-import { loadData, esc, normalize, fmtNum, categoryLabel, iconImg, qualityClass, renderChunked, openItemModal, recipeBlock } from '../data.js';
+import { loadData, esc, normalize, fmtNum, categoryLabel, iconImg, qualityClass, openItemModal, recipeBlock } from '../data.js';
 
 export async function initItemsPage(root, params) {
   const search = root.querySelector('#items-search');
@@ -85,8 +85,40 @@ export async function initItemsPage(root, params) {
       return !q || hay.get(it.id).includes(q);
     });
     count.textContent = tCount('items.count', list.length);
-    renderChunked(container, list, card, { chunk: 60, empty: `<div class="items-no-results">${esc(t('items.none'))}</div>` });
+    current = list;
+    shown = 0;
+    if (container._chunkObserver) container._chunkObserver.disconnect();
+    container.innerHTML = list.length ? '' : `<div class="items-no-results">${esc(t('items.none'))}</div>`;
+    moreWrap.hidden = true;
+    showMore();
   }
+
+  // "Mostrar mais": carrega os itens em blocos, só quando a pessoa pede (a página não pesa com 2 mil cartões)
+  const PAGE = 48;
+  let current = [];
+  let shown = 0;
+  const moreWrap = document.createElement('div');
+  moreWrap.className = 'items-more';
+  moreWrap.hidden = true;
+  moreWrap.innerHTML = '<button type="button" class="map-btn items-more-btn"></button><small class="items-more-info"></small>';
+  container.after(moreWrap);
+  const moreBtn = moreWrap.querySelector('button');
+  const moreInfo = moreWrap.querySelector('small');
+  function showMore() {
+    const slice = current.slice(shown, shown + PAGE);
+    if (slice.length) container.insertAdjacentHTML('beforeend', slice.map(card).join(''));
+    shown += slice.length;
+    const left = current.length - shown;
+    moreWrap.hidden = left <= 0;
+    moreBtn.textContent = t('items.showMore', { n: Math.min(PAGE, left) });
+    moreInfo.textContent = t('items.shownOf', { a: shown, b: current.length });
+  }
+  moreBtn.addEventListener('click', () => {
+    const first = shown;
+    showMore();
+    // leva o foco para o primeiro cartão novo (teclado e leitor de tela)
+    container.children[first]?.querySelector('button, a')?.focus({ preventScroll: true });
+  });
 
   search.addEventListener('input', render);
   catSel.addEventListener('change', render);

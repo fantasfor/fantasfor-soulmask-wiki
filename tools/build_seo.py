@@ -31,6 +31,9 @@ PAGES: dict[str, tuple[str, str]] = {
     'home': ('Wiki do Soulmask em português',
              'Wiki do Soulmask em português e inglês: itens, receitas, armaduras, talentos, mapa interativo, '
              'builder de builds, comandos de admin e mais, com dados tirados direto do jogo.'),
+    'comunidade': ('Comunidade — builds, tier lists e servidores',
+                   'Builds, tier lists e servidores de Soulmask publicados pelos jogadores: avalie com estrelas, '
+                   'comente e guarde nos favoritos.'),
     'builder-maker': ('Builder Maker — monte sua build',
                       'Monte e compartilhe builds do Soulmask: escolha talentos, armadura, armas, máscara e comida '
                       'e veja o total de atributos da build.'),

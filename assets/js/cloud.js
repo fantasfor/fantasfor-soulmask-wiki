@@ -23,7 +23,8 @@ const SYNC_KEYS = {
   talents_favorites_v2: 'union',
   'soulmask-map-markers': 'replace',
   'soulmask-map-visited': 'replace',
-  'soulmask-comfort-check': 'replace'
+  'soulmask-comfort-check': 'replace',
+  'soulmask-favorites': 'replace' // favoritos (favorites.js): páginas e publicações
 };
 const META_KEY = 'cloud_sync_meta';
 

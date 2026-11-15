@@ -48,8 +48,15 @@ export async function initComfortPage(root, params) {
   // ---------------------------------------------------------------- calculadora (ferramenta à parte)
   let placed = readCheck();
   const byId = new Map(data.furniture.map((f) => [f.id, f]));
-  Object.keys(placed).forEach((id) => { if (!byId.has(id)) delete placed[id]; });
-  const counted = (f) => Math.min(placed[f.id] || 0, f.max || 1);
+  // limite de cada item/estrutura: o jogo só conta até "max" unidades de cada um
+  const limit = (f) => Math.max(1, f.max || 1);
+  Object.keys(placed).forEach((id) => {
+    const f = byId.get(id);
+    const n = Math.floor(Number(placed[id]) || 0);
+    if (!f || n <= 0) delete placed[id]; else placed[id] = Math.min(n, limit(f)); // salvos antigos acima do limite
+  });
+  writeCheck(placed);
+  const counted = (f) => Math.min(placed[f.id] || 0, limit(f));
 
   function renderSummary() {
     const total = data.furniture.reduce((s, f) => s + counted(f) * f.value, 0);
@@ -79,14 +86,14 @@ export async function initComfortPage(root, params) {
     toolList.innerHTML = ids.length ? ids.map((id) => {
       const f = byId.get(id);
       const n = placed[id];
-      const over = n > (f.max || 1);
+      const atMax = n >= limit(f);
       return `<li class="comfort-tool-row">
         ${iconImg(f, 'comfort-icon')}
-        <span class="comfort-tool-name">${esc(pick(f, 'name'))}<small>+${esc(fmtNum(f.value, 0))} ${esc(t('comfort.each'))}${f.max > 1 ? ` · ${esc(t('comfort.maxCount', { n: f.max }))}` : ''}</small></span>
+        <span class="comfort-tool-name">${esc(pick(f, 'name'))}<small>+${esc(fmtNum(f.value, 0))} ${esc(t('comfort.each'))} · ${esc(t('comfort.maxCount', { n: limit(f) }))}</small></span>
         <span class="comfort-qty is-on">
           <button type="button" class="map-btn map-btn-sm" data-step="-1" data-id="${esc(id)}" aria-label="${esc(t('comfort.less'))}">-</button>
-          <output class="${over ? 'is-over' : ''}" title="${esc(over ? t('comfort.overMax', { n: f.max }) : '')}">${n}</output>
-          <button type="button" class="map-btn map-btn-sm" data-step="1" data-id="${esc(id)}" aria-label="${esc(t('comfort.more'))}">+</button>
+          <output class="${atMax ? 'is-max' : ''}" title="${esc(atMax ? t('comfort.atMax', { n: limit(f) }) : '')}">${n}/${limit(f)}</output>
+          <button type="button" class="map-btn map-btn-sm" data-step="1" data-id="${esc(id)}" aria-label="${esc(t('comfort.more'))}" ${atMax ? `disabled title="${esc(t('comfort.atMax', { n: limit(f) }))}"` : ''}>+</button>
         </span>
         <strong class="comfort-tool-sub">+${esc(fmtNum(counted(f) * f.value, 0))}</strong>
       </li>`;
@@ -98,17 +105,21 @@ export async function initComfortPage(root, params) {
     const list = data.furniture.filter((f) => !q || normalize(`${f.name_pt} ${f.name_en}`).includes(q))
       .sort((a, b) => b.value - a.value || pick(a, 'name').localeCompare(pick(b, 'name')))
       .slice(0, q ? 60 : 24);
-    toolResults.innerHTML = list.map((f) => `
-      <button type="button" class="comfort-tool-add${placed[f.id] ? ' is-added' : ''}" data-add="${esc(f.id)}" title="${esc(t('comfort.toolAdd'))}">
+    toolResults.innerHTML = list.map((f) => {
+      const full = (placed[f.id] || 0) >= limit(f);
+      return `
+      <button type="button" class="comfort-tool-add${placed[f.id] ? ' is-added' : ''}" data-add="${esc(f.id)}" title="${esc(full ? t('comfort.atMax', { n: limit(f) }) : t('comfort.toolAdd'))}" ${full ? 'disabled' : ''}>
         ${iconImg(f, 'comfort-icon')}
         <span>${esc(pick(f, 'name'))}</span>
-        <small>+${esc(fmtNum(f.value, 0))}</small>
-      </button>`).join('') || `<p class="comfort-tool-empty">${esc(t('comfort.none'))}</p>`;
+        <small>+${esc(fmtNum(f.value, 0))}${limit(f) > 1 ? ` ×${limit(f)}` : ''}</small>
+      </button>`;
+    }).join('') || `<p class="comfort-tool-empty">${esc(t('comfort.none'))}</p>`;
   }
 
   function setQty(id, n) {
-    if (!byId.has(id)) return;
-    const v = Math.max(0, Math.min(99, n));
+    const f = byId.get(id);
+    if (!f) return;
+    const v = Math.max(0, Math.min(limit(f), Math.floor(n) || 0)); // trava no limite do item
     if (v) placed[id] = v; else delete placed[id];
     writeCheck(placed);
     renderSummary();

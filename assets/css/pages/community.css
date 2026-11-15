@@ -1,0 +1,694 @@
+/* v1.0.1 — Comunidade: favoritos no topo do site, avaliações/comentários (social.js),
+   lista de servidores em linhas, aba Comunidade do Builder e página Comunidade. */
+
+/* ------------------------------------------------------------------ favoritos na barra lateral
+   estrela pequena dentro de cada botão do menu (desenhada aqui, sem texto no link) */
+#site-sidebar .nav-link {
+  padding-right: 34px;
+}
+
+.nav-fav {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  transform: translateY(-50%);
+  color: #5d6266;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: color 160ms ease, opacity 160ms ease;
+}
+
+.nav-fav::before {
+  content: '\2605';
+}
+
+.nav-link:hover .nav-fav,
+.nav-link:focus-visible .nav-fav,
+.nav-fav:focus-visible,
+.nav-fav.is-on {
+  opacity: 1;
+}
+
+.nav-fav:hover,
+.nav-fav:focus-visible {
+  color: #ecd760;
+  outline: none;
+}
+
+.nav-fav.is-on {
+  color: #ecd760;
+}
+
+/* em telas de toque não há "passar o mouse": a estrela fica sempre visível */
+@media (hover: none) {
+  .nav-fav {
+    opacity: 1;
+  }
+}
+
+.nav-fav-section[hidden],
+#nav-fav-list[hidden] {
+  display: none;
+}
+/* botão de estrela (favoritar) */
+body .fav-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.fav-toggle .fav-star {
+  color: #8a8f94;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+body .fav-toggle.is-on {
+  border-color: #ecd760;
+  color: #ecd760;
+}
+
+body .fav-toggle.is-on:is(:hover, :focus-visible):not(:disabled) {
+  border-color: #ecd760;
+  background-color: rgba(236, 215, 96, 0.14);
+}
+
+.fav-toggle.is-on .fav-star {
+  color: #ecd760;
+}
+
+body .fav-toggle.is-compact {
+  min-width: 32px;
+  min-height: 30px;
+  padding: 0 6px;
+}
+
+/* ------------------------------------------------------------------ avaliações e comentários */
+.social-count {
+  margin-left: 6px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.social-date {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.tier-reviews li.is-mine {
+  border-color: rgba(144, 209, 238, 0.35);
+}
+
+.social-reply {
+  margin: 8px 0 0 10px;
+  padding: 6px 10px;
+  border-left: 2px solid #ecd760;
+  background: rgba(236, 215, 96, 0.05);
+}
+
+.social-reply strong {
+  color: #ecd760;
+  font-size: 0.74rem;
+}
+
+.social-reply p {
+  margin: 2px 0 0;
+}
+
+.social-reply-form {
+  margin-top: 6px;
+}
+
+.social-reply-form summary {
+  width: fit-content;
+  color: var(--accent);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.social-reply-form form {
+  display: grid;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+body .social-login {
+  min-height: 30px;
+  margin-left: 8px;
+}
+
+.social-card-stats {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.social-mini {
+  color: var(--muted);
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ servidores: lista em linhas
+   (ícone e nome | banner e descrição | IP e números) */
+/* a grade antiga de cartões (.srv-grid em guides.css) vira só um contêiner das linhas */
+.servers-page #srv-grid {
+  display: block;
+}
+
+.srv-list {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.srv-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) 250px;
+  border: 1px solid #3a3d40;
+  background: #141515;
+  cursor: pointer;
+  transition: border-color 160ms ease;
+}
+
+.srv-row:hover,
+.srv-row:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.srv-row > div {
+  min-width: 0;
+  padding: 14px;
+}
+
+.srv-row > div + div {
+  border-left: 1px solid #2a2c2e;
+}
+
+.srv-row-id {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.srv-row-id .srv-icon {
+  width: 72px;
+  height: 72px;
+}
+
+.srv-row-name {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: #ecd760;
+  font-family: Cinzel, serif;
+  font-size: 0.98rem;
+  line-height: 1.25;
+}
+
+.srv-row-pos {
+  color: var(--muted);
+  font-family: Cinzel, serif;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.srv-row .srv-boost-tag {
+  position: static;
+}
+
+.srv-row-mid {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+}
+
+.srv-banner {
+  display: block;
+  width: 100%;
+  max-width: 468px;
+  aspect-ratio: 468 / 60;
+  border: 1px solid #2a2c2e;
+  background: #0d0d0d;
+  object-fit: cover;
+}
+
+.srv-banner-empty {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: linear-gradient(90deg, rgba(144, 209, 238, 0.08), rgba(236, 215, 96, 0.08)), #0d0d0d;
+  color: rgba(243, 239, 232, 0.55);
+  font-family: Cinzel, serif;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.srv-banner-empty > span {
+  overflow: hidden;
+  max-width: 94%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.srv-banner-empty img,
+.srv-form-banner .srv-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.srv-banner-lg {
+  max-width: none;
+  margin: 0 0 14px;
+  padding-right: 0;
+}
+
+.srv-row .srv-desc {
+  margin: 0;
+}
+
+.srv-row-side {
+  display: grid;
+  align-content: center;
+  gap: 10px;
+}
+
+.srv-ip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  border: 1px solid #39d98a;
+}
+
+.srv-ip code {
+  overflow: hidden;
+  padding: 7px 8px;
+  background: rgba(57, 217, 138, 0.12);
+  color: #f3efe8;
+  font-family: Consolas, monospace;
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.srv-ip-copy {
+  padding: 0 10px;
+  border: 0;
+  border-left: 1px solid #39d98a;
+  background: #191a1a;
+  color: #39d98a;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.srv-ip-copy:hover,
+.srv-ip-copy:focus-visible {
+  background: rgba(57, 217, 138, 0.16);
+  outline: none;
+}
+
+.srv-ip-discord {
+  display: grid;
+  place-items: center;
+  grid-column: 1 / -1;
+  min-height: 34px;
+  border-left: 0;
+  color: #90d1ee;
+  text-decoration: none;
+}
+
+.srv-ip:has(.srv-ip-discord) {
+  border-color: rgba(144, 209, 238, 0.6);
+}
+
+.srv-view-ip {
+  max-width: 420px;
+  margin: 10px 0;
+}
+
+.srv-stats {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  list-style: none;
+}
+
+/* 3 primeiros do destaque pago: ouro, prata e bronze */
+.srv-row.srv-place {
+  border-width: 2px;
+  border-color: #ecd760;
+  background: linear-gradient(100deg, rgba(236, 215, 96, 0.1), #141515 45%);
+  box-shadow: 0 0 22px rgba(236, 215, 96, 0.14);
+}
+
+.srv-row.srv-place-1 .srv-row-id .srv-icon {
+  width: 88px;
+  height: 88px;
+}
+
+.srv-row.srv-place-2 {
+  border-color: #c9c2b4;
+  background: linear-gradient(100deg, rgba(201, 194, 180, 0.08), #141515 45%);
+}
+
+.srv-row.srv-place-3 {
+  border-color: #c98a4b;
+  background: linear-gradient(100deg, rgba(201, 138, 75, 0.08), #141515 45%);
+}
+
+.srv-row.srv-place .srv-row-pos {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  background: #ecd760;
+  color: #0b0a09;
+}
+
+.srv-row.srv-place-2 .srv-row-pos { background: #c9c2b4; }
+.srv-row.srv-place-3 .srv-row-pos { background: #c98a4b; }
+
+.srv-row.is-boosted:not(.srv-place) {
+  border-color: rgba(236, 215, 96, 0.55);
+}
+
+.srv-row.is-inactive {
+  opacity: 0.6;
+}
+
+/* formulário: ícone e banner */
+.srv-form-media {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.srv-form-media .tier-muted {
+  flex-basis: 100%;
+  font-size: 0.76rem;
+}
+
+.srv-form-banner {
+  display: grid;
+  gap: 8px;
+}
+
+.srv-form-banner .srv-banner {
+  max-width: 468px;
+}
+
+@media (max-width: 960px) {
+  .srv-row {
+    grid-template-columns: 130px minmax(0, 1fr);
+  }
+
+  .srv-row-side {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    border-top: 1px solid #2a2c2e;
+    border-left: 0 !important;
+  }
+
+  .srv-row-side .srv-tags {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .srv-row {
+    grid-template-columns: 1fr;
+  }
+
+  .srv-row > div + div {
+    border-left: 0;
+    border-top: 1px solid #2a2c2e;
+  }
+
+  .srv-row-id {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .srv-row-id .srv-icon,
+  .srv-row.srv-place-1 .srv-row-id .srv-icon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .srv-row .srv-boost-tag {
+    position: static;
+    grid-column: 1 / -1;
+  }
+
+  .srv-row-side {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------------------------------------------------ Builder Maker: aba Comunidade */
+.builder-tabs {
+  margin: 0 0 16px;
+}
+
+.builder-shell[hidden],
+.builder-community[hidden] {
+  display: none !important;
+}
+
+.builder-community {
+  display: grid;
+  gap: 14px;
+}
+
+.builder-community .tier-publish {
+  margin-top: 0;
+}
+
+.bc-bar {
+  grid-template-columns: minmax(0, 1fr) 180px 180px;
+  margin-bottom: 0;
+}
+
+.bc-mini {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.bc-mini-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.bc-mini-icons img {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #2a2c2e;
+  background: rgba(0, 0, 0, 0.3);
+  object-fit: contain;
+}
+
+.bc-mini-talents img,
+.bc-talents img {
+  background: rgba(144, 209, 238, 0.14);
+}
+
+.bc-mini-talents img {
+  width: 24px;
+  height: 24px;
+}
+
+.bc-full {
+  display: grid;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.bc-full-class {
+  margin: 0;
+  color: var(--muted);
+}
+
+.bc-full-gear {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.bc-gear,
+.bc-talents li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 4px 4px;
+  border: 1px solid #2a2c2e;
+  background: rgba(0, 0, 0, 0.25);
+  font-size: 0.82rem;
+}
+
+.bc-gear img,
+.bc-talents img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.bc-full-title {
+  margin: 4px 0 0;
+  color: var(--accent);
+  font-size: 0.86rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.bc-talents {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tier-viewer-actions a.tier-btn {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text);
+  text-decoration: none;
+}
+
+/* ------------------------------------------------------------------ página Comunidade */
+.cm-publish {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: -10px 0 18px;
+}
+
+.cm-publish a.tier-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.cm-types {
+  flex-wrap: wrap;
+}
+
+.cm-n {
+  color: var(--muted);
+  font-size: 0.8em;
+}
+
+body .cm-fav-type,
+body .cm-fav-type.is-active {
+  border-color: rgba(236, 215, 96, 0.6);
+  color: #ecd760;
+}
+
+body .cm-fav-type.is-active {
+  border-color: #ecd760;
+  background-color: rgba(236, 215, 96, 0.12);
+}
+
+.cm-card {
+  cursor: pointer;
+}
+
+.cm-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.cm-card .tier-card-head {
+  align-items: center;
+}
+
+.cm-type {
+  padding: 1px 8px;
+  border: 1px solid #686e73;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.cm-type-build { border-color: #90d1ee; color: #90d1ee; }
+.cm-type-tier { border-color: #b28acb; color: #c9a6de; }
+.cm-type-server { border-color: #39d98a; color: #39d98a; }
+
+.cm-card-icon {
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 0 !important;
+  object-fit: cover;
+}
+
+.cm-tier-text {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.cm-fav-pages {
+  margin-bottom: 14px;
+}
+
+.cm-fav-pages .home-fav-list {
+  margin-bottom: 18px;
+}
+
+@media (max-width: 760px) {
+  .bc-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .bc-bar input {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .tier-viewer {
+    padding: 8px;
+  }
+
+  .tier-viewer-dialog {
+    padding: 16px 12px;
+  }
+}

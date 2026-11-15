@@ -12,3 +12,77 @@
 		padding: 16px 14px 32px;
 	}
 }
+
+/* v1.0.1: feed e notas centralizados (antes ficavam presos à esquerda) */
+.home-page .home-feed,
+.home-page .home-updates {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* ícones da página inicial: todos no mesmo branco do ícone de Talentos (assets/img/home-icons,
+   gerados por tools/build_home_icons.py); textos e molduras também iguais */
+.home-quick-nav .home-nav-square {
+	color: #cecece;
+	font: inherit;
+	background: none;
+	border: 0;
+	padding: 0;
+	cursor: pointer;
+}
+
+.home-quick-nav .home-nav-box {
+	border-color: #686e73;
+}
+
+.home-quick-nav .home-nav-square:hover .home-nav-text,
+.home-quick-nav .home-nav-square:focus-visible .home-nav-text {
+	color: #f3efe8;
+}
+
+.home-quick-nav .home-nav-square:focus-visible {
+	outline: none;
+}
+
+.home-quick-nav .home-nav-square:focus-visible .home-nav-box {
+	border-color: #1aecec;
+}
+
+/* lista de páginas favoritas (usada no filtro Favoritos da página Comunidade) */
+.cm-fav-pages h2 {
+	margin: 0 0 12px;
+	color: #ecd760;
+	font-family: Cinzel, serif;
+	font-size: 1.05rem;
+}
+
+.home-fav-list {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+	gap: 8px;
+}
+
+.home-fav-link {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 44px;
+	padding: 6px 10px;
+	border: 1px solid #686e73;
+	background: #191a1a;
+	color: var(--text);
+	font-size: 0.86rem;
+	text-decoration: none;
+}
+
+.home-fav-link:hover,
+.home-fav-link:focus-visible {
+	border-color: #ecd760;
+	outline: none;
+}
+
+.home-fav-link img {
+	width: 26px;
+	height: 26px;
+	object-fit: contain;
+}

@@ -230,3 +230,26 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* "Mostrar mais" da página Itens */
+.items-more {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 22px 0 8px;
+}
+
+.items-more[hidden] {
+  display: none;
+}
+
+.items-more-btn {
+  min-width: 220px;
+  padding: 10px 22px;
+}
+
+.items-more-info {
+  color: var(--muted);
+  font-size: 0.8rem;
+}

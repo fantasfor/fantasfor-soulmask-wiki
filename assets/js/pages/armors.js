@@ -1,5 +1,5 @@
 import { t, pick } from '../i18n.js';
-import { loadData, loadIndex, esc, escLines, statList, iconImg, openItemModal } from '../data.js';
+import { loadData, loadIndex, esc, escLines, statList, statParts, attrName, isPct, fmtNum, iconImg, openItemModal } from '../data.js';
 
 export const SLOTS = ['armor', 'gloves', 'pants', 'boots', 'necklace', 'ring'];
 const VARIANT_KEY = 'armors_variant';
@@ -78,6 +78,7 @@ export async function initArmorsPage(root, params) {
   try { variant = localStorage.getItem(VARIANT_KEY) === 'normal' ? 'normal' : 'advanced'; } catch (e) { /* ignora */ }
   let compare = false;
   let chosen = [];
+  let cmpSlot = 'all';
   let current = null;
 
   // conjunto equivalente na outra versão (normal <-> avançada)
@@ -151,8 +152,82 @@ export async function initArmorsPage(root, params) {
           </span>
         </button>
         ${statList(meta, p.stats)}
+        ${randomHtml(p)}
       </li>`;
     }).join('')}</ul>`;
+  }
+
+  // atributos aleatórios: cada grupo ("g") sorteia 1 atributo pelo peso "w" do jogo (DT_ZhuangBeiPropTable)
+  function randomHtml(p) {
+    if (!p.random?.length) return '';
+    const groups = new Map();
+    p.random.forEach((s) => { const g = s.g || 1; if (!groups.has(g)) groups.set(g, []); groups.get(g).push(s); });
+    const many = groups.size > 1;
+    return `<details class="arm-random">
+      <summary>${esc(t('armors.randomTitle', { n: groups.size }))}</summary>
+      ${[...groups.values()].map((list, i) => {
+        const total = list.reduce((a, s) => a + (s.w || 0), 0);
+        return `${many ? `<strong class="arm-random-group">${esc(t('armors.randomGroup', { n: i + 1 }))}</strong>` : ''}
+        <ul class="stat-list arm-random-list">${list.map((s) => {
+          const { label, value } = statParts(meta, s);
+          const ch = total && s.w ? (s.w / total) * 100 : 0;
+          return `<li class="stat-line"><span class="stat-label">${esc(label)}</span><span class="stat-value">${esc(value)}</span>${ch ? `<span class="arm-random-chance" title="${esc(t('armors.randomChance'))}">${esc(fmtNum(ch, ch < 10 ? 1 : 0))}%</span>` : ''}</li>`;
+        }).join('')}</ul>`;
+      }).join('')}
+      <p class="arm-random-note">${esc(t('armors.randomNote'))}</p>
+    </details>`;
+  }
+
+  // ---------------------------------------------------------------- comparação de atributos
+  // soma os atributos fixos (qualidade base) das peças escolhidas; "all" = conjunto completo + bônus de 6 peças
+  function statTotals(set, slot) {
+    const m = new Map();
+    const add = (s) => {
+      const k = `${s.a}|${s.op || 'add'}`;
+      const cur = m.get(k) || { a: s.a, op: s.op || 'add', v: 0 };
+      cur.v += s.v;
+      m.set(k, cur);
+    };
+    const slots = slot === 'all' ? SLOTS : [slot];
+    slots.forEach((sl) => (pieces.get(set.pieces?.[sl])?.stats || []).forEach(add));
+    if (slot === 'all') (set.bonuses || []).forEach((b) => (b.stats || []).forEach(add));
+    return m;
+  }
+
+  function compareTable(a, b, slot) {
+    const ma = statTotals(a, slot);
+    const mb = statTotals(b, slot);
+    const keys = [...new Set([...ma.keys(), ...mb.keys()])]
+      .sort((x, y) => attrName(meta, x.split('|')[0]).localeCompare(attrName(meta, y.split('|')[0])) || x.localeCompare(y));
+    if (!keys.length) return `<p class="arm-subtitle">${esc(t('armors.cmpEmpty'))}</p>`;
+    const fmtV = (s) => (s ? statParts(meta, s).value : '—');
+    const nameA = slot === 'all' ? pick(a, 'name') : pick(pieces.get(a.pieces?.[slot]) || a, 'name');
+    const nameB = slot === 'all' ? pick(b, 'name') : pick(pieces.get(b.pieces?.[slot]) || b, 'name');
+    let winsA = 0; let winsB = 0;
+    const rows = keys.map((k) => {
+      const sa = ma.get(k); const sb = mb.get(k);
+      const va = sa?.v || 0; const vb = sb?.v || 0;
+      const d = vb - va;
+      const ref = sa || sb;
+      // atributos em que menos é melhor (consumo, custo, peso, barulho)
+      const lowerBetter = /Consume|Cost|XiaoHao|Weight|ShengYin/i.test(ref.a);
+      const better = Math.abs(d) < 1e-9 ? 0 : ((d > 0) !== lowerBetter ? 1 : -1);
+      if (better > 0) winsB += 1; else if (better < 0) winsA += 1;
+      const pct = isPct(meta, ref);
+      const dTxt = Math.abs(d) < 1e-9 ? '=' : `${d > 0 ? '+' : ''}${fmtNum(pct ? d * 100 : d, pct ? 1 : 2)}${pct ? '%' : ''}`;
+      return `<tr class="${better > 0 ? 'is-b' : better < 0 ? 'is-a' : ''}">
+        <th scope="row">${esc(attrName(meta, ref.a))}${ref.op === 'mul' ? ' <small>(%)</small>' : ''}</th>
+        <td class="${better < 0 ? 'arm-win' : ''}">${esc(fmtV(sa))}</td>
+        <td class="${better > 0 ? 'arm-win' : ''}">${esc(fmtV(sb))}</td>
+        <td class="arm-diff ${better > 0 ? 'is-up' : better < 0 ? 'is-down' : ''}">${esc(dTxt)}</td>
+      </tr>`;
+    }).join('');
+    return `<p class="arm-cmp-score"><span><strong>A</strong> ${esc(t('armors.cmpScoreOne', { name: nameA, n: winsA }))}</span><span><strong>B</strong> ${esc(t('armors.cmpScoreOne', { name: nameB, n: winsB }))}</span></p>
+      <div class="guide-table-wrap"><table class="guide-table arm-cmp-table">
+        <thead><tr><th>${esc(t('attr.colStat'))}</th><th title="${esc(nameA)}">A</th><th title="${esc(nameB)}">B</th><th>${esc(t('armors.cmpDiff'))}</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+      <p class="arm-random-note">${esc(t(slot === 'all' ? 'armors.cmpNoteAll' : 'armors.cmpNoteSlot'))}</p>`;
   }
 
   function kindLabel(set) {
@@ -182,17 +257,30 @@ export async function initArmorsPage(root, params) {
     detail.hidden = compare;
     cmpToggle.setAttribute('aria-pressed', String(compare));
     cmpToggle.classList.toggle('is-active', compare);
-    cmpGrid.innerHTML = chosen.length ? chosen.map((set) => `
+    const cards = chosen.map((set, i) => `
       <article class="arm-cmp-card">
         <header class="arm-detail-head">
           <img class="arm-detail-icon" src="${esc(set.icon || '')}" alt="" />
           <div>
-            <span class="arm-kind arm-kind-${kindOf(set)}">${esc(kindLabel(set))}</span>
+            <span class="arm-kind arm-kind-${kindOf(set)}">${i ? 'B' : 'A'} · ${esc(kindLabel(set))}</span>
             <h3>${esc(pick(set, 'name'))}</h3>
           </div>
         </header>
-        <div class="arm-bonuses">${bonusHtml(meta, set)}</div>
-      </article>`).join('') : `<p class="arm-subtitle">${esc(t('armors.hint'))}</p>`;
+        <div class="arm-bonuses">${bonusHtml(meta, set) || `<p class="arm-desc">${esc(t('armors.noSetBonus'))}</p>`}</div>
+      </article>`).join('');
+    let table = '';
+    if (chosen.length === 2) {
+      const slots = ['all', ...SLOTS.filter((s) => chosen.some((c) => c.pieces?.[s]))];
+      if (!slots.includes(cmpSlot)) cmpSlot = 'all';
+      table = `<section class="arm-cmp-stats">
+        <h3 class="arm-section-title">${esc(t('armors.cmpTitle'))}</h3>
+        <div class="guide-chips arm-cmp-slots">${slots.map((s) => `<button type="button" class="guide-chip${s === cmpSlot ? ' is-active' : ''}" data-cmp-slot="${s}" aria-pressed="${s === cmpSlot}">${esc(s === 'all' ? t('armors.cmpAll') : t(`builder.slot.${s}`))}</button>`).join('')}</div>
+        ${compareTable(chosen[0], chosen[1], cmpSlot)}
+      </section>`;
+    }
+    cmpGrid.innerHTML = chosen.length
+      ? `${table}${cards}${chosen.length < 2 ? `<p class="arm-subtitle">${esc(t('armors.cmpPickOne'))}</p>` : ''}`
+      : `<p class="arm-subtitle">${esc(t('armors.hint'))}</p>`;
   }
 
   function render() {
@@ -227,7 +315,16 @@ export async function initArmorsPage(root, params) {
     const p = e.target.closest('[data-item-id]');
     if (p) openItemModal(p.dataset.itemId);
   });
-  cmpToggle.addEventListener('click', () => { compare = !compare; render(); });
+  cmpGrid.addEventListener('click', (e) => {
+    const s = e.target.closest('[data-cmp-slot]');
+    if (s) { cmpSlot = s.dataset.cmpSlot; renderCompare(); }
+  });
+  cmpToggle.addEventListener('click', () => {
+    compare = !compare;
+    // ao abrir a comparação, já começa com o conjunto que estava aberto
+    if (compare && !chosen.length && current) chosen = [current];
+    render();
+  });
   cmpClear.addEventListener('click', () => { chosen = []; render(); });
 
   const wanted = byId.get(params.get('set') || '');

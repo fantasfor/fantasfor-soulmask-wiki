@@ -1,5 +1,5 @@
 import { t, tCount, pick } from '../i18n.js';
-import { loadData, esc, normalize, fmtDuration, statParts, statList, iconImg, openItemModal } from '../data.js';
+import { loadData, loadIndex, esc, normalize, fmtDuration, statParts, statList, iconImg, openItemModal, sourceList } from '../data.js';
 
 export async function initFoodsPage(root, params) {
   const search = root.querySelector('#foods-search');
@@ -60,6 +60,33 @@ export async function initFoodsPage(root, params) {
     return s ? statParts(meta, s) : null;
   }
 
+  // onde conseguir: receita (bancada) + fontes do mundo (sources.json). Carrega depois da lista, sem atrasar a página.
+  let where = null; // { recipesOf: Map, benches, sources, creatures, bosses }
+  Promise.all([loadData('recipes'), loadData('benches'), loadData('sources'), loadIndex('creatures').catch(() => new Map()), loadIndex('bosses').catch(() => new Map())])
+    .then(([recipes, benches, sources, creatures, bosses]) => {
+      const recipesOf = new Map();
+      recipes.forEach((r) => { if (!recipesOf.has(r.item)) recipesOf.set(r.item, []); recipesOf.get(r.item).push(r); });
+      where = { recipesOf, benches, sources, creatures, bosses };
+      if (root.isConnected && view === 'cards') render();
+    })
+    .catch((e) => console.warn('foods: fontes', e));
+
+  function whereHtml(f) {
+    if (!where) return `<div class="food-card-where is-loading">${esc(t('foods.whereLoading'))}</div>`;
+    const rs = where.recipesOf.get(f.id) || [];
+    const benchIds = [...new Set(rs.flatMap((r) => r.benches || []))];
+    const benchNames = [...new Set(benchIds.map((b) => where.benches[b]).filter(Boolean).map((b) => pick(b, 'name')))];
+    const src = where.sources[f.id] || [];
+    if (!rs.length && !src.length) return `<div class="food-card-where"><strong>${esc(t('foods.where'))}</strong><p class="food-where-none">${esc(t('foods.whereNone'))}</p></div>`;
+    return `<div class="food-card-where">
+      <strong>${esc(t('foods.where'))}</strong>
+      ${rs.length ? `<p class="food-where-craft">${esc(t('foods.crafted'))}${benchNames.length ? ` <span>${esc(benchNames.join(', '))}</span>` : ''}
+        <a class="food-recipe-link" href="#bancada?item=${encodeURIComponent(f.id)}">${esc(t('foods.seeRecipe'))}</a></p>` : ''}
+      ${src.length ? sourceList(src, where.creatures, where.bosses, 3) : ''}
+      ${src.length > 3 ? `<button type="button" class="food-where-more" data-more="${esc(f.id)}">${esc(t('foods.whereMore', { n: src.length - 3 }))}</button>` : ''}
+    </div>`;
+  }
+
   function cardHtml(f) {
     return `
       <article class="food-card" data-item-id="${esc(f.id)}">
@@ -74,6 +101,7 @@ export async function initFoodsPage(root, params) {
         ${f.effects?.length ? `<div class="food-card-bonus"><strong>${esc(t('common.effects'))}</strong>${statList(meta, f.effects)}</div>` : ''}
         ${f.restores?.length ? `<div class="food-card-bonus"><strong>${esc(t('common.restores'))}</strong>${statList(meta, f.restores)}</div>` : ''}
         ${f.duration ? `<div class="food-card-duration"><strong>${esc(t('common.duration'))}:</strong> ${esc(fmtDuration(f.duration))}</div>` : ''}
+        ${whereHtml(f)}
       </article>`;
   }
 
@@ -141,6 +169,8 @@ export async function initFoodsPage(root, params) {
       render();
       return;
     }
+    // links e botões de "onde conseguir" têm ação própria (bancada / mapa); "mais fontes" abre os detalhes
+    if (e.target.closest('a[href], [data-map-find]')) return;
     const row = e.target.closest('[data-item-id]');
     if (row) openItemModal(row.dataset.itemId);
   });

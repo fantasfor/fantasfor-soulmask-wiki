@@ -53,13 +53,64 @@ export async function initFarmingPage(root, params) {
   const container = root.querySelector('#db-container');
   let crops = [];
   let items;
+  let ferts = [];
   try {
-    [crops, items] = await Promise.all([loadData('crops'), loadIndex('items')]);
+    [crops, items, ferts] = await Promise.all([loadData('crops'), loadIndex('items'), loadData('fertilizers').catch(() => [])]);
   } catch (e) {
     container.innerHTML = `<div class="items-error">${esc(t('common.errorLoading', { msg: e.message }))}</div>`;
     return;
   }
   if (params.get('q')) search.value = params.get('q');
+
+  // ---------------------------------------------------------------- fertilizantes (assets/data/fertilizers.json)
+  // tipo de adubo (0..3) -> fertilizante simples daquele tipo; o composto serve para todos
+  const fertOfType = new Map();
+  ferts.filter((f) => Object.keys(f.types).length === 1).forEach((f) => fertOfType.set(Number(Object.keys(f.types)[0]), f));
+  const universal = ferts.filter((f) => Object.keys(f.types).length > 1);
+  const cropById = new Map(crops.map((c) => [c.id, c]));
+  const fertName = (type) => { const f = fertOfType.get(type); return f ? pick(f, 'name') : t('farming.fertType', { n: type + 1 }); };
+  // unidades de fertilizante para cobrir "points" pontos de adubo do tipo dado
+  const unitsFor = (f, type, points) => points / (f.types[String(type)] || Infinity);
+
+  const fertEl = root.querySelector('#farm-fert-list');
+  if (fertEl) {
+    fertEl.innerHTML = ferts.length ? ferts.map((f) => {
+      const types = Object.entries(f.types);
+      const list = f.crops.map((id) => cropById.get(id)).filter(Boolean).sort((a, b) => pick(a, 'name').localeCompare(pick(b, 'name')));
+      return `<article class="farm-fert-card${types.length > 1 ? ' is-universal' : ''}">
+        <header class="farming-head">
+          <button type="button" class="farming-icon-btn" data-item-id="${esc(f.id)}" title="${esc(t('common.details'))}">${iconImg(f, 'farming-icon')}</button>
+          <div>
+            <h3 class="item-card-title">${esc(pick(f, 'name'))}</h3>
+            <span class="farming-seed">${esc(types.length > 1 ? t('farming.fertAll') : t('farming.fertFor', { n: list.length }))}</span>
+          </div>
+        </header>
+        ${pick(f, 'desc') ? `<p class="farming-desc">${esc(pick(f, 'desc'))}</p>` : ''}
+        <dl class="farming-facts">
+          <div><dt>${esc(t('farming.fertPoints'))}</dt><dd>${types.length > 1 ? esc(t('farming.fertPointsAll', { n: fmtNum(types[0][1], 0) })) : esc(fmtNum(types[0][1], 0))}</dd></div>
+          ${f.exp ? `<div><dt>${esc(t('farming.fertExp'))}</dt><dd>+${esc(fmtNum(f.exp, 0))}</dd></div>` : ''}
+          ${f.boost ? `<div><dt>${esc(t('farming.fertBoost'))}</dt><dd>${esc(t('farming.fertBoostVal', { p: fmtNum(f.boost.pct * 100, 0), h: fmtNum(f.boost.time / 3600, 1) }))}</dd></div>` : ''}
+        </dl>
+        ${types.length === 1 && list.length ? `<p class="farm-fert-crops">${list.map((c) => `<button type="button" class="farm-fert-crop" data-sim="${esc(c.id)}">${esc(pick(c, 'name'))}</button>`).join('')}</p>` : ''}
+        ${f.craft ? `<a class="item-card-tree" href="#bancada?item=${encodeURIComponent(f.id)}">${esc(t('farming.fertCraft'))}</a>` : ''}
+      </article>`;
+    }).join('') : '';
+    fertEl.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-item-id]');
+      if (b) openItemModal(b.dataset.itemId);
+    });
+  }
+
+  // texto do adubo de uma plantação: "100 por ciclo · Fertilizante de Cinzas (0,25 un.)"
+  function fertHtml(c, cycles = 1, plots = 1) {
+    if (!c.fert) return '';
+    const total = c.fert.amount * cycles * plots;
+    const f = fertOfType.get(c.fert.type);
+    const u = f ? unitsFor(f, c.fert.type, total) : 0;
+    const alt = universal[0];
+    const ua = alt ? unitsFor(alt, c.fert.type, total) : 0;
+    return `${esc(fmtNum(total, 0))} <small>· ${f ? `<a href="#" data-item-link="${esc(f.id)}">${esc(fertName(c.fert.type))}</a> ≈ ${esc(fmtNum(u, u < 10 ? 2 : 0))} ${esc(t('farming.units'))}` : esc(fertName(c.fert.type))}${alt ? ` ${esc(t('common.or'))} ${esc(pick(alt, 'name'))} ≈ ${esc(fmtNum(ua, ua < 10 ? 2 : 0))}` : ''}</small>`;
+  }
 
   function card(c) {
     const slow = c.temps.some((x) => x.mult > 1) ? Math.max(...c.temps.map((x) => x.mult)) : 1;
@@ -74,7 +125,7 @@ export async function initFarmingPage(root, params) {
         </header>
         <dl class="farming-facts">
           <div><dt>${esc(t('farming.growth'))}</dt><dd>${esc(fmtGrowth(c.growth))}${slow > 1 ? ` <small>(${esc(t('farming.slowNote', { x: fmtNum(slow, 1) }))})</small>` : ''}</dd></div>
-          ${c.fert ? `<div><dt>${esc(t('farming.fert'))}</dt><dd>${esc(fmtNum(c.fert.amount, 0))}</dd></div>` : ''}
+          ${c.fert ? `<div><dt>${esc(t('farming.fert'))}</dt><dd>${fertHtml(c)}</dd></div>` : ''}
           ${c.exp ? `<div><dt>${esc(t('farming.exp'))}</dt><dd>${esc(fmtNum(c.exp, 0))}</dd></div>` : ''}
         </dl>
         ${tempBar(c.temps)}
@@ -128,7 +179,7 @@ export async function initFarmingPage(root, params) {
         <span>${mult ? esc(t('farming.simTime', { time: fmtGrowth(time) })) : esc(t('farming.simStopped'))}</span>
       </div>
       <dl class="farming-facts">
-        ${c.fert ? `<div><dt>${esc(t('farming.simFert'))}</dt><dd>${esc(fmtNum(c.fert.amount * plots * cycles, 0))}</dd></div>` : ''}
+        ${c.fert ? `<div><dt>${esc(t('farming.simFert'))}</dt><dd>${fertHtml(c, cycles, plots)}</dd></div>` : ''}
         ${c.exp ? `<div><dt>${esc(t('farming.exp'))}</dt><dd>${esc(fmtNum(c.exp * plots * cycles, 0))}</dd></div>` : ''}
         <div><dt>${esc(t('farming.simSeeds'))}</dt><dd>${esc(fmtNum(plots * cycles, 0))}</dd></div>
       </dl>

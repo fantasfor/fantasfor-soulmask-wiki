@@ -332,6 +332,112 @@
   grid-template-columns: 1fr;
 }
 
+/* comparação de atributos (tabela A x B) */
+.arm-cmp-stats,
+.arm-comparison-grid > .arm-subtitle {
+  grid-column: 1 / -1;
+}
+
+.arm-cmp-stats {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #ecd760;
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.arm-cmp-stats .arm-section-title {
+  margin: 0;
+}
+
+.arm-cmp-score {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  color: #d9d2c5;
+  font-size: 0.86rem;
+}
+
+.arm-cmp-score strong {
+  display: inline-block;
+  min-width: 18px;
+  color: #ecd760;
+}
+
+.arm-cmp-table td,
+.arm-cmp-table th {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 600px) {
+  .arm-cmp-stats {
+    padding: 10px 6px;
+  }
+
+  .arm-cmp-table {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .arm-cmp-table th,
+  .arm-cmp-table td {
+    padding: 6px 4px;
+    font-size: 0.76rem;
+    word-break: break-word;
+  }
+}
+
+.arm-cmp-table td.arm-win {
+  color: #39d98a;
+  font-weight: 700;
+}
+
+.arm-diff.is-up {
+  color: #39d98a;
+}
+
+.arm-diff.is-down {
+  color: #e63946;
+}
+
+/* atributos aleatórios de cada peça */
+.arm-random {
+  border-top: 1px dashed rgba(255, 255, 255, 0.12);
+  padding-top: 6px;
+  font-size: 0.82rem;
+}
+
+.arm-random summary {
+  color: #ecd760;
+  cursor: pointer;
+}
+
+.arm-random-group {
+  display: block;
+  margin: 6px 0 2px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+}
+
+.arm-random-list .stat-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 46px;
+  gap: 8px;
+}
+
+.arm-random-chance {
+  color: var(--muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.arm-random-note {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
 .armaduras-loading,
 .armaduras-error {
   padding: 16px;

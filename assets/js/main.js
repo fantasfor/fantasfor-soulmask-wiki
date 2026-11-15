@@ -28,6 +28,9 @@ import { initServersPage } from './pages/servers.js';
 import { initWorkbenchPage } from './pages/workbench.js';
 import { initAttributesPage } from './pages/attributes.js';
 import { initRedCrystalsPage } from './pages/red-crystals.js';
+import { initCommunityPage } from './pages/community.js';
+import { initBuilderCommunity } from './pages/builder-community.js';
+import { initFavorites } from './favorites.js';
 
 // página -> função de inicialização (recebe o elemento raiz e os parâmetros da URL)
 const PAGE_INIT = {
@@ -40,7 +43,9 @@ const PAGE_INIT = {
   mascaras: initMasksPage,
   criaturas: initCreaturesPage,
   'tier-list': initTierListPage,
-  'builder-maker': initBuilderPage,
+  // editor (builder.js) + aba Comunidade (builder-community.js)
+  'builder-maker': async (root, params) => { await initBuilderPage(root, params); await initBuilderCommunity(root, params); },
+  comunidade: initCommunityPage,
   mapa: initMapPage,
   plantio: initFarmingPage,
   reportar: initReportPage,
@@ -457,6 +462,7 @@ async function init() {
   // conta (login Google) e sincronização das builds/tier lists; recarrega a página quando chegam dados da conta
   mountAccountWidget(document.querySelector('#account-box'));
   initCloud();
+  initFavorites(); // estrela nos botões da barra lateral + categoria Favoritos
   window.addEventListener('cloud-synced', () => loadPageFromHash({ keepScroll: true }));
   await loadPageFromHash();
 }

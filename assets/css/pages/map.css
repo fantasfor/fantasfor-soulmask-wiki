@@ -1282,3 +1282,118 @@
   font-size: 0.76rem;
   line-height: 1.4;
 }
+
+/* ---------------------------------------------------------------- procurar loot (item -> fontes) */
+.map-lootsearch {
+  display: grid;
+  gap: 6px;
+}
+
+.map-lootsearch .map-hint {
+  margin: 0;
+}
+
+.map-loot-cols {
+  display: grid;
+  gap: 6px;
+}
+
+.map-loot-list,
+.map-loot-srcs {
+  margin: 0;
+  padding: 4px;
+  border: 1px solid #686e73;
+  background: #191a1a;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.map-loot-list {
+  max-height: 210px;
+}
+
+.map-loot-srcs {
+  display: grid;
+  align-content: start;
+  gap: 3px;
+  max-height: 200px;
+  min-height: 44px;
+}
+
+.map-loot-srcs .map-hint {
+  margin: 4px;
+}
+
+.map-loot-item {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 3px 4px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.map-loot-item:hover,
+.map-loot-item:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.map-loot-item[aria-pressed="true"] {
+  background: rgba(236, 180, 60, 0.18);
+  color: #f3efe8;
+  font-weight: 700;
+  box-shadow: inset 2px 0 0 #ecb43c;
+}
+
+.map-loot-item img,
+.map-loot-item i {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.map-loot-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-loot-srcs small {
+  color: #ecb43c;
+}
+
+.map-loot-note {
+  margin: 2px 4px 4px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+
+.map-loot-note a {
+  color: var(--accent);
+}
+
+/* aviso rápido do botão direito (visitado) */
+.map-toast {
+  position: absolute;
+  z-index: 800;
+  padding: 4px 8px;
+  border: 1px solid #686e73;
+  background: rgba(13, 13, 13, 0.92);
+  color: var(--text);
+  font-size: 0.74rem;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 14px));
+}
+
+.map-toast[hidden] {
+  display: none;
+}

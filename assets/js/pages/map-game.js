@@ -82,7 +82,7 @@ const writeJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); 
 
 const MODE_KEY = 'map_game_mode';
 
-export async function initGameLayers(L, map, root, mapId = 'main', startQuery = '') {
+export async function initGameLayers(L, map, root, mapId = 'main', startQuery = '', params = null) {
   const panel = root.querySelector('#map-layers');
   const searchEl = root.querySelector('#map-search');
   const visitEl = root.querySelector('#map-visits');
@@ -149,6 +149,19 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
   const babyName = (id) => (data.babyNames?.[id] ? pick({ name_pt: data.babyNames[id].pt, name_en: data.babyNames[id].en }, 'name')
     : pick(creatures.get(id), 'name') || id);
 
+  // tipo de conteúdo do baú pelo nome dele no jogo (cores em build_data.py CHEST_TINT)
+  function chestKind(labelIdx, cat) {
+    const en = m.labels[labelIdx]?.en || '';
+    if (cat === 'maskChest' || /holy|legend/i.test(en)) return 'holy';
+    if (/engine core/i.test(en)) return 'core';
+    if (/relic/i.test(en)) return 'relic';
+    if (/suppl/i.test(en)) return 'supply';
+    if (/^storage box$/i.test(en)) return 'junk';
+    if (/storage/i.test(en)) return 'storage';
+    return 'relic';
+  }
+  const chestIcon = (labelIdx, cat) => data.icons?.chestTint?.[chestKind(labelIdx, cat)] || data.icons?.chest;
+
   // ---------------------------------------------------------------- pontos normalizados
   // k = chave do filtro (categoria, "a:<criatura>" ou "e:<inimigo>"), icon = url do ícone do jogo
   const points = m.points.map((p, idx) => {
@@ -181,7 +194,8 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       o.icon = data.icons?.invasion; o.size = 22;
     } else if (cat === 'chest' || cat === 'maskChest') {
       o.k = `c:${p[4]}`; o.label = p[4]; o.level = p[5]; o.bag = p[6]; o.boss = p[7];
-      o.icon = data.icons?.chest; o.size = 20; // mesmo ícone para todos os baús
+      // mesmo ícone para todos os baús, pintado por tipo de conteúdo
+      o.icon = chestIcon(p[4], cat); o.size = 16;
     } else if (cat === 'summon') {
       // altar de invocação dos chefes da DLC (Sobek, Escaravelho, Anúbis), ao lado da pirâmide deles
       o.boss = p[4]; o.k = `b:${p[4]}`; o.summon = true;
@@ -281,7 +295,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     }
     if (g === 'chests') {
       return Object.keys(chestKeys)
-        .map((k) => ({ k, name: lab(Number(k.slice(2))) || t('map.game.chest'), n: chestKeys[k], icon: data.icons?.chest }))
+        .map((k) => ({ k, name: lab(Number(k.slice(2))) || t('map.game.chest'), n: chestKeys[k], icon: chestIcon(Number(k.slice(2)), chestMask[k] ? 'maskChest' : 'chest') }))
         .sort((a, b) => a.name.localeCompare(b.name));
     }
     if (g === 'babies') {
@@ -374,7 +388,8 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
         <button type="button" class="map-btn map-btn-sm" data-visit-act="rename" title="${esc(t('map.visitRename'))}">${esc(t('map.visitRenameShort'))}</button>
         <button type="button" class="map-btn map-btn-sm" data-visit-act="delete" title="${esc(t('map.visitDelete'))}">&times;</button>
       </div>
-      <label class="map-check"><input type="checkbox" data-visit-hide ${hideVisited ? 'checked' : ''} /> <span>${esc(t('map.visitHide'))}</span><small>${visited.size}</small></label>`;
+      <label class="map-check"><input type="checkbox" data-visit-hide ${hideVisited ? 'checked' : ''} /> <span>${esc(t('map.visitHide'))}</span><small>${visited.size}</small></label>
+      <p class="map-hint">${esc(t('map.visitRightClick'))}</p>`;
   }
   visitEl.addEventListener('change', (e) => {
     if (e.target.matches('[data-visit-save]')) {
@@ -432,7 +447,159 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
   ].filter(Boolean).join(' '));
   const matches = (o) => (nameOnly ? nameHay(o).includes(query) : hay(o).includes(query));
 
-  const isVisible = (o) => (query.length >= 2 ? matches(o) : on[o.k])
+  // ---------------------------------------------------------------- procurar loot (item -> onde se obtém)
+  // itens que cada ponto pode dar: bolsa de drop do ponto, recompensas do chefe, inimigos e baús da masmorra
+  const bagSets = {};
+  const bagSet = (b) => {
+    if (!b || !data.bags?.[b]) return null;
+    if (!bagSets[b]) bagSets[b] = new Set(data.bags[b].map((r) => r[0]));
+    return bagSets[b];
+  };
+  function pointItems(o) {
+    if (o._items !== undefined) return o._items;
+    const s = new Set();
+    bagSet(o.bag)?.forEach((id) => s.add(id));
+    if (o.k.startsWith('b:')) {
+      (bossById.get(o.boss)?.tiers || []).forEach((ti) => {
+        [...(ti.drops || []), ...(ti.final || [])].forEach((d) => s.add(d.id));
+        (ti.groups || []).forEach((r) => s.add(r[0]));
+      });
+    }
+    if (o.dg) [...(o.dg.enemies || []), ...(o.dg.chests || [])].forEach((e) => bagSet(e.bag)?.forEach((id) => s.add(id)));
+    o._items = s.size ? s : null;
+    return o._items;
+  }
+  let lootIndex = null;   // item -> Map(chave do filtro -> nº de pontos)
+  function buildLootIndex() {
+    if (lootIndex) return lootIndex;
+    lootIndex = new Map();
+    points.forEach((o) => {
+      pointItems(o)?.forEach((id) => {
+        if (!items.get(id)) return;
+        if (!lootIndex.has(id)) lootIndex.set(id, new Map());
+        const mk = lootIndex.get(id);
+        mk.set(o.k, (mk.get(o.k) || 0) + 1);
+      });
+    });
+    return lootIndex;
+  }
+  let entryByK = null;   // chave do filtro -> nome e ícone (os mesmos da lista de filtros)
+  const entryOf = (k) => {
+    if (!entryByK) entryByK = new Map(GROUPS.flatMap((g) => groupEntries(g)).map((e) => [e.k, e]));
+    return entryByK.get(k) || { k, name: t(`map.game.${k}`), icon: data.icons?.[k] };
+  };
+
+  // foco: só os pontos dessas chaves (e, se houver itens, só os que dão algum deles)
+  let focusKeys = null;
+  let focusItems = null;
+  let focusAll = [];   // fontes encontradas: [{ k, n }]
+  const hasAnyItem = (o) => { const s = pointItems(o); return !!s && [...focusItems].some((id) => s.has(id)); };
+  const lootEl = root.querySelector('#map-loot');
+  let lootFilter = '';
+  let lootSel = null;   // item escolhido na lista
+
+  function renderLootItems() {
+    if (!lootEl) return;
+    const list = lootEl.querySelector('[data-loot-items]');
+    const q = normalize(lootFilter);
+    const ids = [...buildLootIndex().keys()]
+      .map((id) => ({ id, it: items.get(id) }))
+      .filter((e) => !q || normalize(`${e.it.name_pt} ${e.it.name_en}`).includes(q))
+      .sort((a, b) => pick(a.it, 'name').localeCompare(pick(b.it, 'name')));
+    list.innerHTML = ids.length ? ids.map(({ id, it }) => `<li><button type="button" class="map-loot-item" data-loot-item="${esc(id)}" aria-pressed="${id === lootSel}">
+        ${it.icon ? `<img src="${esc(it.icon)}" alt="" loading="lazy" />` : '<i></i>'}<span>${esc(pick(it, 'name'))}</span></button></li>`).join('')
+      : `<li class="map-hint">${esc(t('map.loot.noItems'))}</li>`;
+  }
+  function renderLootSources(note = '') {
+    if (!lootEl) return;
+    const box = lootEl.querySelector('[data-loot-srcs]');
+    if (!focusKeys) { box.innerHTML = `<p class="map-hint">${esc(t('map.loot.pick'))}</p>`; return; }
+    box.innerHTML = (note ? `<p class="map-loot-note">${note}</p>` : '') + (focusAll.length ? focusAll.map(({ k, n }) => {
+      const e = entryOf(k);
+      return `<label class="map-check">
+        <input type="checkbox" data-loot-k="${esc(k)}" ${focusKeys.has(k) ? 'checked' : ''} />
+        ${e.icon ? `<img src="${esc(e.icon)}" alt="" />` : ''}<span title="${esc(e.name)}">${esc(e.name)}</span><small>[${n}]</small></label>`;
+    }).join('') : '');
+  }
+  function fitTo(list) {
+    if (!list.length) return;
+    const ys = list.map((o) => SIZE - o.y); const xs = list.map((o) => o.x);
+    map.fitBounds([[Math.min(...ys) - 8, Math.min(...xs) - 8], [Math.max(...ys) + 8, Math.max(...xs) + 8]], { maxZoom: 2, animate: false });
+  }
+  const otherMap = mapId === 'dlc' ? 'main' : 'dlc';
+  const otherMapLink = (param) => `<a href="#mapa?map=${otherMap}&${param}">${esc(t(otherMap === 'dlc' ? 'map.mapDlc' : 'map.mapMain'))}</a>`;
+  // mostra no mapa só os pontos que dão algum destes itens
+  function focusOnItems(ids, { fit = true, note = '' } = {}) {
+    focusItems = new Set(ids);
+    const count = new Map();
+    const hits = points.filter((o) => hasAnyItem(o));
+    hits.forEach((o) => count.set(o.k, (count.get(o.k) || 0) + 1));
+    focusAll = [...count.entries()].map(([k, n]) => ({ k, n })).sort((a, b) => b.n - a.n || entryOf(a.k).name.localeCompare(entryOf(b.k).name));
+    focusKeys = new Set(count.keys());
+    let msg = note;
+    if (!hits.length) msg = `${note ? `${note} ` : ''}${esc(t('map.loot.noneHere'))} ${otherMapLink(`item=${encodeURIComponent(ids.join(','))}`)}`;
+    renderLootSources(msg);
+    if (fit) fitTo(hits);
+    layer.redraw();
+  }
+  // mostra no mapa só os pontos destas chaves (ex.: uma criatura vinda da página Criaturas)
+  function focusOnKeys(keys, otherParam) {
+    focusItems = null;
+    const hits = points.filter((o) => keys.includes(o.k));
+    const count = new Map();
+    hits.forEach((o) => count.set(o.k, (count.get(o.k) || 0) + 1));
+    focusAll = keys.filter((k) => count.has(k)).map((k) => ({ k, n: count.get(k) }));
+    focusKeys = new Set(focusAll.map((e) => e.k));
+    renderLootSources(hits.length ? '' : `${esc(t('map.loot.noneHere'))} ${otherMapLink(otherParam)}`);
+    fitTo(hits);
+    layer.redraw();
+  }
+  function clearFocus() {
+    focusKeys = null; focusItems = null; focusAll = []; lootSel = null;
+    renderLootSources();
+    lootEl?.querySelectorAll('[data-loot-item][aria-pressed="true"]').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+    layer.redraw();
+  }
+  if (lootEl) {
+    lootEl.innerHTML = `
+      <p class="map-hint">${esc(t('map.loot.hint'))}</p>
+      <input type="search" class="map-input" data-loot-filter placeholder="${esc(t('map.loot.filter'))}" aria-label="${esc(t('map.loot.filter'))}" />
+      <div class="map-loot-cols">
+        <ul class="map-loot-list" data-loot-items></ul>
+        <div class="map-loot-srcs" data-loot-srcs></div>
+      </div>
+      <button type="button" class="map-btn map-btn-sm" data-loot-clear>${esc(t('map.loot.clear'))}</button>`;
+    renderLootItems();
+    renderLootSources();
+    lootEl.querySelector('[data-loot-filter]').addEventListener('input', (e) => { lootFilter = e.target.value.trim(); renderLootItems(); });
+    lootEl.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-loot-item]');
+      if (b) {
+        lootSel = b.dataset.lootItem;
+        lootEl.querySelectorAll('[data-loot-item]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        if (searchEl.value) { searchEl.value = ''; query = ''; }
+        focusOnItems([lootSel]);
+        return;
+      }
+      if (e.target.closest('[data-loot-clear]')) {
+        clearFocus();
+        lootFilter = '';
+        lootEl.querySelector('[data-loot-filter]').value = '';
+        renderLootItems();
+      }
+    });
+    lootEl.addEventListener('change', (e) => {
+      const cb = e.target.closest('[data-loot-k]');
+      if (!cb || !focusKeys) return;
+      if (cb.checked) focusKeys.add(cb.dataset.lootK); else focusKeys.delete(cb.dataset.lootK);
+      layer.redraw();
+    });
+  }
+  // a busca por nome desliga o "procurar loot"
+  searchEl.addEventListener('input', () => { if (focusKeys) clearFocus(); });
+
+  const isVisible = (o) => (focusKeys ? focusKeys.has(o.k) && (!focusItems || hasAnyItem(o))
+    : query.length >= 2 ? matches(o) : on[o.k])
     && !(hideVisited && visited.has(o.id));
 
   // ---------------------------------------------------------------- camada de ícones (canvas)
@@ -477,7 +644,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const zoomScale = Math.max(0.7, Math.min(1.6, 1 + mp.getZoom() * 0.2));
       drawn = [];
-      const searching = query.length >= 2;
+      const searching = query.length >= 2 || !!focusKeys;
       points.forEach((o) => {
         if (!isVisible(o)) return;
         const pt = mp.latLngToContainerPoint([SIZE - o.y, o.x]);
@@ -551,6 +718,18 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     }
     layer.redraw();
   }
+  // aberto com #mapa?creature=<id> (página Criaturas) ou #mapa?item=<id>[,<id>...] (Máscaras, itens)
+  const startCreature = params?.get('creature');
+  const startItems = (params?.get('item') || '').split(',').filter((id) => items.get(id));
+  if (startCreature) {
+    focusOnKeys([`a:${startCreature}`], `creature=${encodeURIComponent(startCreature)}`);
+  } else if (startItems.length) {
+    lootSel = startItems[0];
+    const it = items.get(lootSel);
+    focusOnItems(startItems, { note: `${esc(t('map.loot.showing'))} <strong>${esc(pick(it, 'name'))}</strong>` });
+    const btn = lootEl?.querySelector(`[data-loot-item="${CSS.escape(lootSel)}"]`);
+    if (btn) { btn.setAttribute('aria-pressed', 'true'); btn.scrollIntoView({ block: 'nearest' }); }
+  }
 
   // coordenadas do jogo onde o mouse está (mesma escala do "X / Y" das janelas e do gm go)
   if (map._coordCtl) map.removeControl(map._coordCtl);
@@ -580,19 +759,46 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
   map.on('mouseout', map._coordOut);
 
   // clique num ícone: abre a janela de informações (o mais próximo do clique)
-  map.on('click', (e) => {
-    if (root.querySelector('#map-add')?.getAttribute('aria-pressed') === 'true') return;
-    const p = e.containerPoint;
+  function hitAt(px, py) {
     let best = null; let bd = Infinity;
     drawn.forEach((d) => {
-      const dist = (d.x - p.x) ** 2 + (d.y - p.y) ** 2;
+      const dist = (d.x - px) ** 2 + (d.y - py) ** 2;
       // ícones sobrepostos: vale o maior (ex.: a pirâmide antes do baú dela), depois o mais próximo
       const score = dist - d.o.size * 40;
       if (dist <= d.r * d.r && score < bd) { best = d; bd = score; }
     });
-    if (!best) return;
-    openSide(best.o);
+    return best?.o || null;
+  }
+  map.on('click', (e) => {
+    if (root.querySelector('#map-add')?.getAttribute('aria-pressed') === 'true') return;
+    const o = hitAt(e.containerPoint.x, e.containerPoint.y);
+    if (o) openSide(o);
   });
+  // botão direito (ou toque longo) num marcador: marca / desmarca como visitado, sem o menu do navegador
+  const toast = L.DomUtil.create('div', 'map-toast', map.getContainer());
+  toast.hidden = true;
+  let toastTimer;
+  if (map._ctxMenu) map.getContainer().removeEventListener('contextmenu', map._ctxMenu);
+  map._ctxMenu = (e) => {
+    const r = map.getContainer().getBoundingClientRect();
+    const o = hitAt(e.clientX - r.left, e.clientY - r.top);
+    if (!o) return;
+    e.preventDefault();
+    const now = !visited.has(o.id);
+    if (now) visited.add(o.id); else visited.delete(o.id);
+    saveVisits();
+    renderVisits();
+    const sw = side.querySelector(`[data-visit-id="${CSS.escape(o.id)}"]`);
+    if (sw) sw.checked = now;
+    toast.textContent = t(now ? 'map.visitMarked' : 'map.visitUnmarked', { save: visits.current });
+    toast.style.left = `${e.clientX - r.left}px`;
+    toast.style.top = `${e.clientY - r.top}px`;
+    toast.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast.hidden = true; }, 1300);
+    layer.redraw();
+  };
+  map.getContainer().addEventListener('contextmenu', map._ctxMenu);
 
   // painel de informações fixo no canto superior direito do mapa
   if (map._sidePanel) map._sidePanel.remove();
@@ -781,7 +987,24 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       </details>`;
     };
     let html = '';
-    const beasts = groupBy(around.filter((q) => q.creature), (q) => q.creature);
+    let beastPts = around.filter((q) => q.creature);
+    // covil / fera: a criatura às vezes nasce um pouco fora do raio; usa a mais próxima (até ~110 m)
+    if (!beastPts.length && (o.cat === 'lair' || o.cat === 'beast')) {
+      let best = null; let bd = 14 * 14;
+      points.forEach((q) => {
+        if (!q.creature) return;
+        const d = (q.x - o.x) ** 2 + (q.y - o.y) ** 2;
+        if (d <= bd) { best = q; bd = d; }
+      });
+      if (best) beastPts = points.filter((q) => q.creature === best.creature && (q.x - best.x) ** 2 + (q.y - best.y) ** 2 <= 9);
+    }
+    const beasts = groupBy(beastPts, (q) => q.creature);
+    // covil / fera: foto da criatura principal e link para a enciclopédia
+    if (beasts.length && (o.cat === 'lair' || o.cat === 'beast')) {
+      const c = creatures.get(beasts[0].q.creature);
+      if (c?.photo) html += `<div class="mp-hero mp-hero-solo"><img src="${esc(c.photo)}" alt="" /></div>`;
+      if (c) html += `<a class="mp-link" href="#criaturas?q=${encodeURIComponent(pick(c, 'name'))}">${esc(t('map.seeCreature'))}</a>`;
+    }
     if (beasts.length) {
       html += block(t(o.cat === 'lair' || o.cat === 'beast' ? 'map.beastsHere' : 'map.animalsHere'),
         beasts.map((g) => row(g, creatureName(g.q.creature), g.q.popIcon, multOf(g.q), 'map.harvest')).join(''));

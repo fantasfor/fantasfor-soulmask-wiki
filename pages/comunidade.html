@@ -1,0 +1,42 @@
+<section class="tier-list-page community-page">
+  <header class="tier-list-header">
+    <span class="tier-list-eyebrow" data-i18n="tier.eyebrow">Soulmask Fantasfor Wiki</span>
+    <h1 data-i18n="cm.title">Comunidade</h1>
+    <p data-i18n="cm.subtitle">Builds, tier lists e servidores publicados pelos jogadores, num só lugar. Avalie com estrelas, comente e guarde nos favoritos.</p>
+  </header>
+
+  <div class="cm-publish" aria-label="Publicar" data-i18n-aria="cm.publish">
+    <span class="tier-muted" data-i18n="cm.publishHint">Publique o seu:</span>
+    <a class="tier-btn" href="#builder-maker" data-i18n="cm.publishBuild">Build no Builder Maker</a>
+    <a class="tier-btn" href="#tier-list" data-i18n="cm.publishTier">Tier list</a>
+    <a class="tier-btn" href="#servidores" data-i18n="cm.publishServer">Servidor</a>
+  </div>
+
+  <div class="tier-list-categories cm-types" role="group" aria-label="Tipo" data-i18n-aria="cm.type">
+    <button type="button" class="tier-category is-active" data-type="" aria-pressed="true"><span data-i18n="cm.all">Tudo</span> <span class="cm-n" data-n=""></span></button>
+    <button type="button" class="tier-category" data-type="build" aria-pressed="false"><span data-i18n="cm.builds">Builds</span> <span class="cm-n" data-n="build"></span></button>
+    <button type="button" class="tier-category" data-type="tier" aria-pressed="false"><span data-i18n="cm.tiers">Tier lists</span> <span class="cm-n" data-n="tier"></span></button>
+    <button type="button" class="tier-category" data-type="server" aria-pressed="false"><span data-i18n="cm.servers">Servidores</span> <span class="cm-n" data-n="server"></span></button>
+    <button type="button" class="tier-category cm-fav-type" data-type="favoritos" aria-pressed="false"><span aria-hidden="true">★</span> <span data-i18n="fav.title">Favoritos</span> <span class="cm-n" data-n="favoritos"></span></button>
+  </div>
+
+  <div class="tier-community-bar cm-bar">
+    <input type="search" class="tier-entry-input" id="cm-search" placeholder="Buscar por título, autor ou descrição..." data-i18n-placeholder="cm.search" aria-label="Buscar" data-i18n-aria="site.search" />
+    <select class="tier-entry-input" id="cm-sort" aria-label="Ordenar" data-i18n-aria="tier.sort">
+      <option value="rating" data-i18n="tier.sortRating">Melhor avaliadas</option>
+      <option value="recent" data-i18n="tier.sortRecent">Mais recentes</option>
+      <option value="comments" data-i18n="cm.sortComments">Mais comentadas</option>
+      <option value="votes" data-i18n="tier.sortVotes">Mais avaliadas</option>
+    </select>
+  </div>
+
+  <div id="cm-fav-pages"></div>
+  <div class="tier-community-grid cm-grid" id="cm-grid" aria-live="polite"><p class="tier-muted" data-i18n="site.loading">Carregando...</p></div>
+
+  <div class="tier-viewer" id="cm-viewer" hidden>
+    <section class="tier-viewer-dialog" role="dialog" aria-modal="true" aria-labelledby="cm-viewer-title">
+      <button type="button" class="tier-viewer-close" data-close aria-label="Fechar" data-i18n-aria="common.close">&times;</button>
+      <div id="cm-viewer-body"></div>
+    </section>
+  </div>
+</section>

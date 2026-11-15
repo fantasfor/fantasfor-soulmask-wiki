@@ -47,20 +47,21 @@ function emptyBuild() {
 }
 
 // ------------------------------------------------------------------ link compartilhável
-function toBase64Url(str) {
+// (exportadas: usadas também pela aba Comunidade, pages/builder-community.js)
+export function toBase64Url(str) {
   const bytes = new TextEncoder().encode(str);
   let bin = '';
   bytes.forEach((b) => { bin += String.fromCharCode(b); });
   return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-function fromBase64Url(s) {
+export function fromBase64Url(s) {
   const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/'));
   const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
   return new TextDecoder().decode(bytes);
 }
 
-function compact(b) {
+export function compact(b) {
   return {
     n: b.name || undefined,
     d: b.description || undefined,
@@ -117,7 +118,8 @@ export async function initBuilderPage(root, params) {
     hMaster: $('#builderHeaderMaster'),
     hTribe: $('#builderHeaderTribe'),
     hTitle: $('#builderHeaderTitle'),
-    saved: $('#savedBuildsList'),
+    saved: $('#savedBuildsSelect'),
+    savedDel: $('#savedBuildDelete'),
     setBonus: $('#setBonusPanel'),
     totals: $('#buildTotals'),
     importInput: $('#buildImportInput'),
@@ -479,7 +481,11 @@ export async function initBuilderPage(root, params) {
     el.hMaster.style.display = el.tribe.value ? 'inline' : 'none';
     const tribeT = talentIdx.get(state.talents[0]);
     const titleT = talentIdx.get(state.talents[1]);
-    el.hTribe.textContent = tribeT ? (tribeT.excl?.length ? tribeT.excl.map(L).join(', ') : pick(tribeT, 'name')) : t('builder.notSelected');
+    // o rótulo "<Tribo ...>" já diz "Tribo": tira a palavra do nome para não repetir ("Tribo Garra" -> "Garra")
+    const noTribeWord = (s) => String(s || '').replace(/^(tribo|tribe)\s*[-–:]?\s*/i, '').replace(/\s+(tribe|tribo)$/i, '').trim() || s;
+    el.hTribe.textContent = tribeT
+      ? [...new Set(tribeT.excl?.length ? tribeT.excl.map((e) => noTribeWord(L(e))) : [noTribeWord(pick(tribeT, 'name'))])].join(', ')
+      : t('builder.notSelected');
     el.hTitle.textContent = titleT ? pick(titleT, 'name') : t('builder.notSelectedM');
   }
 
@@ -551,18 +557,16 @@ export async function initBuilderPage(root, params) {
   function gmCommands() {
     const level = el.expLevel.value || 'max';
     const ids = state.talents.map((id) => talentGameId(talentIdx.get(id), level)).filter(Boolean);
-    return ids.length ? ['gm ClearNG', ...ids.map((id) => `gm AddNG ${id} 1 0`)] : [];
+    // os IDs dos talentos são só números; qualquer "-" é removido para o comando não quebrar
+    const clean = ids.map((id) => String(id).replace(/-/g, '').trim()).filter(Boolean);
+    return clean.length ? ['gm ClearNG', ...clean.map((id) => `gm AddNG ${id} 1 0`)] : [];
   }
 
   function macroCode() {
     const cmds = gmCommands();
     if (!cmds.length) return '';
-    const name = el.name.value.trim() || t('builder.unnamed');
-    const out = [
-      { type: 'comment', value: t('builder.macroComment', { name, n: cmds.length - 1 }), delay: 0, options: {} },
-      { type: 'key', value: '-', delay: 0.3, options: { key_action: 'normal' } },
-      { type: 'key', value: '-', delay: 0.5, options: { key_action: 'normal' } }
-    ];
+    // macro simplificada: só "gm ClearNG" e um "gm AddNG" por talento (sem comentário e sem teclas "-")
+    const out = [];
     cmds.forEach((line) => {
       out.push({ type: 'type_text', value: line, delay: 0.2, options: { interval: 0.02 } });
       out.push({ type: 'key', value: 'enter', delay: 0.5, options: { key_action: 'normal' } });
@@ -624,23 +628,15 @@ export async function initBuilderPage(root, params) {
     renderAll();
   }
 
+  // menu suspenso das builds salvas (ao lado do nome); o botão ao lado exclui a build aberta
   function renderSaved() {
-    if (!savedBuilds.length) {
-      el.saved.innerHTML = `<div class="saved-build-empty">${esc(t('builder.noSaved'))}</div>`;
-      return;
-    }
     const fmt = (iso) => { try { return new Date(iso).toLocaleString(document.documentElement.lang, { dateStyle: 'short', timeStyle: 'short' }); } catch (e) { return ''; } };
-    el.saved.innerHTML = savedBuilds.map((b) => `
-      <article class="saved-build-card ${b.id === state.id ? 'active' : ''}">
-        <button type="button" class="saved-build-main" data-action="load" data-id="${esc(b.id)}">
-          <h3 class="saved-build-name">${esc(b.name || t('builder.unnamed'))}</h3>
-          <p class="saved-build-date">${esc(fmt(b.updatedAt))}</p>
-        </button>
-        <div class="saved-build-actions">
-          <button type="button" class="saved-build-btn" data-action="load" data-id="${esc(b.id)}" aria-label="${esc(t('builder.edit'))}" title="${esc(t('builder.edit'))}">${esc(t('builder.edit'))}</button>
-          <button type="button" class="saved-build-btn delete" data-action="delete" data-id="${esc(b.id)}" aria-label="${esc(t('builder.delete'))}" title="${esc(t('builder.delete'))}">${esc(t('builder.delete'))}</button>
-        </div>
-      </article>`).join('');
+    const isSaved = savedBuilds.some((b) => b.id === state.id);
+    const head = savedBuilds.length ? t('builder.savedPick', { n: savedBuilds.length }) : t('builder.noSaved');
+    el.saved.innerHTML = `<option value="">${esc(head)}</option>${savedBuilds.map((b) => `<option value="${esc(b.id)}">${esc(b.name || t('builder.unnamed'))}${b.updatedAt ? ` · ${esc(fmt(b.updatedAt))}` : ''}</option>`).join('')}`;
+    el.saved.value = isSaved ? state.id : '';
+    el.saved.disabled = !savedBuilds.length;
+    el.savedDel.disabled = !isSaved;
   }
 
   // rascunho da sessão: mantém a build ao trocar de idioma ou de página
@@ -806,6 +802,7 @@ export async function initBuilderPage(root, params) {
     const i = savedBuilds.findIndex((b) => b.id === p.id);
     if (i >= 0) savedBuilds[i] = p; else savedBuilds.unshift(p);
     persist();
+    saveDraft();   // o rascunho guarda o id: ao recarregar, o menu continua mostrando esta build
     renderSaved();
     flash(el.status, t('builder.saved', { name: p.name || t('builder.unnamed') }));
   });
@@ -836,19 +833,19 @@ export async function initBuilderPage(root, params) {
       el.importInput.value = '';
     }
   });
-  el.saved.addEventListener('click', (e) => {
-    const b = e.target.closest('[data-action]');
-    if (!b) return;
-    const build = savedBuilds.find((x) => x.id === b.dataset.id);
+  el.saved.addEventListener('change', () => {
+    const build = savedBuilds.find((x) => x.id === el.saved.value);
+    if (build) applyBuild(build);
+  });
+  el.savedDel.addEventListener('click', () => {
+    const build = savedBuilds.find((x) => x.id === state.id);
     if (!build) return;
-    if (b.dataset.action === 'delete') {
-      savedBuilds = savedBuilds.filter((x) => x.id !== build.id);
-      if (state.id === build.id) state.id = null;
-      persist();
-      renderSaved();
-      return;
-    }
-    applyBuild(build);
+    if (!window.confirm(t('builder.deleteConfirm', { name: build.name || t('builder.unnamed') }))) return;
+    savedBuilds = savedBuilds.filter((x) => x.id !== build.id);
+    state.id = null;
+    persist();
+    renderSaved();
+    flash(el.status, t('builder.deleted'));
   });
   root.querySelector('#actionCopyTalentCode').addEventListener('click', async () => {
     const code = macroCode();

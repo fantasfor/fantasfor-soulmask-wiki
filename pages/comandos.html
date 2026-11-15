@@ -4,6 +4,59 @@
     <p class="items-subtitle" data-i18n="cmd.subtitle">Todos os comandos GM do jogo explicados. Escreva o que você quer fazer e o site acha o comando.</p>
   </div>
 
+  <style>
+    /* destaque: ativar o GM em Solo/Host antes dos comandos */
+    .cmd-gm-key {
+      display: grid;
+      gap: 8px;
+      margin: 0 0 16px;
+      padding: 14px 16px;
+      border: 1px solid #ecb43c;
+      border-left-width: 5px;
+      background: linear-gradient(90deg, rgba(236, 180, 60, 0.12), rgba(236, 180, 60, 0.02));
+    }
+
+    .cmd-gm-key h2 {
+      margin: 0;
+      color: #ecb43c;
+      font-family: "Cinzel", serif;
+      font-size: 1.05rem;
+      letter-spacing: 0.04em;
+    }
+
+    .cmd-gm-key p {
+      margin: 0;
+      color: #e8dfcf;
+      line-height: 1.5;
+    }
+
+    .cmd-gm-key-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cmd-gm-key-line code {
+      padding: 6px 12px;
+      border: 1px solid #686e73;
+      background: #0d0d0d;
+      color: #ecb43c;
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+  </style>
+
+  <section class="cmd-gm-key" aria-labelledby="cmd-gm-key-title">
+    <h2 id="cmd-gm-key-title" data-i18n="cmd.gmKeyTitle">Primeiro passo: ativar o GM (Solo/Host)</h2>
+    <p data-i18n-html="cmd.gmKeyText">Jogando Solo ou hospedando (Host), os comandos de GM só funcionam depois que você ativa o GM. Abra o console e rode este comando <strong>antes</strong> de qualquer outro:</p>
+    <div class="cmd-gm-key-line">
+      <code>gm key 123456</code>
+      <button type="button" class="map-btn map-btn-sm" data-copy="gm key 123456" data-i18n="cmd.copy">Copiar</button>
+    </div>
+    <p data-i18n-html="cmd.gmKeyNote">Em servidor dedicado, troque 123456 pela senha de admin do servidor.</p>
+  </section>
+
   <section class="guide-explain">
     <h2 data-i18n="cmd.howTitle">Como usar</h2>
     <ol class="guide-steps">

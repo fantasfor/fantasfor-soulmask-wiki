@@ -38,6 +38,23 @@ function allZones() {
     .filter((x) => x.off !== null)
     .sort((a, b) => a.off - b.off || a.z.localeCompare(b.z));
 }
+
+// cidade principal de cada deslocamento (o seletor mostra só um fuso por horário, sem repetições)
+const MAIN_ZONES = ['Pacific/Pago_Pago', 'Pacific/Honolulu', 'America/Anchorage', 'America/Los_Angeles', 'America/Denver',
+  'America/Mexico_City', 'America/Chicago', 'America/New_York', 'America/Caracas', 'America/Halifax', 'America/St_Johns',
+  'America/Sao_Paulo', 'America/Noronha', 'Atlantic/Azores', 'Europe/London', 'Europe/Paris', 'Europe/Athens', 'Europe/Moscow',
+  'Asia/Tehran', 'Asia/Dubai', 'Asia/Kabul', 'Asia/Karachi', 'Asia/Kolkata', 'Asia/Kathmandu', 'Asia/Dhaka', 'Asia/Yangon',
+  'Asia/Bangkok', 'Asia/Shanghai', 'Asia/Tokyo', 'Australia/Darwin', 'Australia/Adelaide', 'Australia/Sydney', 'Pacific/Noumea',
+  'Pacific/Auckland', 'Pacific/Chatham', 'Pacific/Tongatapu', 'Pacific/Kiritimati'];
+function mainZones() {
+  const byOff = new Map();
+  allZones().forEach((x) => { if (!byOff.has(x.off)) byOff.set(x.off, []); byOff.get(x.off).push(x.z); });
+  return [...byOff].sort((a, b) => a[0] - b[0]).map(([off, zs]) => {
+    const z = MAIN_ZONES.find((m) => zs.includes(m)) || zs.find((m) => /^(America|Europe|Asia|Africa|Australia|Pacific|Atlantic)\//.test(m)) || zs[0];
+    return { z, off, all: zs };
+  });
+}
+const cityOf = (z) => z.split('/').pop().replace(/_/g, ' ');
 const mod24 = (h) => ((h % 24) + 24) % 24;
 const fmtH = (h) => { const x = mod24(h); const hh = Math.floor(x); const mm = Math.round((x - hh) * 60); return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`; };
 
@@ -64,10 +81,11 @@ export async function initEventsPage(root) {
   }
   // preenche o seletor com todos os fusos (depois de "Meu fuso horário" e "UTC")
   const frag = document.createDocumentFragment();
-  allZones().forEach(({ z, off }) => {
+  const zones = mainZones();
+  zones.forEach(({ z, off }) => {
     const o = document.createElement('option');
     o.value = z;
-    o.textContent = `(${fmtOff(off)}) ${z.replace(/_/g, ' ').replace(/\//g, ' / ')}`;
+    o.textContent = `(${fmtOff(off)}) ${cityOf(z)}`;
     frag.appendChild(o);
   });
   tzEl.appendChild(frag);
@@ -75,8 +93,24 @@ export async function initEventsPage(root) {
   let st = {};
   try { st = JSON.parse(localStorage.getItem(LS_KEY) || '{}') || {}; } catch (e) { st = {}; }
   if (st.region) regionEl.value = st.region;
-  if (st.tz) tzEl.value = st.tz;
+  if (st.tz) {
+    // fuso salvo antes (lista completa) -> a cidade principal do mesmo horário
+    const off = ['local', 'utc'].includes(st.tz) ? null : zoneOffset(st.tz);
+    const rep = zones.find((x) => x.z === st.tz || x.all.includes(st.tz)) || (off !== null ? zones.find((x) => x.off === off) : null);
+    tzEl.value = rep ? rep.z : st.tz;
+  }
   if (!tzEl.value) tzEl.value = 'local';
+
+  // o que cada evento traz (resumo curto; dados do gerenciador de eventos do mapa)
+  const infoEl = root.querySelector('#ev-info');
+  if (infoEl) {
+    infoEl.innerHTML = (data.squads || []).map((s) => `
+      <article class="ev-info-card">
+        <h3>${esc(pick(s, 'name'))}</h3>
+        <p>${esc(t(`events.desc.${s.id}`))}</p>
+        <p class="ev-info-reward"><strong>${esc(t('events.rewards'))}</strong> ${esc(t(`events.reward.${s.id}`))}</p>
+      </article>`).join('');
+  }
 
   function render() {
     try { localStorage.setItem(LS_KEY, JSON.stringify({ ...st, region: regionEl.value, tz: tzEl.value })); } catch (e) { /* ignora */ }
@@ -136,7 +170,7 @@ export async function initEventsPage(root) {
       timeStr = now.toLocaleTimeString(); dateStr = now.toLocaleDateString();
     }
     const off = tz === 'utc' ? 0 : (tz === 'local' ? tzOffset() : (zoneOffset(tz) ?? tzOffset()));
-    const name = tz === 'utc' ? 'UTC' : (tz === 'local' ? t('events.tzLocal') : tz.replace(/_/g, ' ').replace(/\//g, ' / '));
+    const name = tz === 'utc' ? 'UTC' : (tz === 'local' ? t('events.tzLocal') : cityOf(tz));
     clockTime.textContent = timeStr;
     clockDate.textContent = dateStr;
     clockZone.textContent = tz === 'utc' ? 'UTC+00:00' : `${name} · ${fmtOff(off)}`;

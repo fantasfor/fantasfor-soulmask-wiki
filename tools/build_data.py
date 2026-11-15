@@ -564,10 +564,13 @@ def main():
             if len(pack["stats"]) == 1:
                 fixed.append(pack["stats"][0])
             else:
-                random_pool.extend(pack["stats"])
+                # "g" = grupo de sorteio (cada pacote sorteia 1 atributo pelo peso "w")
+                gi = len({s.get("g") for s in random_pool}) + 1
+                random_pool.extend(dict(s, g=gi) for s in pack["stats"])
         extra = prop_pack(cdo.get("ExtraPropPackID")) if cdo.get("ExtraPropPackID") else None
         if extra:
-            random_pool.extend(extra["stats"])
+            gi = len({s.get("g") for s in random_pool}) + 1
+            random_pool.extend(dict(s, g=gi) for s in extra["stats"])
         if fixed:
             it["stats"] = fixed
         if random_pool:
@@ -806,6 +809,16 @@ def main():
     build_menu_icons()
     log("lendo marcadores do mapa (fases do jogo)...")
     markers = build_map_markers(loc, {c["id"] for c in creatures}, items)
+    # página Criaturas: o que cada animal dá (itens clicáveis) e em quais mapas ele aparece ("Ver no mapa")
+    for c in creatures:
+        rows = markers["bags"].get(markers["creatureBags"].get(c["id"]) or "", [])
+        drops = [r[0] for r in rows if r[0] in items]
+        if drops:
+            c["dropIds"] = list(dict.fromkeys(drops))
+        on = [mid for mid, mm in markers["maps"].items()
+              if any(p[0] == "creature" and p[4] == c["id"] for p in mm["points"])]
+        if on:
+            c["maps"] = on
 
     # ------------------------------------------------------------------ guias: proficiência, maestria, eventos, modos
     import build_guides
@@ -819,6 +832,9 @@ def main():
     sources = build_guides.build_item_sources(markers, creatures, bosses, all_bags, loc, crops)
     red_crystals = build_guides.build_red_crystals(loc, attrs, items)
     log("itens com fonte:", len(sources), "cristais vermelhos:", len(red_crystals["crystals"]))
+    npc_quality = build_guides.build_npc_quality(attrs)            # página Atributos
+    fertilizers = build_guides.build_fertilizers(items, cdo_cache, loc, crops)   # página Plantio
+    log("fertilizantes:", len(fertilizers))
 
     # ------------------------------------------------------------------ máscaras
     masks = build_masks(items, loc, icons)
@@ -863,6 +879,8 @@ def main():
     dump("creatures.json", sorted(creatures, key=lambda x: x["name_pt"]))
     dump("masks.json", masks)
     dump("crops.json", crops)
+    dump("fertilizers.json", fertilizers)
+    dump("npc-quality.json", npc_quality)
     dump("map-markers.json", markers)
     dump("bosses.json", bosses)
     dump("comfort.json", comfort)
@@ -1683,6 +1701,15 @@ JZT_BOSS = {"RenChiShou": "JianChiHu", "GuiWuWa": "MoGuiWa", "JinGangYuan": "Jin
 
 
 MAP_CAT_TINT = {"boss": (226, 48, 36)}   # ícone branco do jogo pintado nessa cor (vermelho)
+# cor do ícone de baú por tipo de conteúdo (a regra de qual baú é qual tipo fica em map-game.js chestKind)
+CHEST_TINT = {
+    "relic": (236, 180, 60),     # Relíquia Antiga: dourado
+    "holy": (196, 120, 255),     # relíquias sagradas e Lenda Dourada (máscaras): roxo
+    "supply": (96, 214, 120),    # caixas de suprimentos: verde
+    "storage": (110, 182, 240),  # caixas de armazenamento: azul
+    "junk": (186, 170, 150),     # caixa de tralhas: cinza
+    "core": (240, 118, 54),      # núcleo de motor antigravidade (DLC): laranja
+}
 
 
 def map_icon(tex_path, size=64, tint=None):
@@ -1970,6 +1997,12 @@ def build_map_markers(loc, creature_ids, items=None):
         url = map_icon(tex, tint=MAP_CAT_TINT.get(cat))
         if url:
             out["icons"][cat] = url
+    # baús: o mesmo ícone pintado numa cor por tipo de conteúdo (map-game.js chestKind)
+    out["icons"]["chestTint"] = {}
+    for kind, rgb in CHEST_TINT.items():
+        url = map_icon(MAP_CAT_ICONS["chest"], tint=rgb)
+        if url:
+            out["icons"]["chestTint"][kind] = url
     if os.path.isfile(os.path.join(IMG_DIR, "daoju_item_firefly.webp")):
         out["icons"]["firefly"] = IMG_URL + "daoju_item_firefly.webp"   # item "Vaga-lume"
     # nomes dos tipos de invasão (os mesmos da página Eventos de invasão)
@@ -2023,6 +2056,24 @@ def build_map_markers(loc, creature_ids, items=None):
             rows = [r for r in all_bags.get(name, []) if not item_ids or r[0] in item_ids] if name else []
             if rows:
                 out["bags"][name] = rows
+            elif "_Mask_" in cls_path:
+                # baú de máscara (Relíquia Sagrada): não tem bolsa; a máscara que ele dá é importada pelo
+                # próprio Blueprint (ou pela versão "_SYW" dele). Vira uma bolsa com 100% daquele item.
+                got = []
+                for cand in (cls_path, cls_path + "_SYW"):
+                    pk2 = Package.open(cand)
+                    for imp in (pk2.imports if pk2 else []):
+                        nm = str(imp.get("name") or "")
+                        nm = nm[:-2] if nm.endswith("_C") else nm
+                        if re.match(r"DaoJu_(Item_)?Mask", nm) and nm in item_ids and nm not in got:
+                            got.append(nm)
+                    if got:
+                        break
+                if got:
+                    name = "mask:" + cls_path.rsplit("/", 1)[-1].split(".")[0]
+                    rows = [[i, 1, 1, 100, 100.0, k] for k, i in enumerate(got)]
+                    out["bags"][name] = rows
+                    STATS["baú de máscara com máscara"] += 1
             chest_bag[cls_path] = name if rows else None
         return chest_bag[cls_path]
 

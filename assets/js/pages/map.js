@@ -199,5 +199,5 @@ export async function initMapPage(root, params) {
   render();
   // o Leaflet precisa recalcular o tamanho depois da animação de troca de página
   setTimeout(() => map.invalidateSize(), 350);
-  initGameLayers(L, map, root, mapId, params?.get('q') || '');
+  initGameLayers(L, map, root, mapId, params?.get('q') || '', params);
 }

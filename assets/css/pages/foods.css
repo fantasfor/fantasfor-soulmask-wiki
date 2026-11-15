@@ -379,6 +379,62 @@
   font-size: 0.8rem;
 }
 
+/* onde conseguir (receita + fontes do mapa) */
+.food-card-where {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #3a3d40;
+  font-size: 0.8rem;
+}
+
+.food-card-where > strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #ecd760;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.food-card-where.is-loading,
+.food-where-none {
+  margin: 0;
+  color: var(--muted);
+}
+
+.food-where-craft {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin: 0 0 4px;
+}
+
+.food-where-craft span {
+  color: #d9d2c5;
+}
+
+.food-recipe-link {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.food-card-where .src-item {
+  padding: 2px 6px;
+  font-size: 0.76rem;
+}
+
+.food-where-more {
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .foods-loading,
 .foods-empty,
 .foods-error {

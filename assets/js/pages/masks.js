@@ -8,8 +8,9 @@ export async function initMasksPage(root, params) {
   const container = root.querySelector('#db-container');
   let masks = [];
   let items;
+  let sources = {};
   try {
-    [masks, items] = await Promise.all([loadData('masks'), loadIndex('items')]);
+    [masks, items, sources] = await Promise.all([loadData('masks'), loadIndex('items'), loadData('sources').catch(() => ({}))]);
   } catch (e) {
     container.innerHTML = `<div class="items-error">${esc(t('common.errorLoading', { msg: e.message }))}</div>`;
     return;
@@ -47,6 +48,19 @@ export async function initMasksPage(root, params) {
       </button>`;
   }
 
+  // "Onde encontrar": baús de máscara (Relíquia Sagrada), chefes e inimigos que dão a máscara, no Mapa interativo
+  function whereHtml(m) {
+    const src = (sources[m.id] || []).filter((s) => s.m?.length);
+    const maps = [...new Set(src.flatMap((s) => s.m))];
+    const names = [...new Set(src.map((s) => pick({ name_pt: s.n?.pt, name_en: s.n?.en }, 'name')).filter(Boolean))];
+    const craft = m.recipes?.length ? `<p class="mask-where-note">${esc(t('masks.whereCraft'))}</p>` : '';
+    if (!maps.length) return `<div class="mask-where"><p class="mask-where-note">${esc(t(m.recipes?.length ? 'masks.onlyCraft' : 'masks.notOnMap'))}</p></div>`;
+    const mapId = maps.includes('main') ? 'main' : maps[0];
+    return `<div class="mask-where">
+      <a class="db-map-btn" href="#mapa?map=${mapId}&item=${encodeURIComponent(m.id)}">${esc(t('masks.whereFind'))}</a>
+      ${names.length ? `<p class="mask-where-note">${esc(names.join(' · '))}</p>` : ''}${craft}</div>`;
+  }
+
   function detail(m) {
     return `
       <article class="mask-detail${qualityClass(m.quality)}" id="mask-detail" tabindex="-1">
@@ -56,6 +70,7 @@ export async function initMasksPage(root, params) {
             <h2 class="mask-detail-title">${esc(pick(m, 'name'))} ${m.dlc ? '<span class="dlc-badge">DLC</span>' : ''}</h2>
             ${pick(m, 'lore') ? `<p class="mask-lore">${escLines(pick(m, 'lore'))}</p>` : ''}
             ${(m.buffs || []).map((b) => `<p class="mask-buff"><strong>${esc(pick(b, 'name'))}</strong> ${escLines(pick(b, 'desc'))}</p>`).join('')}
+            ${whereHtml(m)}
           </div>
           <button type="button" class="mask-detail-close" data-close aria-label="${esc(t('common.close'))}">&times;</button>
         </header>

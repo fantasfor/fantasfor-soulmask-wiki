@@ -106,9 +106,59 @@
       gap: 10px;
     }
 
+    /* nome da build + menu das builds salvas ao lado */
+    .build-name-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .build-name-row #buildName {
+      flex: 1 1 180px;
+      min-width: 0;
+    }
+
+    .saved-builds-pick {
+      display: flex;
+      flex: 1 1 200px;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .saved-builds-pick select {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .saved-build-del {
+      flex: none;
+      min-height: 0;
+    }
+
+    .saved-build-del:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .export-gm-warn {
+      margin: 0;
+      padding: 8px 10px;
+      border: 1px solid #ecb43c;
+      border-left-width: 4px;
+      background: rgba(236, 180, 60, 0.08);
+      color: #e8dfcf;
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+
+    .export-gm-warn code {
+      color: #ecb43c;
+      font-weight: 700;
+    }
+
     .builder-main-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.7fr) minmax(250px, 1fr);
+      grid-template-columns: minmax(0, 1.35fr) minmax(300px, 1fr);
       gap: 12px;
       min-height: 0;
       flex: 1;
@@ -1502,6 +1552,12 @@
     }
   </style>
 
+  <div class="tier-tabs builder-tabs" id="builder-tabs" role="tablist" aria-label="Builder Maker">
+    <button type="button" class="tier-tab" role="tab" data-btab="editor" aria-selected="true" data-i18n="bc.tabEditor">Minha build</button>
+    <button type="button" class="tier-tab" role="tab" data-btab="community" aria-selected="false" data-i18n="bc.tabCommunity">Comunidade</button>
+  </div>
+  <section class="builder-community" id="builder-community" hidden></section>
+
   <div class="builder-shell">
     <div class="builder-main-grid">
       <section class="builder-panel">
@@ -1560,7 +1616,13 @@
       <section class="builder-panel">
         <div class="panel-block field-stack">
           <h2 class="panel-section-title" data-i18n="builder.info">Informações da Build</h2>
-          <input id="buildName" class="builder-field" type="text" placeholder="Nome da Build" data-i18n-placeholder="builder.name" />
+          <div class="build-name-row">
+            <input id="buildName" class="builder-field" type="text" placeholder="Nome da Build" data-i18n-placeholder="builder.name" />
+            <div class="saved-builds-pick">
+              <select id="savedBuildsSelect" class="builder-field" aria-label="Builds Salvas" data-i18n-aria="builder.savedBuilds"></select>
+              <button type="button" class="build-action-btn saved-build-del" id="savedBuildDelete" data-i18n="builder.delete">Excluir</button>
+            </div>
+          </div>
           <textarea id="buildDescription" class="builder-field" rows="3" placeholder="Descrição (opcional)" data-i18n-placeholder="builder.description"></textarea>
           <select id="buildTribe" class="builder-field">
             <option value="" data-i18n="builder.class">Classe</option>
@@ -1611,17 +1673,11 @@
             <button type="button" class="build-action-btn primary" id="actionCopyTalentCode" data-i18n="builder.copyCode">Copiar código</button>
             <button type="button" class="build-action-btn" id="actionDownloadTalentCode" data-i18n="builder.downloadJson">Baixar .json</button>
           </div>
+          <p class="export-gm-warn" data-i18n-html="builder.gmKeyWarn"></p>
           <p class="export-hint" data-i18n-html="builder.exportHint"></p>
           <p class="build-status" id="talentExportStatus" aria-live="polite"></p>
         </div>
       </section>
-
-      <aside class="builder-panel">
-        <div class="panel-block">
-          <h2 class="panel-section-title" data-i18n="builder.savedBuilds">Builds Salvas</h2>
-        </div>
-        <div class="saved-builds-list" id="savedBuildsList"></div>
-      </aside>
     </div>
   </div>
 
