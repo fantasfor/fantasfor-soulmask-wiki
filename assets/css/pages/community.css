@@ -468,6 +468,41 @@ body .social-login {
   margin-right: 8px;
 }
 
+.srv-off-tags {
+  display: block;
+  margin: 2px 0 0 18px;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.srv-off-players {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.srv-off-filters {
+  margin: 8px 0 10px;
+}
+
+.srv-off-note {
+  margin-top: 8px;
+}
+
+/* celular: a região já aparece no nome (SA-02-1), então a coluna sai */
+@media (max-width: 600px) {
+  .srv-official-table th:nth-child(2),
+  .srv-official-table td:nth-child(2) {
+    display: none;
+  }
+
+  .srv-official-table td,
+  .srv-official-table th {
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 0.8rem;
+  }
+}
+
 /* formulário: ícone e banner */
 .srv-form-media {
   display: flex;

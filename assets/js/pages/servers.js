@@ -8,7 +8,7 @@
 //   num documento separado, serverMedia/{id}, para não estourar o limite de 1 MB do documento do servidor;
 //   o campo "media" (data em ms) avisa que esse documento existe.
 import { t, locale } from '../i18n.js';
-import { esc, normalize, fmtNum } from '../data.js';
+import { esc, normalize, fmtNum, moreBlock } from '../data.js';
 import { loadFirebase, getUser, onUser, requireUser, publicName } from '../cloud.js';
 import { summarize, starsDisplay } from '../ratings.js';
 import { reviewsHtml, bindReviews, commentCount, score } from '../social.js';
@@ -140,9 +140,8 @@ export async function initServersPage(root, params) {
     }
   }
 
-  // Servidores oficiais: desligado (config.showOfficials). Testado em 16/11/2026 com a chave da Steam:
-  // a Steam lista 2182 servidores de Soulmask, mas os oficiais não estão entre eles (o jogo usa lista própria);
-  // o único com "Official" no nome era de comunidade. Religue só se a Steam passar a listá-los.
+  // Servidores oficiais (config.showOfficials): vêm da mesma lista da Steam. Não têm "Official" no nome; o Worker
+  // reconhece o padrão do jogo ([NA_PvE][05_1 Survival]Cloud_Mist_Forest_04P Tribe). Conferido em 16/11/2026: 264 oficiais.
   async function loadOfficials() {
     if (!officialEl || !api || !config.showOfficials) return;
     try {
@@ -174,23 +173,62 @@ export async function initServersPage(root, params) {
       ${full && s.map ? `<span class="srv-live-name">${esc(mapName(s.map))}</span>` : ''}${when}</div>`;
   }
 
+  // região do nome oficial ([NA_PvE]...) -> região usada no site
+  const OFF_REGION = { NA: 'America', US: 'America', EU: 'Europe', AS: 'Asia', SA: 'SouthAmerica', OC: 'Oceania', AU: 'Oceania' };
+  const offFilter = { region: '', mode: '', map: '' };
+  const OFF_SHOWN = 15;
+
+  function officialRow(s) {
+    const tags = [
+      s.survival ? t('srv.official.survival') : '',
+      s.longTerm ? t('srv.official.longTerm') : '',
+      s.noRaid ? t('srv.official.noRaid') : '',
+      s.tribe ? t('srv.official.tribe', { n: s.tribe }) : '',
+      s.raidUtc ? t('srv.official.raid', { a: s.raidUtc[0], b: s.raidUtc[1] }) : ''
+    ].filter(Boolean);
+    const reg = OFF_REGION[s.region];
+    return `<tr>
+      <td><span class="srv-dot is-on-dot" title="${esc(t('srv.live.online'))}"></span><strong>${esc(s.region)}-${esc(s.num || '?')}</strong>
+        <small class="srv-off-tags">${esc(tags.join(' · '))}</small></td>
+      <td>${esc(reg ? t(`events.reg.${reg}`) : s.region)}</td>
+      <td><span class="srv-mode srv-mode-${esc(s.mode)}">${esc(t(`srv.modeName.${s.mode}`))}</span></td>
+      <td>${esc(s.map === 'event' ? (s.event || t('srv.official.event')) : mapName(s.map === 'dlc' ? 'dlc' : 'main'))}</td>
+      <td class="srv-off-players">${esc(`${s.players}/${s.maxPlayers}`)}</td>
+    </tr>`;
+  }
+
   function renderOfficials() {
     if (!officialEl) return;
     const head = `<h2 class="comfort-section-title">${esc(t('srv.official.title'))}</h2>`;
     if (!officials || officials === 'nokey') { officialEl.innerHTML = ''; return; }
     if (officials === 'error') { officialEl.innerHTML = `${head}<p class="tier-muted">${esc(t('srv.live.unknown'))}</p>`; return; }
-    const list = officials.servers || [];
+    const all = officials.servers || [];
+    if (!all.length) { officialEl.innerHTML = `${head}<p class="tier-muted">${esc(t('srv.official.none'))}</p>`; return; }
+    const list = all.filter((s) => (!offFilter.region || OFF_REGION[s.region] === offFilter.region)
+      && (!offFilter.mode || s.mode === offFilter.mode) && (!offFilter.map || s.map === offFilter.map));
+    const players = list.reduce((a, s) => a + s.players, 0);
+    const opt = (v, cur, label) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
+    const table = (rows) => `<div class="guide-table-wrap"><table class="guide-table srv-official-table">
+        <thead><tr><th>${esc(t('srv.official.name'))}</th><th>${esc(t('srv.region'))}</th><th>${esc(t('srv.mode'))}</th><th>${esc(t('srv.fMap'))}</th><th>${esc(t('srv.official.players'))}</th></tr></thead>
+        <tbody>${rows.map(officialRow).join('')}</tbody></table></div>`;
     officialEl.innerHTML = `${head}
-      ${list.length ? `<div class="guide-table-wrap"><table class="guide-table srv-official-table">
-        <thead><tr><th>${esc(t('srv.official.name'))}</th><th>${esc(t('srv.official.players'))}</th><th>${esc(t('srv.fMap'))}</th></tr></thead>
-        <tbody>${list.map((s) => `<tr>
-          <td><span class="srv-dot is-on-dot"></span>${esc(s.name)}</td>
-          <td>${esc(`${s.players}/${s.maxPlayers}`)}</td>
-          <td>${esc(mapName(s.map))}</td></tr>`).join('')}</tbody>
-      </table></div>
-      <p class="tier-muted">${esc(t('srv.live.checked', { h: hhmm(officials.checkedAt) }))} · ${esc(t('srv.live.pingNote'))}</p>`
-      : `<p class="tier-muted">${esc(t('srv.official.none'))}</p>`}`;
+      <p class="items-subtitle">${esc(t('srv.official.subtitle'))}</p>
+      <div class="items-filters srv-off-filters">
+        <select class="items-search-input" data-off="region" aria-label="${esc(t('srv.region'))}">${opt('', offFilter.region, t('srv.allRegions'))}${['SouthAmerica', 'America', 'Europe', 'Asia'].map((r) => opt(r, offFilter.region, t(`events.reg.${r}`))).join('')}</select>
+        <select class="items-search-input" data-off="mode" aria-label="${esc(t('srv.mode'))}">${opt('', offFilter.mode, t('srv.allModes'))}${['pve', 'pvp'].map((m) => opt(m, offFilter.mode, t(`srv.modeName.${m}`))).join('')}</select>
+        <select class="items-search-input" data-off="map" aria-label="${esc(t('srv.fMap'))}">${opt('', offFilter.map, t('srv.official.allMaps'))}${['main', 'dlc', 'event'].map((m) => opt(m, offFilter.map, m === 'event' ? t('srv.official.event') : t(`srv.map.${m}`))).join('')}</select>
+        <div class="items-stats">${esc(t('srv.official.count', { n: list.length, p: players }))}</div>
+      </div>
+      ${list.length ? `${table(list.slice(0, OFF_SHOWN))}${list.length > OFF_SHOWN ? moreBlock(table(list.slice(OFF_SHOWN))) : ''}`
+        : `<p class="tier-muted">${esc(t('cm.empty'))}</p>`}
+      <p class="tier-muted srv-off-note">${esc(t('srv.official.source', { h: hhmm(officials.checkedAt) }))} ${esc(t('srv.live.pingNote'))}</p>`;
   }
+  officialEl?.addEventListener('change', (e) => {
+    const s = e.target.closest('[data-off]');
+    if (!s) return;
+    offFilter[s.dataset.off] = s.value;
+    renderOfficials();
+  });
 
   // atualiza sozinho; para quando a pessoa sai da página
   const timer = setInterval(async () => {
