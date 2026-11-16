@@ -402,19 +402,26 @@ async function renderHomeUpdates() {
   const list = document.getElementById('home-updates-list');
   if (!list) return;
   try {
-    const updates = (await loadData('updates')).slice(0, 4);
+    const updates = await loadData('updates');
     if (!updates.length) {
       list.innerHTML = `<article class="home-update-card"><h3>${esc(t('home.notesNone'))}</h3></article>`;
       return;
     }
-    list.innerHTML = `
-      <article class="home-update-card">
-        <h3>${esc(t('home.notesTitle'))}</h3>
-        ${updates.map((u) => `
+    const version = (u) => `
           <div class="home-update-version">
             <strong>${esc(u.version)}${u.date ? ` — ${esc(new Date(`${u.date}T12:00:00`).toLocaleDateString(locale()))}` : ''}</strong>
             <ul>${(u[getLang()] || u.pt || []).map((c) => `<li>${esc(c)}</li>`).join('')}</ul>
-          </div>`).join('')}
+          </div>`;
+    // só a versão mais nova à vista; as anteriores ficam em "Mostrar mais"
+    const older = updates.slice(1);
+    list.innerHTML = `
+      <article class="home-update-card">
+        <h3>${esc(t('home.notesTitle'))}</h3>
+        ${version(updates[0])}
+        ${older.length ? `<details class="boss-more">
+          <summary><span class="boss-more-on">${esc(t('bosses.more'))}</span><span class="boss-more-off">${esc(t('bosses.less'))}</span></summary>
+          <div class="boss-more-body">${older.map(version).join('')}</div>
+        </details>` : ''}
       </article>`;
   } catch (error) {
     console.warn('renderHomeUpdates', error);

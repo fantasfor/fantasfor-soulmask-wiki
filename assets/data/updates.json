@@ -1,7 +1,7 @@
 [
   {
     "version": "1.0.2",
-    "date": "2026-11-15",
+    "date": "2026-11-16",
     "pt": [
       "Página inicial: ícone de Armaduras corrigido (sem o quadrado escuro de fundo e do mesmo tamanho dos outros ícones)",
       "Máscaras: \"Onde encontrar\" abre o mapa já com o baú ou o inimigo da máscara destacado e com a janela dele aberta",
@@ -17,7 +17,10 @@
       "Bancada de trabalho: a árvore de fabricação agora é movida clicando e arrastando (ou com o dedo no celular), sem barras de rolagem",
       "Bancada de trabalho: a busca do item e a quantidade agora ficam no topo da própria caixa da árvore, deixando a página mais compacta",
       "Partes longas recolhidas com \"Mostrar mais\": na janela de cada item (onde conseguir mostra 5 fontes e agora lista até 40; \"Usado em\" mostra 12), nos Talentos (os outros níveis e os IDs) e no Plantio (descrição longa das plantações e a lista de plantações de cada fertilizante)",
-      "Servidores: status ao vivo pela lista da Steam (online ou offline, jogadores/vagas, nome no jogo e hora da verificação), atualizado sozinho a cada 3 minutos, e nova ordem \"Mais jogadores agora\" (os servidores oficiais não aparecem na lista da Steam, então não entram)"
+      "Servidores: status ao vivo pela lista da Steam (online ou offline, jogadores/vagas, nome no jogo e hora da verificação), atualizado sozinho a cada 3 minutos, e nova ordem \"Mais jogadores agora\" (os servidores oficiais não aparecem na lista da Steam, então não entram)",
+      "Clicar no nome Soulmask / Fantasfor Wiki no topo da barra lateral volta para a página inicial",
+      "Ao apertar F5, o texto de resumo da página não pisca mais na tela antes de ela carregar",
+      "Mais segurança: o GDMbot só se conecta à sua conta depois de você confirmar no site, e as fotos e ícones das publicações só aceitam imagens do próprio site ou do Google"
     ],
     "en": [
       "Home page: Armor icon fixed (no dark square behind it and the same size as the other icons)",
@@ -34,7 +37,10 @@
       "Workbench: drag the crafting tree with the mouse (or your finger on mobile) to move around it, with no scroll bars",
       "Workbench: item search and quantity now sit at the top of the crafting tree box, making the page more compact",
       "Long sections folded behind \"Show more\": in each item's window (where to get shows 5 sources and now lists up to 40; \"Used in\" shows 12), in Talents (the other levels and the IDs) and in Farming (long crop descriptions and the crop list of each fertilizer)",
-      "Servers: live status from the Steam server list (online or offline, players/slots, in-game name and check time), refreshed every 3 minutes, and a new \"Most players now\" sort (official servers are not on the Steam list, so they are not shown)"
+      "Servers: live status from the Steam server list (online or offline, players/slots, in-game name and check time), refreshed every 3 minutes, and a new \"Most players now\" sort (official servers are not on the Steam list, so they are not shown)",
+      "Clicking the Soulmask / Fantasfor Wiki name at the top of the sidebar takes you back to the home page",
+      "Pressing F5 no longer flashes the page summary text on screen before the page loads",
+      "Better security: GDMbot only connects to your account after you confirm on the site, and post photos and icons only accept images from the site itself or Google"
     ]
   },
   {
