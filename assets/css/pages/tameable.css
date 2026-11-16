@@ -1,0 +1,192 @@
+/* Animais domesticáveis (#animais) */
+.tame-grid {
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+}
+
+.tame-card {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.tame-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tame-photo {
+  width: 96px;
+  height: 96px;
+  flex: none;
+  object-fit: contain;
+  background: #111212;
+  border: 1px solid #3a3d40;
+}
+
+.tame-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.tame-cat {
+  padding: 2px 8px;
+  border: 1px solid currentColor;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tame-cat-mount { color: #90d1ee; }
+.tame-cat-farm { color: #39d98a; }
+.tame-cat-other { color: #d9d2c5; }
+
+.tame-facts {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+
+.tame-facts div {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.8fr) minmax(0, 1.4fr);
+  gap: 8px;
+  font-size: 0.82rem;
+}
+
+.tame-facts dt {
+  color: var(--muted);
+}
+
+.tame-facts dd {
+  margin: 0;
+  color: #d9d2c5;
+}
+
+.tame-facts.tame-stats div {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.tame-stats dd {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.tame-sec {
+  padding-top: 8px;
+  border-top: 1px solid #3a3d40;
+}
+
+.tame-sec h4 {
+  margin: 0 0 6px;
+  color: #ecd760;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tame-sec h4 small {
+  color: var(--muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.tame-drops {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tame-drops li {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tame-drops small,
+.tame-note,
+.tame-none,
+.tame-sub,
+.tame-more {
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.tame-note,
+.tame-none,
+.tame-sub {
+  margin: 4px 0 0;
+}
+
+/* tópicos recolhidos ("Mostrar mais", mesmo estilo de .boss-more da página Chefes) */
+.tame-topic summary {
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.tame-topic summary strong {
+  color: #ecd760;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tame-topic summary span {
+  margin-left: auto;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.tame-topic-body {
+  padding-top: 8px;
+}
+
+.tame-gear {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.tame-gear > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  font-size: 0.82rem;
+}
+
+.tame-gear > div > span {
+  min-width: 120px;
+  color: var(--muted);
+}
+
+.tame-foods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.tame-unconfirmed {
+  color: #ecb43c;
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .tame-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tame-facts div {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

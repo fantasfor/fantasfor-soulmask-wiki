@@ -785,6 +785,9 @@ def main():
         photo = creature_photo(pkg, k)
         if photo:
             c["photo"] = photo
+        st = creature_stats(cls)
+        if st:
+            c["stats"] = st
         creatures.append(c)
     log("criaturas:", len(creatures), "com foto:", sum(1 for c in creatures if c.get("photo")))
 
@@ -809,16 +812,7 @@ def main():
     build_menu_icons()
     log("lendo marcadores do mapa (fases do jogo)...")
     markers = build_map_markers(loc, {c["id"] for c in creatures}, items)
-    # página Criaturas: o que cada animal dá (itens clicáveis) e em quais mapas ele aparece ("Ver no mapa")
-    for c in creatures:
-        rows = markers["bags"].get(markers["creatureBags"].get(c["id"]) or "", [])
-        drops = [r[0] for r in rows if r[0] in items]
-        if drops:
-            c["dropIds"] = list(dict.fromkeys(drops))
-        on = [mid for mid, mm in markers["maps"].items()
-              if any(p[0] == "creature" and p[4] == c["id"] for p in mm["points"])]
-        if on:
-            c["maps"] = on
+    build_creature_db(creatures, markers)
 
     # ------------------------------------------------------------------ guias: proficiência, maestria, eventos, modos
     import build_guides
@@ -830,10 +824,14 @@ def main():
     log("proficiências:", len(proficiency["types"]), "maestrias:", len(mastery["skills"]))
     all_bags = {k: [r for r in v if r[0] in items] for k, v in load_drop_bags().items()}
     sources = build_guides.build_item_sources(markers, creatures, bosses, all_bags, loc, crops)
+    # as bolsas "cr:<criatura>" ficam só em creatures.json (loot); o mapa as remonta ao carregar
+    for k in [k for k in markers["bags"] if k.startswith("cr:")]:
+        del markers["bags"][k]
     red_crystals = build_guides.build_red_crystals(loc, attrs, items)
     log("itens com fonte:", len(sources), "cristais vermelhos:", len(red_crystals["crystals"]))
     npc_quality = build_guides.build_npc_quality(attrs)            # página Atributos
     fertilizers = build_guides.build_fertilizers(items, cdo_cache, loc, crops)   # página Plantio
+    tameable = build_guides.build_tameable(loc, items, creatures, markers, cdo_cache)   # página Animais domesticáveis
     log("fertilizantes:", len(fertilizers))
 
     # ------------------------------------------------------------------ máscaras
@@ -881,6 +879,7 @@ def main():
     dump("crops.json", crops)
     dump("fertilizers.json", fertilizers)
     dump("npc-quality.json", npc_quality)
+    dump("tameable.json", tameable)
     dump("map-markers.json", markers)
     dump("bosses.json", bosses)
     dump("comfort.json", comfort)
@@ -1989,6 +1988,99 @@ def map_regions(loc, mid):
     return out
 
 
+CREATURE_VARIANT_RE = re.compile(r"_(JY|JingYing|Elite|Boss)$")
+
+# atributos base mostrados (chaves iguais às de meta.json "attrs"); a tabela tem mais linhas (partes do corpo etc.)
+CREATURE_STAT_KEYS = ["MaxHealth", "Attack", "Defense", "MaxTiLi", "TiLiRecover", "HealthRecover", "MaxFuZhong",
+                      "SpeedRate", "AttackSpeed", "Crit", "CritDef", "MaxTenacity", "MaxHuXi", "MaxFood", "MaxWater",
+                      "HanKang", "YanKang", "DuKang", "FuKang"]
+
+
+_ATTR_TABLES = None
+
+
+def creature_stats(cls_path):
+    """Atributos base (nível 1) da criatura: tabela DT_Attr_<x> importada pelo Blueprint dela (ou por um pai),
+    e o nº de espaços do inventário (BaoGuoRongLiang). Formato descrito em build_creature_db."""
+    path, seen, table, slots = str(cls_path or "").split(".")[0], set(), None, None
+    while path.startswith("/Game/") and path not in seen and not (table and slots is not None):
+        seen.add(path)
+        pk = Package.open(path)
+        if not pk:
+            break
+        if not table:
+            table = next((str(i.get("name")) for i in pk.imports if str(i.get("class")) == "Package"
+                          and "/DT_Attr_" in str(i.get("name"))), None)
+        if slots is None:
+            slots = (pk.cdo() or {}).get("BaoGuoRongLiang")
+        sup = next((pk.ref_path(e["super_index"]) for e in pk.exports
+                    if pk.export_class(e) == "BlueprintGeneratedClass" and e.get("super_index")), None)
+        path = (sup or "").split(".")[0]
+    out = {}
+    confirmed = bool(table)
+    if not table:
+        # o Blueprint não importa a tabela: tenta DT_Attr_<nome> pelo nome do Blueprint (não confirmado)
+        global _ATTR_TABLES
+        if _ATTR_TABLES is None:
+            _ATTR_TABLES = {p.rsplit("/", 1)[-1].lower(): p for root in ("/Game/Blueprints/DataTable/AttrMetaData",
+                            "/Game/AdditionMap01/BluePrints/DataTable/AttrMetaData") for p in game_assets_under(root)}
+        name = re.sub(r"^BP_(DongWu|Monster)_", "", asset_name(cls_path).split(".")[0])
+        table = _ATTR_TABLES.get(("DT_Attr_" + name).lower())
+    if table:
+        tp = Package.open(table)
+        rows = (tp.datatable_rows() if tp else None) or {}
+        base = {k.split(".")[-1]: v.get("BaseValue") for k, v in rows.items()}
+        vals = {k: rnd(base[k]) for k in CREATURE_STAT_KEYS if base.get(k) is not None}
+        if vals:
+            out = {"table": table.rsplit("/", 1)[-1], "base": vals, "confirmed": confirmed}
+    if slots:
+        out["slots"] = int(slots)
+    return out or None
+
+
+def build_creature_db(creatures, markers):
+    """Banco único de criaturas (assets/data/creatures.json), lido pelo mapa, pela página Criaturas,
+    pela página Itens (via sources.json) e pela página Animais domesticáveis. Campos que este passo põe:
+      variant: "normal" | "elite" | "boss"
+      base:    id da versão comum (nas elites/chefes);  elites: [ids das versões elite/chefe] (na comum)
+      maps:    ["main", "dlc"] onde a criatura nasce no Mapa interativo
+      loot: {
+        confirmed: true  -> tabela ligada à criatura pelo próprio jogo (BP_ShengWuCollectData)
+                   false -> achada só pelo nome do Blueprint (mostrar como "não confirmado")
+        harvest: {bag, rows}  ao esquartejar o corpo
+        extra:   {bag, rows}  outros recursos, ao terminar de esquartejar (bolsa "final")
+        young:   {bag, rows}  filhote em crescimento, quando a bolsa é outra
+        toolMult: {"Stone": 1.0, "Bronze": 1.2, ...}  quantidade × conforme a faca de esquartejar
+      }
+      rows = [item, mín, máx, chance do grupo %, chance no grupo %, grupo, condição]
+      stats: {table: "DT_Attr_<x>", base: {MaxHealth, Attack, Defense, MaxTiLi, MaxFuZhong, SpeedRate, ...}, slots: n}
+        valores BaseValue do jogo no nível 1 (chaves = meta.json "attrs"); Crit/CritDef são frações (0,05 = 5%),
+        SpeedRate/AttackSpeed são multiplicadores (1 = normal). A cada nível a criatura ganha pontos de atributo
+        (DT_Level_Monster: 1 ponto automático por nível), então no jogo os valores sobem com o nível.
+        slots = espaços do inventário (BaoGuoRongLiang).
+        confirmed: true = tabela importada pelo Blueprint; false = achada pelo nome (mostrar "não confirmado")."""
+    ids = {c["id"] for c in creatures}
+    loot = markers.pop("creatureLoot", {})
+    for c in creatures:
+        cid = c["id"]
+        mm = CREATURE_VARIANT_RE.search(cid)
+        c["variant"] = ("boss" if mm.group(1) == "Boss" else "elite") if mm else "normal"
+        if mm and CREATURE_VARIANT_RE.sub("", cid) in ids:
+            c["base"] = CREATURE_VARIANT_RE.sub("", cid)
+        if cid in loot:
+            c["loot"] = loot[cid]
+        on = [mid for mid, m in markers["maps"].items()
+              if any(p[0] == "creature" and p[4] == cid for p in m["points"])]
+        if on:
+            c["maps"] = on
+        c.pop("dropIds", None)
+    by_id = {c["id"]: c for c in creatures}
+    for c in creatures:
+        if c.get("base"):
+            by_id[c["base"]].setdefault("elites", []).append(c["id"])
+    STATS["criatura sem tabela de coleta"] += sum(1 for c in creatures if not c.get("loot"))
+
+
 def build_map_markers(loc, creature_ids, items=None):
     """Marcadores do mapa interativo, lidos das fases do jogo (.umap): portais, estelas, pirâmides,
     ruínas, baús, minérios, tribos e onde nasce cada criatura. Coordenadas em 0..1024 sobre o desenho."""
@@ -2080,19 +2172,47 @@ def build_map_markers(loc, creature_ids, items=None):
     # o que se coleta de cada animal: tabela do próprio jogo (BP_ShengWuCollectData) com a bolsa normal
     # e a bolsa extra/final; se o animal não estiver nela, tenta pelo nome do Blueprint (DT_ShengWuCaiJiBao)
     out["creatureBags"] = {}
+    # banco de criaturas (vai para creatures.json["loot"]; formato descrito em build_creature_db)
+    out["creatureLoot"] = {}
     collect_conf = (Package.open("/Game/Blueprints/ZiYuanGuanLi/BP_ShengWuCollectData").cdo() or {}).get("ShengWuPropConfigSoftMap") or {}
+
+    def bag_rows(name):
+        if not name or name == "None":
+            return []
+        return [list(r) for r in all_bags.get(name, []) if not item_ids or r[0] in item_ids]
+
+    # o jogo nem sempre escreve o id igual à enciclopédia (ex.: BP_DongWu_EYu x BP_DongWu_Eyu): compara sem maiúsculas
+    canon = {c.lower(): c for c in creature_ids}
+    conf_lower = {asset_name(p).lower(): (asset_name(p), c) for p, c in collect_conf.items()}
     for path, conf in collect_conf.items():
-        cid = asset_name(path)
+        cid = canon.get(asset_name(path).lower(), asset_name(path))
         m = (conf or {}).get("ShengWuCollectDaoJuMap") or {}
         first = next(iter(m.values()), None) if m else None
         if cid not in creature_ids or not first:
             continue
-        rows = [r for r in all_bags.get(first.get("CaiJiDaoJuBaoName"), []) if not item_ids or r[0] in item_ids]
-        fin = [r for r in all_bags.get(first.get("CaiJiFinalDaoJuBaoName"), []) if not item_ids or r[0] in item_ids]
+        rows = bag_rows(first.get("CaiJiDaoJuBaoName"))
+        fin = bag_rows(first.get("CaiJiFinalDaoJuBaoName"))
+        young = bag_rows(first.get("FaYuingCaiJiDaoJuBaoName"))
+        loot = {"confirmed": True}
+        if rows:
+            loot["harvest"] = {"bag": first.get("CaiJiDaoJuBaoName"), "rows": rows}
+        if fin:
+            loot["extra"] = {"bag": first.get("CaiJiFinalDaoJuBaoName"), "rows": fin}
+        if young and first.get("FaYuingCaiJiDaoJuBaoName") != first.get("CaiJiDaoJuBaoName"):
+            loot["young"] = {"bag": first.get("FaYuingCaiJiDaoJuBaoName"), "rows": young}
+        # multiplicador de quantidade por faca de esquartejar (BP_DamageType_ChopKnife_<material>)
+        mult = {}
+        for tool, e in m.items():
+            mm = re.search(r"ChopKnife_([A-Za-z]+)", tool or "")
+            if mm and (e or {}).get("DamageGiveDaoJuMultiPower") is not None:
+                mult[mm.group(1)] = round(float(e["DamageGiveDaoJuMultiPower"]), 2)
+        if mult:
+            loot["toolMult"] = mult
         rows = rows + [r[:5] + [r[5] + 1000] + r[6:] for r in fin]
         if rows:
             out["bags"]["cr:" + cid] = rows
             out["creatureBags"][cid] = "cr:" + cid
+            out["creatureLoot"][cid] = loot
     lower_bags = {k.lower(): k for k in all_bags}
     for cid in creature_ids:
         if cid in out["creatureBags"]:
@@ -2103,9 +2223,126 @@ def build_map_markers(loc, creature_ids, items=None):
             name = use_bag(key) if key else None
             if name:
                 out["creatureBags"][cid] = name
+                # bolsa achada só pelo nome do Blueprint: dado do jogo, mas a ligação não é confirmada
+                out["creatureLoot"][cid] = {"confirmed": False, "harvest": {"bag": name, "rows": [list(r) for r in out["bags"][name]]}}
                 break
         else:
             STATS["animal sem drop"] += 1
+
+    harvest_cache = {}
+
+    def animal_harvest(cls_path):
+        """Animal que não está na enciclopédia (ex.: Jacaré (Ruínas) = BP_DongWu_EYu_YiJi): usa a tabela de
+        esquartejar dele ou, se não tiver, a do Blueprint pai (confirmado pelas importações do próprio Blueprint).
+        Devolve "cr:<criatura>" (tabela do banco de criaturas) ou "hv:<Blueprint>" (tabela própria), ou None."""
+        name = asset_name(cls_path)
+        if name in harvest_cache:
+            return harvest_cache[name]
+        res = None
+        if re.match(r"BP_(DongWu|Monster)_", name):
+            pk = Package.open(cls_path.split(".")[0])
+            imps = {str(i.get("name") or "").lower() for i in (pk.imports if pk else [])}
+            parts = name.split("_")
+            for n in range(len(parts), 2, -1):
+                cand = "_".join(parts[:n])
+                if n < len(parts) and cand.lower() + "_c" not in imps:
+                    continue   # só vale o pai de verdade (importado pelo Blueprint)
+                cid = canon.get(cand.lower())
+                if cid and out["creatureBags"].get(cid, "").startswith("cr:"):
+                    res = "cr:" + cid
+                    break
+                hit = conf_lower.get(cand.lower())
+                mm = ((hit[1] or {}).get("ShengWuCollectDaoJuMap") or {}) if hit else {}
+                first = next(iter(mm.values()), None) if mm else None
+                if first:
+                    rows = bag_rows(first.get("CaiJiDaoJuBaoName"))
+                    fin = bag_rows(first.get("CaiJiFinalDaoJuBaoName"))
+                    rows = rows + [r[:5] + [r[5] + 1000] + r[6:] for r in fin]
+                    if rows:
+                        res = "hv:" + hit[0]
+                        out["bags"][res] = rows
+                        break
+        if res:
+            STATS["animal fora da enciclopédia com tabela"] += 1
+        harvest_cache[name] = res
+        return res
+
+    # equipamento dos NPCs humanos (armaduras, anel, colar e armas que eles vestem e soltam ao morrer):
+    # o spawner aponta para as tabelas DiWeiAndZhuangBeiDataTable / DiWeiAndWuQiDataTable (peças por posição
+    # e profissão) e a classe do NPC diz a chance de cada parte cair (CharMorenDaoJuInitData).
+    # out["npcEquip"] = [{slots: {"1": [itens]...}, drop: {"1": %...}, weapons: [itens], weaponDrop: %}]
+    out["npcEquip"] = []
+    equip_index, equip_cache, dt_cache = {}, {}, {}
+    SLOT_OF = {"YIFU": "1", "TUI": "2", "SHOU": "3", "JIAO": "4"}
+
+    def dt_items(path):
+        """Tabela de equipamento/armas -> {parte: [itens]} (parte "w" quando a linha não diz a parte)."""
+        path = str(path or "").split(".")[0]
+        if not path or path == "None":
+            return {}
+        if path not in dt_cache:
+            res = {}
+            pk = Package.open(path)
+            rows = pk.datatable_rows() if pk else {}
+
+            def walk(v, slot=None):
+                if isinstance(v, dict):
+                    for k, x in v.items():
+                        walk(x, k if re.fullmatch(r"\d", str(k)) else slot)
+                elif isinstance(v, list):
+                    for x in v:
+                        walk(x, slot)
+                elif isinstance(v, str) and v.startswith("/Game/"):
+                    iid = asset_name(v)
+                    iid = iid[:-2] if iid.endswith("_C") else iid
+                    if iid in item_ids:
+                        lst = res.setdefault(slot or "w", [])
+                        if iid not in lst:
+                            lst.append(iid)
+            walk(rows or {})
+            dt_cache[path] = res
+        return dt_cache[path]
+
+    def npc_equip(scg, cls_path):
+        """Índice em out["npcEquip"] do equipamento deste NPC (ou None)."""
+        key = (str(scg), str(cls_path))
+        if key in equip_cache:
+            return equip_cache[key]
+        res = None
+        spk = Package.open(str(scg).split(".")[0]) if scg else None
+        scdo = (spk.cdo() if spk else None) or {}
+        armor = dt_items(scdo.get("DiWeiAndZhuangBeiDataTable"))
+        weapons = [i for lst in dt_items(scdo.get("DiWeiAndWuQiDataTable")).values() for i in lst]
+        if armor or weapons:
+            # cada campo de CharMorenDaoJuInitData vale da classe mais próxima que o define (sobe pelos pais)
+            init, path, seen = {}, str(cls_path).split(".")[0], set()
+            while path.startswith("/Game/") and path not in seen:
+                seen.add(path)
+                cpk = Package.open(path)
+                if not cpk:
+                    break
+                for k, v in ((((cpk.cdo() or {}).get("CharMorenDaoJuInitData")) or {}).items()):
+                    init.setdefault(k, v)
+                sup = next((cpk.ref_path(e["super_index"]) for e in cpk.exports
+                            if cpk.export_class(e) == "BlueprintGeneratedClass" and e.get("super_index")), None)
+                path = (sup or "").split(".")[0]
+            drop = {}
+            for k, v in (init.get("DaoJuPartDiaoLuoData") or {}).items():
+                s = str(k).split("ZHUANGBEI_SLOT_INDEX_")[-1]
+                drop[SLOT_OF.get(s, s)] = round(float(v) * 100, 1)
+            eq = {"slots": armor, "drop": drop}
+            if weapons:
+                eq["weapons"] = list(dict.fromkeys(weapons))
+                if init.get("KJLWuQiDiaoLuoProbalility") is not None:
+                    eq["weaponDrop"] = round(float(init["KJLWuQiDiaoLuoProbalility"]) * 100, 1)
+            sig = json.dumps(eq, sort_keys=True)
+            if sig not in equip_index:
+                equip_index[sig] = len(out["npcEquip"])
+                out["npcEquip"].append(eq)
+            res = equip_index[sig]
+            STATS["NPC com equipamento"] += 1
+        equip_cache[key] = res
+        return res
 
     # coletáveis e depósitos de recurso (vegetação "BP_Collections_*", BP_ZhiBeiConfig)
     foliage = build_foliage_types(loc, all_bags, item_ids)
@@ -2246,7 +2483,7 @@ def build_map_markers(loc, creature_ids, items=None):
                                 q[5] = min(q[5], i[1]) if q[5] else i[1]
                                 q[6] = max(q[6], i[2])
                     for cls, lo, hi, bag, baby in spawn_info(props.get("SCGClass")):
-                        cid = asset_name(cls)
+                        cid = canon.get(asset_name(cls).lower(), asset_name(cls))
                         bag = use_bag(bag)
                         # filhotes também nascem com a Equipe de Caça (onça, leopardo-das-neves...)
                         if baby and (not is_event or sq == "hunting"):
@@ -2263,12 +2500,15 @@ def build_map_markers(loc, creature_ids, items=None):
                             # pontos de evento não vão para o mapa; só reis/líderes nomeados continuam (chefes)
                             nm = actor_name(cls)
                             if cid not in creature_ids and nm and BOSS_NAME_RE.search("%s %s" % (nm["pt"], nm["en"])):
-                                points.append(["npc", x, y, z, label(nm), lo, hi, bag])
+                                points.append(["npc", x, y, z, label(nm), lo, hi, bag, npc_equip(props.get("SCGClass"), cls)])
                             continue
                         if cid in creature_ids:
                             points.append(["creature", x, y, z, cid, lo, hi, bag])
                         else:
-                            points.append(["npc", x, y, z, label(actor_name(cls)), lo, hi, bag])
+                            # animal fora da enciclopédia sem bolsa de drop: o que dá ao esquartejar
+                            # p[8] = índice em out["npcEquip"] (armaduras/armas que o NPC veste e pode soltar)
+                            points.append(["npc", x, y, z, label(actor_name(cls)), lo, hi, bag or animal_harvest(cls),
+                                           npc_equip(props.get("SCGClass"), cls)])
                     continue
                 if cat in ("ore", "summon"):
                     points.append([cat, x, y, z, sub])
@@ -2569,11 +2809,12 @@ def build_talents(loc, icons, names):
 
     # Níveis do mesmo talento: o jogo liga os níveis por LearnedNGID; alguns (ex.: negativos) não ligam,
     # mas usam o mesmo prefixo de ID (…1, …2, …3) e o mesmo título com Star 1, 2, 3.
+    # O nível 3 às vezes tem outro título (ex.: 抵触 "Aversão" -> 厌恶 "Nojo"), então o agrupamento é só pelo prefixo
+    # do ID; o título só separa quando o mesmo prefixo tem estrelas repetidas (ex.: títulos 6000x, todos Star 3).
     buckets = defaultdict(list)
     for k, r in rows.items():
         rid = r.get("ID") or int(k)
-        title = (r.get("Title") or {}).get("text", "") if isinstance(r.get("Title"), dict) else ""
-        buckets[(rid // 10, title)].append(r)
+        buckets[rid // 10].append(r)
     groups = defaultdict(list)
     for key, rs in buckets.items():
         stars = [r.get("Star", 0) for r in rs]
@@ -2597,14 +2838,17 @@ def build_talents(loc, icons, names):
         lv = []
         for r in levels:
             d = loc.get(r.get("Desc"))
-            e = {"id": r.get("ID")}
+            e = {"id": r.get("ID"), "star": r.get("Star", 0)}
             if d:
                 e["desc_pt"], e["desc_en"] = d["pt"], d["en"]
+            ln = loc.get(r.get("Title"))
+            if ln and ln["pt"] != name["pt"]:
+                e["name_pt"], e["name_en"] = ln["pt"], ln["en"]   # nível com nome próprio (ex.: nível 3)
             lv.append(e)
         t["levels"] = lv
         # descrição combinada "+[5,10,15]%" quando os níveis só mudam números
         comb = combine_levels([x.get("desc_pt", "") for x in lv]), combine_levels([x.get("desc_en", "") for x in lv])
-        if comb[0]:
+        if comb[0] and comb[1]:
             t["desc_pt"], t["desc_en"] = comb
         ids = {x.get("ID") for x in levels}
         source = enum_tail(first.get("NGEffectSource")) or "Normal"
@@ -2731,7 +2975,7 @@ def combine_levels(descs):
         return descs[0]
     skel = [_NUM.sub("#", d) for d in descs]
     if len(set(skel)) != 1:
-        return descs[-1]
+        return ""   # textos diferentes entre os níveis: a página mostra cada nível separado
     nums = [_NUM.findall(d) for d in descs]
     parts = _NUM.split(descs[0])
     out = parts[0]

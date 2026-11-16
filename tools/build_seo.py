@@ -71,6 +71,8 @@ PAGES: dict[str, tuple[str, str]] = {
                  'Quanto conforto cada móvel dá no Soulmask, os 10 níveis de conforto e o bônus de Humor Agradável.'),
     'criaturas': ('Criaturas e animais',
                   'Enciclopédia de animais e criaturas do Soulmask.'),
+    'animais': ('Animais domesticáveis',
+                'Montarias e animais de criação do Soulmask: onde encontrar, como capturar, o que produzem e o que dão no abate.'),
     'maestria': ('Maestria de armas',
                  'Todas as habilidades de maestria de cada arma do Soulmask, como conseguir e a chance de cada uma.'),
     'proficiencia': ('Proficiência',

@@ -1,0 +1,22 @@
+<section class="items-page db-page tame-page">
+  <div class="items-header">
+    <h1 data-i18n="tame.title">Animais domesticáveis</h1>
+    <p class="items-subtitle" data-i18n="tame.subtitle">Montarias e animais de criação: onde encontrar, como capturar, o que produzem e o que dão no abate.</p>
+  </div>
+  <div class="items-filters">
+    <input type="search" id="db-search" class="items-search-input" placeholder="Buscar animal..." data-i18n-placeholder="tame.search" aria-label="Buscar animal" data-i18n-aria="tame.search" />
+    <select id="tame-cat" class="items-search-input" aria-label="Categoria" data-i18n-aria="tame.cat">
+      <option value="" data-i18n="tame.catAll">Todas as categorias</option>
+      <option value="mount" data-i18n="tame.cat.mount">Montarias</option>
+      <option value="farm" data-i18n="tame.cat.farm">Animais de criação</option>
+      <option value="other" data-i18n="tame.cat.other">Outros capturáveis</option>
+    </select>
+    <select id="tame-map" class="items-search-input" aria-label="Mapa" data-i18n-aria="tame.map">
+      <option value="" data-i18n="tame.mapAll">Todos os mapas</option>
+      <option value="main" data-i18n="map.mapMain">Floresta de Névoa Nuvem</option>
+      <option value="dlc" data-i18n="map.mapDlc">Areias Errantes</option>
+    </select>
+    <div class="items-stats"><span id="db-count" data-i18n="site.loading">Carregando...</span></div>
+  </div>
+  <div id="db-container" class="items-grid tame-grid"></div>
+</section>

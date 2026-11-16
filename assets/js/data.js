@@ -179,6 +179,17 @@ export function recipeBlock(recipe, items, benches) {
     </div>`;
 }
 
+// ------------------------------------------------------------------ "Mostrar mais" genérico
+// Mesmo visual e textos do recolhido da página Chefes (.boss-more / bosses.more / bosses.less).
+// Use para esconder a parte longa de um cartão ou ficha; o principal fica sempre visível.
+export function moreBlock(body, { cls = '', open = false } = {}) {
+  if (!body) return '';
+  return `<details class="boss-more more-block${cls ? ` ${cls}` : ''}"${open ? ' open' : ''}>
+    <summary><span class="boss-more-on">${esc(t('bosses.more'))}</span><span class="boss-more-off">${esc(t('bosses.less'))}</span></summary>
+    <div class="boss-more-body">${body}</div>
+  </details>`;
+}
+
 // ------------------------------------------------------------------ onde conseguir (sources.json)
 const MAP_NAMES = { main: 'map.mapMain', dlc: 'map.mapDlc' };
 
@@ -192,8 +203,12 @@ export function sourceName(s, creatures, bosses) {
 }
 
 // lista de fontes; o nome abre a escolha do mapa (data-map-find)
-export function sourceList(list, creatures, bosses, max = 8) {
+// fold: quantas ficam à vista; as outras (até "max") ficam no "Mostrar mais"
+export function sourceList(list, creatures, bosses, max = 8, { fold = 0 } = {}) {
   if (!list?.length) return '';
+  if (fold && list.length > fold + 1 && max > fold) {
+    return `${sourceList(list.slice(0, fold), creatures, bosses, fold)}${moreBlock(sourceList(list.slice(fold, max), creatures, bosses, max - fold))}`;
+  }
   return `<ul class="src-list">${list.slice(0, max).map((s) => {
     const name = sourceName(s, creatures, bosses);
     const qty = s.q && (s.q[0] !== 1 || s.q[1] !== 1) ? ` ×${s.q[0]}${s.q[1] !== s.q[0] ? `–${s.q[1]}` : ''}` : '';
@@ -262,6 +277,8 @@ export async function openItemModal(id) {
   }
   const own = recipes.filter((r) => r.item === it.id);
   const usedIn = recipes.filter((r) => r.ing.some((g) => g.ids.includes(it.id))).slice(0, 40);
+  const USED_FOLD = 12; // "Usado em": 12 à vista, o resto no "Mostrar mais"
+  const usedShown = usedIn.length > USED_FOLD + 1 ? USED_FOLD : usedIn.length;
   const set = it.set ? sets.get(String(it.set)) : null;
   const facts = [
     it.quality != null && meta.qualities?.[it.quality] ? `<span>${esc(t('common.quality'))} <strong>${esc(L(meta.qualities[it.quality]))}</strong></span>` : '',
@@ -286,8 +303,9 @@ export async function openItemModal(id) {
     ${set ? `<h3>${esc(t('armors.setPieces'))}</h3><p><a href="#armaduras?set=${esc(set.id)}" class="item-modal-link">${esc(pick(set, 'name'))}</a></p>` : ''}
     ${own.length ? `<h3>${esc(t('items.howToCraft'))}</h3>${own.map((r) => recipeBlock(r, items, benches)).join('')}
       <p><a class="item-modal-link" href="#bancada?item=${encodeURIComponent(it.id)}">${esc(t('items.seeTree'))}</a></p>` : ''}
-    ${sources[it.id]?.length ? `<h3>${esc(t('src.title'))}</h3>${sourceList(sources[it.id], creatures, bosses)}` : ''}
-    ${usedIn.length ? `<h3>${esc(t('items.usedIn'))}</h3><div class="used-in">${usedIn.map((r) => ingredientChip(items, r.item, 0)).join('')}</div>` : ''}
+    ${sources[it.id]?.length ? `<h3>${esc(t('src.title'))}</h3>${sourceList(sources[it.id], creatures, bosses, 40, { fold: 5 })}` : ''}
+    ${usedIn.length ? `<h3>${esc(t('items.usedIn'))}</h3><div class="used-in">${usedIn.slice(0, usedShown).map((r) => ingredientChip(items, r.item, 0)).join('')}</div>
+      ${usedIn.length > usedShown ? moreBlock(`<div class="used-in">${usedIn.slice(usedShown).map((r) => ingredientChip(items, r.item, 0)).join('')}</div>`) : ''}` : ''}
   `;
   el.querySelector('.item-modal-close').setAttribute('aria-label', t('common.close'));
 }

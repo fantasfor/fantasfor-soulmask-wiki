@@ -151,6 +151,128 @@ def build_fertilizers(items, cdo_cache, loc, crops):
     return sorted(out, key=lambda f: (len(f["types"]), min(int(k) for k in f["types"])))
 
 
+def build_tameable(loc, items, creatures, markers, cdo_cache):
+    """Animais domesticáveis (assets/data/tameable.json, página Animais). Regra (pedida pelo usuário):
+      - só entra quem é capturado por arapuca (BT_DongWuTuJian.XianJingList com BP_XianJing_BuZhuo_*);
+      - montaria = a sela do animal (QiChengDaoJuClass) existe como item do jogo;
+      - animal de criação = existe um item que constrói o cercado dele (JianZhuClasses -> BP_SiYangJuan_*);
+      - quem a arapuca captura mas não é montaria nem de criação entra como "other" (outros capturáveis).
+    Só guarda o que é de domesticação/criação; nome, foto, mapas e o abate (loot) vêm do banco de criaturas
+    (creatures.json, montado em build_creature_db pela parte do mapa) e são lidos direto pela página."""
+    tj = Package.open("/Game/Data/DataTables/BT_DongWuTuJian").datatable_rows() or {}
+    cls_of = {k: (r.get("ObjectClassPath") or "").split(".")[0] for k, r in tj.items()}
+    by_id = {c["id"]: c for c in creatures}
+
+    def iname(path):
+        a = re.sub(r"_C$", "", (path or "").split(".")[-1]) if path else ""
+        if not a:
+            return None
+        return next((i for i in (a, a.replace("Daoju_", "DaoJu_"), a.replace("BP_AN_", "BP_An_")) if i in items), None)
+
+    # item que constrói cada cercado
+    pen_item = {}
+    for iid, (_pkg, cdo, _native) in cdo_cache.items():
+        for jc in cdo.get("JianZhuClasses") or []:
+            # só cercado que dá para construir (item com receita; ex.: o Cercado de Alpacas não tem)
+            if "/DongWuJuan/BP_SiYangJuan_" in str(jc) and iid in items and items[iid].get("recipes"):
+                pen_item.setdefault(str(jc).split(".")[0], iid)
+
+    # cercados: classe do animal -> produção
+    pens = {}
+    pen_dir = os.path.join(CONTENT_DIR, "Blueprints", "JianZhu", "DongWuJuan")
+    for f in sorted(os.listdir(pen_dir)):
+        m = re.match(r"(BP_SiYangJuan_(?!Comp|Base)\w+)\.uasset$", f)
+        if not m:
+            continue
+        built_by = pen_item.get("/Game/Blueprints/JianZhu/DongWuJuan/" + m.group(1))
+        if not built_by:
+            continue            # cercado sem item para construir: não conta
+        c = Package.open("/Game/Blueprints/JianZhu/DongWuJuan/" + m.group(1)).cdo() or {}
+        animal =(c.get("DongWuClass") or "").split(".")[0] or ("/Game/Blueprints/DongWu/BP_DongWu_" + m.group(1).split("_")[-1])
+        prod = []
+        for kind, item_k, n_k, t_k, max_k in (("egg", "ProductDanDaoJu", "ProductDanCount", "ProductDanInterval", "MaxDanCount"),
+                                               ("fur", "ProductMaoDaoJu", "ProductMaoCount", "ProductMaoInterval", None),
+                                               ("dung", "ProductFenDaoJu", "ProductFenCount", "ProductFenInterval", None)):
+            iid = iname(c.get(item_k))
+            if not iid or not c.get(n_k) or (max_k and c.get(max_k) == 0):
+                continue
+            p = {"kind": kind, "id": iid, "n": c.get(n_k), "every": c.get(t_k) or 0}
+            if max_k and c.get(max_k):
+                p["max"] = c[max_k]
+            prod.append(p)
+        pen = {"item": built_by, "max": c.get("MaxDongWuCount"), "prod": prod}
+        nm = loc.get(c.get("JianZhuDisplayName"))
+        if nm:
+            pen["name_pt"], pen["name_en"] = nm["pt"], nm["en"]
+        pens[animal] = pen
+
+    # regiões: rótulo de região mais próximo de cada ponto de nascimento
+    regions = {}
+    for mid, mm in (markers.get("maps") or {}).items():
+        regs = mm.get("regions") or []
+        if not regs:
+            continue
+        for p in mm.get("points") or []:
+            if p[0] != "creature":
+                continue
+            r = min(regs, key=lambda g: (g["x"] - p[1]) ** 2 + (g["y"] - p[2]) ** 2)
+            regions.setdefault(p[4], {}).setdefault((mid, r["name"]["pt"]), [r["name"], 0])[1] += 1
+
+    out = []
+    for cid, cls in cls_of.items():
+        c = by_id.get(cid)
+        # versões elite/chefe ficam de fora (a ficha é da versão comum)
+        if not c or not cls or c.get("base") or re.search(r"_(JY|JingYing|Elite|Boss)$", cid):
+            continue
+        # captura: só arapucas (BP_XianJing_BuZhuo_*)
+        trap_paths = [tp for tp in tj[cid].get("XianJingList") or [] if "BP_XianJing_BuZhuo_" in tp]
+        if not trap_paths:
+            continue
+        pk = Package.open(cls)
+        cdo = (pk.cdo() if pk else None) or {}
+        saddle = iname(cdo.get("QiChengDaoJuClass"))
+        if saddle and not items[saddle].get("recipes"):
+            saddle = None       # sela que não se fabrica não conta
+        pen = pens.get(cls)
+        # capturado por arapuca, mas sem sela nem cercado: "outros capturáveis"
+        a = {"id": cid, "cats": [k for k, v in (("mount", saddle), ("farm", pen)) if v] or ["other"]}
+        if saddle:
+            a["saddle"] = saddle
+        # None = o Blueprint não diz (a página mostra "não confirmado")
+        for key, field in (("tame", "bCanBuZhuo"), ("fight", "bCanChuZhan")):
+            if cdo.get(field) is not None:
+                a[key] = bool(cdo[field])
+        # espaços do inventário e atributos base ficam em creatures.json -> stats (parte do mapa)
+        if pen:
+            a["pen"] = pen
+        # comida que o animal aceita (BT_ShiWu_DongWu_*): prioridade menor = come primeiro
+        ft = cdo.get("ShiWuXiaoGuoTable")
+        if ft:
+            rows = (Package.open(ft.split(".")[0]).datatable_rows() if Package.open(ft.split(".")[0]) else None) or {}
+            # só comida (bUseOnFoodLack); a mesma tabela também lista remédios usados com pouca vida
+            foods = sorted(((r.get("YouXianJi", 9), iname((r.get("Data") or {}).get("FoodClass"))) for r in rows.values()
+                            if (r.get("Data") or {}).get("bUseOnFoodLack")), key=lambda x: x[0])
+            a["foods"] = list(dict.fromkeys(i for _, i in foods if i))
+        # armadilhas que capturam (BT_DongWuTuJian.XianJingList)
+        traps = []
+        for tp in trap_paths:
+            pk = Package.open(tp.split(".")[0])
+            nm = loc.get(((pk.cdo() if pk else None) or {}).get("JianZhuDisplayName"))
+            ti = next((i for i, (_p, cd, _n) in cdo_cache.items()
+                       if any(str(j).split(".")[0] == tp.split(".")[0] for j in cd.get("JianZhuClasses") or [])), None)
+            if nm or ti:
+                e = dict(nm) if nm else {"pt": items[ti]["name_pt"], "en": items[ti]["name_en"]}
+                if ti:
+                    e["item"] = ti      # item da arapuca (abre a janela do item na página)
+                traps.append(e)
+        a["traps"] = traps
+        regs = sorted(regions.get(cid, {}).items(), key=lambda kv: -kv[1][1])
+        if regs:
+            a["regions"] = [{"map": mid, "name_pt": v[0]["pt"], "name_en": v[0]["en"], "n": v[1]} for (mid, _), v in regs[:8]]
+        out.append(a)
+    return sorted(out, key=lambda a: by_id[a["id"]]["name_pt"])
+
+
 def build_proficiency(loc, attrs, icons):
     root = os.path.join(CONTENT_DIR, "Blueprints", "DataTable", "Proficiency")
     talents_by_prof = _prof_talents(loc, icons)

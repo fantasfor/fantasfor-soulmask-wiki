@@ -81,6 +81,8 @@ const readJSON = (k, f) => { try { return JSON.parse(localStorage.getItem(k) || 
 const writeJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* ignora */ } };
 
 const MODE_KEY = 'map_game_mode';
+// bolsa de esquartejar de animal ("cr:" = banco de criaturas, "hv:" = animal fora da enciclopédia)
+const isHarvestBag = (b) => /^(cr|hv):/.test(b || '');
 
 export async function initGameLayers(L, map, root, mapId = 'main', startQuery = '', params = null) {
   const panel = root.querySelector('#map-layers');
@@ -98,6 +100,14 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
   }
   const m = data.maps[mapId] || data.maps.main;
   const [QX, QY, WSIZE] = m.world || [-408028, -408144, 816100];
+  // banco único de criaturas: as bolsas "cr:<id>" vêm de creatures.json (loot), não do map-markers.json
+  data.bags = data.bags || {};
+  creatures.forEach((c) => {
+    if (!c.loot?.harvest && !c.loot?.extra) return;
+    if (data.creatureBags?.[c.id] && !data.creatureBags[c.id].startsWith('cr:')) return;
+    data.bags[`cr:${c.id}`] = [...(c.loot.harvest?.rows || []),
+      ...(c.loot.extra?.rows || []).map((r) => [...r.slice(0, 5), r[5] + 1000, ...r.slice(6)])];
+  });
 
   // ---------------------------------------------------------------- modo de jogo (multiplicadores de drop)
   const modes = data.modes || [];
@@ -121,7 +131,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
   // tipo do ponto -> multiplicador de quantidade do modo atual
   function multOf(o) {
     const r = modeRates();
-    if (o.creature) return r.DongWuShiTiDiaoLuoRatio ?? 1;
+    if (o.creature || isHarvestBag(o.bag)) return r.DongWuShiTiDiaoLuoRatio ?? 1;
     if (o.npcBoss || (o.boss && !o.bag)) return r.BossRenDiaoLuoRatio ?? 1;
     if (o.k?.startsWith('e:') || o.k?.startsWith('m:')) return r.PuTongRenDiaoLuoRatio ?? 1;
     if (o.cat === 'chest' || o.cat === 'maskChest' || NEAR_CATS.includes(o.cat)) return r.BaoXiangDropRatio ?? 1;
@@ -138,7 +148,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
   renderModeNote();
   const bossById = new Map(bosses.map((b) => [b.id, b]));
   const lab = (i) => (i >= 0 && m.labels[i] ? Lbl(m.labels[i]) : '');
-  const typeKey = (o) => (o.k.startsWith('a:') ? 'animal' : o.k.startsWith('e:') ? 'npc' : o.k.startsWith('n:') ? 'npcBoss'
+  const typeKey = (o) => (o.k.startsWith('a:') ? 'animal' : o.k.startsWith('e:') ? (isHarvestBag(o.bag) ? 'animal' : 'npc') : o.k.startsWith('n:') ? 'npcBoss'
     : o.k.startsWith('b:') ? 'worldBoss' : o.k.startsWith('m:') ? 'mech'
       : o.k.startsWith('c:') ? o.cat : o.k.startsWith('i:') ? 'invasion' : o.k.startsWith('y:') ? 'baby'
       : o.k.startsWith('f:') ? (o.fol?.g === 'collect' ? 'collect' : 'deposit') : o.k);
@@ -174,11 +184,13 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       o.icon = data.icons?.animalDot || o.popIcon; o.size = data.icons?.animalDot ? 14 : 22;
     } else if (cat === 'npc') {
       o.label = p[4]; o.lo = p[5]; o.hi = p[6]; o.bag = p[7];
+      o.eq = p[8] ?? null;   // índice em data.npcEquip (armaduras/armas que veste e pode soltar)
       const l = m.labels[p[4]];
       // bolinhas: vermelha = chefe de tribo, verde = mecânico, amarela = inimigo
       if (l && BOSS_RE.test(`${l.pt} ${l.en}`)) { o.k = `n:${p[4]}`; o.icon = data.icons?.boss; o.size = 18; o.npcBoss = true; }
       else if (l && isMech(l)) { o.k = `m:${p[4]}`; o.icon = data.icons?.mech || data.icons?.npc; o.size = 14; o.mech = true; }
-      else { o.k = `e:${p[4]}`; o.icon = data.icons?.npc; o.size = 14; }
+      // animal fora da enciclopédia (ex.: Jacaré (Ruínas)): bolinha azul de animal
+      else { o.k = `e:${p[4]}`; o.icon = (isHarvestBag(p[7]) && data.icons?.animalDot) || data.icons?.npc; o.size = 14; }
     } else if (cat === 'fol') {
       // depósito de recurso ou coletável (vegetação do jogo): ícone do item que ele dá
       const ft = data.foliage?.[p[4]];
@@ -466,6 +478,8 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       });
     }
     if (o.dg) [...(o.dg.enemies || []), ...(o.dg.chests || [])].forEach((e) => bagSet(e.bag)?.forEach((id) => s.add(id)));
+    const eq = o.eq != null ? data.npcEquip?.[o.eq] : null;
+    if (eq) [...Object.values(eq.slots || {}).flat(), ...(eq.weapons || [])].forEach((id) => s.add(id));
     o._items = s.size ? s : null;
     return o._items;
   }
@@ -658,6 +672,15 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
         ctx.drawImage(im, pt.x - s / 2, pt.y - s / 2, s, s);
         drawn.push({ o, x: pt.x, y: pt.y, r: s / 2 + 3 });
       });
+      // procurar loot com poucos resultados: anel em volta de cada lugar para achar fácil
+      if (focusKeys && drawn.length && drawn.length <= 20) {
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#1aecec';
+        drawn.forEach((d) => { ctx.beginPath(); ctx.arc(d.x, d.y, d.r + 7, 0, Math.PI * 2); ctx.stroke(); });
+      }
       if (selected) {
         const pt = mp.latLngToContainerPoint([SIZE - selected.y, selected.x]);
         const r = (selected.size * zoomScale) / 2 + 6;
@@ -728,7 +751,14 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     const it = items.get(lootSel);
     focusOnItems(startItems, { note: `${esc(t('map.loot.showing'))} <strong>${esc(pick(it, 'name'))}</strong>` });
     const btn = lootEl?.querySelector(`[data-loot-item="${CSS.escape(lootSel)}"]`);
-    if (btn) { btn.setAttribute('aria-pressed', 'true'); btn.scrollIntoView({ block: 'nearest' }); }
+    if (btn) {
+      btn.setAttribute('aria-pressed', 'true');
+      const list = btn.closest('[data-loot-items]');
+      list.scrollTop = btn.offsetTop - list.offsetTop - list.clientHeight / 2;   // sem rolar a página
+    }
+    // poucos lugares (ex.: o baú de uma máscara): já abre a janela do primeiro
+    const hits = points.filter((o) => focusKeys?.has(o.k) && hasAnyItem(o));
+    if (hits.length && hits.length <= 3) setTimeout(() => openSide(hits[0]), 0);
   }
 
   // coordenadas do jogo onde o mouse está (mesma escala do "X / Y" das janelas e do gm go)
@@ -977,13 +1007,14 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     const row = (g, name, icon, mult, what) => {
       const lv = g.hi ? `${t('common.level')} ${g.lo === g.hi || g.lo === Infinity ? g.hi : `${g.lo}–${g.hi}`}` : '';
       const rows = [...g.bags].flatMap((bg) => data.bags[bg].map((x) => [...x.slice(0, 5), `${bg}:${x[5]}`, x[6]]));
-      if (!rows.length) {
+      const eqHtml = equipHtml(g.q.eq);   // NPC humano: armaduras/armas que veste e pode soltar
+      if (!rows.length && !eqHtml) {
         // sem tabela de drop (ex.: veio de minério): só a linha, sem abrir
         return `<div class="mp-here mp-here-flat"><div class="mp-here-row">${icon ? `<img src="${esc(icon)}" alt="" />` : '<i></i>'}<span>${esc(name)}</span><small>${esc([lv, `×${g.n}`].filter(Boolean).join(' · '))}</small></div></div>`;
       }
       return `<details class="mp-here">
         <summary>${icon ? `<img src="${esc(icon)}" alt="" />` : '<i></i>'}<span>${esc(name)}</span><small>${esc([lv, `×${g.n}`].filter(Boolean).join(' · '))}</small></summary>
-        <div class="mp-here-body"><h5>${esc(t(what))}</h5>${groupTable(rows, mult)}</div>
+        <div class="mp-here-body">${rows.length ? `<h5>${esc(t(what))}</h5>${groupTable(rows, mult)}` : ''}${eqHtml ? `<h5>${esc(t('map.eq.title'))}</h5>${eqHtml}` : ''}</div>
       </details>`;
     };
     let html = '';
@@ -1005,11 +1036,14 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       if (c?.photo) html += `<div class="mp-hero mp-hero-solo"><img src="${esc(c.photo)}" alt="" /></div>`;
       if (c) html += `<a class="mp-link" href="#criaturas?q=${encodeURIComponent(pick(c, 'name'))}">${esc(t('map.seeCreature'))}</a>`;
     }
-    if (beasts.length) {
+    // animais fora da enciclopédia (ex.: Jacaré (Ruínas)) entram junto com os animais
+    const wild = groupBy(around.filter((q) => q.k?.startsWith('e:') && isHarvestBag(q.bag)), (q) => q.label);
+    if (beasts.length || wild.length) {
       html += block(t(o.cat === 'lair' || o.cat === 'beast' ? 'map.beastsHere' : 'map.animalsHere'),
-        beasts.map((g) => row(g, creatureName(g.q.creature), g.q.popIcon, multOf(g.q), 'map.harvest')).join(''));
+        beasts.map((g) => row(g, creatureName(g.q.creature), g.q.popIcon, multOf(g.q), 'map.harvest')).join('')
+        + wild.map((g) => row(g, enemyName(g.q.label), creatures.get(g.q.bag.slice(3))?.photo || g.q.icon, multOf(g.q), 'map.cr.harvest')).join(''));
     }
-    const foes = groupBy(around.filter((q) => q.k?.startsWith('e:') || q.k?.startsWith('n:') || q.k?.startsWith('m:')), (q) => q.label);
+    const foes = groupBy(around.filter((q) => (q.k?.startsWith('e:') && !isHarvestBag(q.bag)) || q.k?.startsWith('n:') || q.k?.startsWith('m:')), (q) => q.label);
     if (foes.length) {
       html += block(t('map.enemiesHere'), foes.map((g) => row(g, enemyName(g.q.label), g.q.icon, multOf(g.q), 'map.drops')).join(''));
     }
@@ -1027,6 +1061,45 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     return html;
   }
 
+  // equipamento que o NPC veste e pode soltar ao morrer (data.npcEquip, das tabelas de equipamento do clã)
+  const EQ_SLOTS = ['0', '1', '2', '3', '4', '5', '6', 'w'];
+  function equipHtml(idx) {
+    const eq = idx != null ? data.npcEquip?.[idx] : null;
+    if (!eq) return '';
+    const parts = EQ_SLOTS.map((s) => {
+      const ids = s === 'w' ? [...(eq.weapons || []), ...(eq.slots?.w || [])] : (eq.slots?.[s] || []);
+      const chance = s === 'w' ? eq.weaponDrop : eq.drop?.[s];
+      return ids.length ? { s, ids: [...new Set(ids)], chance } : null;
+    }).filter(Boolean);
+    if (!parts.length) return '';
+    return `<table class="mp-gt mp-eq">
+      <thead><tr><th>${esc(t('map.eq.part'))}</th><th>${esc(t('map.colChance'))}</th><th>${esc(t('map.colItem'))}</th></tr></thead>
+      <tbody>${parts.map((p) => `<tr>
+        <td class="mp-eq-part">${esc(t(`map.eq.slot.${p.s}`))}</td>
+        <td class="mp-gt-p">${p.chance != null ? esc(fmtPct(p.chance)) : '?'}</td>
+        <td class="mp-gt-i">${p.ids.map((id) => {
+    const it = itemOf(id);
+    return `<a href="#itens?item=${encodeURIComponent(id)}">${it?.icon ? `<img src="${esc(it.icon)}" alt="" />` : ''}<span>${esc(it ? pick(it, 'name') : id)}</span></a>`;
+  }).join('')}</td></tr>`).join('')}</tbody></table>
+      <p class="mp-gt-hint">${esc(t('map.eq.hint'))}</p>`;
+  }
+
+  // tabelas de uma criatura do banco (creatures.json "loot"): esquartejar, outros recursos e filhote
+  function lootTables(c, mult) {
+    const L2 = c.loot;
+    if (!L2) return `<p class="mp-note">${esc(t('map.cr.noLoot'))}</p>`;
+    const knife = Math.max(...Object.values(L2.toolMult || { x: 1 }));
+    return (L2.confirmed ? '' : `<p class="mp-unconfirmed">${esc(t('map.cr.unconfirmed'))}</p>`)
+      + (L2.harvest ? block(t('map.cr.harvest'), groupTable(L2.harvest.rows, mult)) : '')
+      + (L2.extra ? block(t('map.cr.extra'), groupTable(L2.extra.rows, mult)) : '')
+      + (L2.young ? block(t('map.cr.young'), groupTable(L2.young.rows, mult)) : '')
+      + (knife > 1 ? `<p class="mp-note">${esc(t('map.cr.knife', { m: knife.toLocaleString() }))}</p>` : '');
+  }
+  // só a tabela da versão que o bicho realmente é (comum, elite ou chefe), com a etiqueta da versão
+  function creatureLootHtml(c, mult) {
+    return `<p class="mp-variant"><span>${esc(t(`map.cr.variant.${c.variant || 'normal'}`))}</span></p>${lootTables(c, mult)}`;
+  }
+
   function popupHtml(o, tierIdx = 0) {
     const typeName = t(`map.game.${typeKey(o)}`);
     let title = typeName;
@@ -1040,7 +1113,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       sub = [typeName, lv].filter(Boolean).join(' · ');
       tone = 'animal';
       if (c?.photo) body = `<div class="mp-hero mp-hero-solo"><img src="${esc(c.photo)}" alt="" /></div>`;
-      body += block(t('map.harvest'), groupTable(data.bags?.[o.bag], multOf(o)));
+      body += c ? creatureLootHtml(c, multOf(o)) : block(t('map.harvest'), groupTable(data.bags?.[o.bag], multOf(o)));
       if (c) body += `<a class="mp-link" href="#criaturas?q=${encodeURIComponent(title)}">${esc(t('map.seeCreature'))}</a>`;
     } else if (o.fol) {
       title = pick(o.fol, 'name');
@@ -1067,7 +1140,11 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       title = enemyName(o.label);
       sub = [typeName, lv].filter(Boolean).join(' · ');
       tone = o.npcBoss ? 'boss' : 'enemy';
-      body = block(t('map.drops'), groupTable(data.bags?.[o.bag], multOf(o)));
+      // animal fora da enciclopédia (ex.: Jacaré (Ruínas)): o que dá ao esquartejar, da tabela do banco de criaturas
+      const cr = o.bag?.startsWith('cr:') ? creatures.get(o.bag.slice(3)) : null;
+      body = cr ? creatureLootHtml(cr, multOf(o))
+        : block(t(isHarvestBag(o.bag) ? 'map.cr.harvest' : 'map.drops'), groupTable(data.bags?.[o.bag], multOf(o)));
+      body += block(t('map.eq.title'), equipHtml(o.eq));
     } else if (o.boss && bossById.get(o.boss)) {
       const b = bossById.get(o.boss);
       title = pick(b, 'name');

@@ -1,5 +1,41 @@
 [
   {
+    "version": "1.0.2",
+    "date": "2026-11-15",
+    "pt": [
+      "Página inicial: ícone de Armaduras corrigido (sem o quadrado escuro de fundo e do mesmo tamanho dos outros ícones)",
+      "Máscaras: \"Onde encontrar\" abre o mapa já com o baú ou o inimigo da máscara destacado e com a janela dele aberta",
+      "Mapa: lugares do \"Procurar loot\" ganham um anel quando são poucos, para achar fácil",
+      "Mapa: ao clicar numa criatura aparecem os recursos ao esquartejar, os outros recursos ao terminar, as chances e as quantidades, só da versão que o bicho é (comum ou elite)",
+      "Criaturas: recursos ao esquartejar e outros recursos vêm do mesmo banco de dados do mapa; o que não é confirmado pelo jogo aparece marcado",
+      "Mapa no celular: nomes dos itens nas tabelas de drop não quebram mais letra a letra",
+      "Mapa: animais das ruínas e outros animais que apareciam como inimigo sem drop (Jacaré (Ruínas), Lobo (Ruínas), Hiena (Ruínas) etc.) agora mostram o que dão ao esquartejar; jacarés comuns, gigantes e elites voltaram a ser animais com a tabela confirmada pelo jogo",
+      "Mapa: líderes, reis, elites e inimigos humanos agora mostram o equipamento que podem soltar (armadura de corpo, pernas, braços e pés, anel, colar e armas) com a chance de cada parte, nos dois mapas; o \"Procurar loot\" também acha essas peças",
+      "Criaturas: atributos base do jogo no nível 1 (vida, ataque, defesa, vigor, carga, velocidade e, em \"Mostrar mais\", crítico, resistências, fôlego, fome, sede e espaços do inventário)",
+      "Talentos: 95 talentos que apareciam sem o nível 3 (ou com o nível 3 como talento separado) agora mostram os níveis 1, 2 e 3; quando o texto muda entre os níveis, cada nível aparece com o seu efeito",
+      "Nova página Animais domesticáveis: os 20 animais que as arapucas capturam, separados em montarias (têm sela), animais de criação (têm cercado de criação que dá para construir) e outros capturáveis; cada tópico (mapas e regiões, recursos que produz, abate com quantidade e chance, domesticação com arapuca, sela e cercado clicáveis, atributos base no nível 1, comidas aceitas) começa fechado com Mostrar mais; botão Ver no mapa e filtros por categoria e mapa",
+      "Bancada de trabalho: a árvore de fabricação agora é movida clicando e arrastando (ou com o dedo no celular), sem barras de rolagem",
+      "Bancada de trabalho: a busca do item e a quantidade agora ficam no topo da própria caixa da árvore, deixando a página mais compacta",
+      "Partes longas recolhidas com \"Mostrar mais\": na janela de cada item (onde conseguir mostra 5 fontes e agora lista até 40; \"Usado em\" mostra 12), nos Talentos (os outros níveis e os IDs) e no Plantio (descrição longa das plantações e a lista de plantações de cada fertilizante)"
+    ],
+    "en": [
+      "Home page: Armor icon fixed (no dark square behind it and the same size as the other icons)",
+      "Masks: \"Where to find\" opens the map with the mask's chest or enemy highlighted and its panel already open",
+      "Map: \"Search for loot\" places get a ring when there are only a few, so they are easy to spot",
+      "Map: clicking a creature shows butchering resources, other resources when butchering is finished, chances and amounts, only for the version the animal actually is (common or elite)",
+      "Creatures: butchering and other resources come from the same database as the map; anything not confirmed by the game is marked",
+      "Map on mobile: item names in drop tables no longer break letter by letter",
+      "Map: ruin animals and other animals that showed up as enemies with no drops (Crocodile (Ruins), Wolf (Ruins), Hyena (Ruins) etc.) now show their butchering resources; common, giant and elite crocodiles are animals again with the table confirmed by the game",
+      "Map: leaders, kings, elites and human enemies now show the gear they can drop (body, legs, arms and feet armor, ring, necklace and weapons) with the chance for each part, on both maps; \"Search for loot\" also finds these pieces",
+      "Creatures: base game attributes at level 1 (health, attack, defense, stamina, carry weight, speed and, under \"Show more\", crit, resistances, breath, food, water and inventory slots)",
+      "Talents: 95 talents that showed up without level 3 (or with level 3 as a separate talent) now show levels 1, 2 and 3; when the text changes between levels, each level is shown with its own effect",
+      "New Tameable animals page: the 20 animals the traps can catch, split into mounts (have a saddle), farm animals (have a buildable breeding pen) and other catchable animals; each topic (maps and regions, resources produced, butchering with amount and chance, taming with clickable trap, saddle and pen, base attributes at level 1, accepted foods) starts closed with Show more; See on map button and filters by category and map",
+      "Workbench: drag the crafting tree with the mouse (or your finger on mobile) to move around it, with no scroll bars",
+      "Workbench: item search and quantity now sit at the top of the crafting tree box, making the page more compact",
+      "Long sections folded behind \"Show more\": in each item's window (where to get shows 5 sources and now lists up to 40; \"Used in\" shows 12), in Talents (the other levels and the IDs) and in Farming (long crop descriptions and the crop list of each fertilizer)"
+    ]
+  },
+  {
     "version": "1.0.1",
     "date": "2026-11-15",
     "pt": [

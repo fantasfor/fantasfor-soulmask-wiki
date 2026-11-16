@@ -651,7 +651,28 @@
 .map-info .mp-gt-i span {
   min-width: 0;
   white-space: normal;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+}
+
+/* celular: colunas de número mais estreitas para o nome do item caber sem quebrar letra a letra */
+@media (max-width: 520px) {
+  .map-info .mp-gt th:nth-child(1),
+  .map-info .mp-gt-g {
+    width: 40px;
+  }
+
+  .map-info .mp-gt th:nth-child(2) {
+    width: 46px;
+  }
+
+  .map-info .mp-gt th:nth-child(3) {
+    width: 36px;
+  }
+
+  .map-info .mp-gt-i img {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .map-info .mp-scroll,
@@ -1281,6 +1302,62 @@
   color: var(--muted);
   font-size: 0.76rem;
   line-height: 1.4;
+}
+
+/* equipamento que o NPC pode soltar: várias peças possíveis por parte do corpo */
+.mp-eq .mp-eq-part {
+  color: var(--muted);
+  font-size: 0.72rem;
+  vertical-align: top;
+}
+
+.mp-eq .mp-gt-i a + a {
+  margin-top: 4px;
+}
+
+.mp-eq td {
+  vertical-align: top;
+}
+
+.map-info .mp-eq th:nth-child(1) {
+  width: 58px;
+}
+
+.map-info .mp-eq th:nth-child(2) {
+  width: 50px;
+}
+
+.map-info .mp-eq th:nth-child(3) {
+  width: auto;
+}
+
+/* criatura: versão (comum / elite / chefe) e aviso de dado não confirmado */
+.mp-variant {
+  margin: 0 0 6px;
+}
+
+.mp-variant span {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid #ecb43c;
+  color: #ecb43c;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mp-variant-other {
+  margin-top: 6px;
+}
+
+.mp-unconfirmed {
+  margin: 0 0 8px;
+  padding: 4px 8px;
+  border-left: 3px solid #e6a23c;
+  background: rgba(230, 162, 60, 0.1);
+  color: #f0c27a;
+  font-size: 0.74rem;
 }
 
 /* ---------------------------------------------------------------- procurar loot (item -> fontes) */

@@ -1,6 +1,6 @@
 // Plantio: dados das plantações (assets/data/crops.json, gerado de BP_ZhongZhi_ZuoWu_* e DT_ZhiBeiCaiJiBao)
 import { t, tCount, pick } from '../i18n.js';
-import { loadData, loadIndex, esc, escLines, normalize, fmtNum, iconImg, ingredientChip, openItemModal } from '../data.js';
+import { loadData, loadIndex, esc, escLines, normalize, fmtNum, iconImg, ingredientChip, openItemModal, moreBlock } from '../data.js';
 
 function fmtGrowth(sec) {
   const h = Math.floor(sec / 3600);
@@ -72,6 +72,13 @@ export async function initFarmingPage(root, params) {
   // unidades de fertilizante para cobrir "points" pontos de adubo do tipo dado
   const unitsFor = (f, type, points) => points / (f.types[String(type)] || Infinity);
 
+  // plantações que usam o fertilizante: 8 à vista, o resto no "Mostrar mais"
+  const CROPS_FOLD = 8;
+  const cropChip = (c) => `<button type="button" class="farm-fert-crop" data-sim="${esc(c.id)}">${esc(pick(c, 'name'))}</button>`;
+  const cropChips = (list) => (list.length <= CROPS_FOLD + 1
+    ? `<p class="farm-fert-crops">${list.map(cropChip).join('')}</p>`
+    : `<p class="farm-fert-crops">${list.slice(0, CROPS_FOLD).map(cropChip).join('')}</p>${moreBlock(`<p class="farm-fert-crops">${list.slice(CROPS_FOLD).map(cropChip).join('')}</p>`)}`);
+
   const fertEl = root.querySelector('#farm-fert-list');
   if (fertEl) {
     fertEl.innerHTML = ferts.length ? ferts.map((f) => {
@@ -91,7 +98,7 @@ export async function initFarmingPage(root, params) {
           ${f.exp ? `<div><dt>${esc(t('farming.fertExp'))}</dt><dd>+${esc(fmtNum(f.exp, 0))}</dd></div>` : ''}
           ${f.boost ? `<div><dt>${esc(t('farming.fertBoost'))}</dt><dd>${esc(t('farming.fertBoostVal', { p: fmtNum(f.boost.pct * 100, 0), h: fmtNum(f.boost.time / 3600, 1) }))}</dd></div>` : ''}
         </dl>
-        ${types.length === 1 && list.length ? `<p class="farm-fert-crops">${list.map((c) => `<button type="button" class="farm-fert-crop" data-sim="${esc(c.id)}">${esc(pick(c, 'name'))}</button>`).join('')}</p>` : ''}
+        ${types.length === 1 && list.length ? cropChips(list) : ''}
         ${f.craft ? `<a class="item-card-tree" href="#bancada?item=${encodeURIComponent(f.id)}">${esc(t('farming.fertCraft'))}</a>` : ''}
       </article>`;
     }).join('') : '';
@@ -112,6 +119,11 @@ export async function initFarmingPage(root, params) {
     return `${esc(fmtNum(total, 0))} <small>· ${f ? `<a href="#" data-item-link="${esc(f.id)}">${esc(fertName(c.fert.type))}</a> ≈ ${esc(fmtNum(u, u < 10 ? 2 : 0))} ${esc(t('farming.units'))}` : esc(fertName(c.fert.type))}${alt ? ` ${esc(t('common.or'))} ${esc(pick(alt, 'name'))} ≈ ${esc(fmtNum(ua, ua < 10 ? 2 : 0))}` : ''}</small>`;
   }
 
+  // descrição da plantação: curta fica à vista; longa vai para o "Mostrar mais"
+  const DESC_FOLD = 140;
+  const descHtml = (d) => (!d ? '' : d.length <= DESC_FOLD ? `<p class="farming-desc">${escLines(d)}</p>`
+    : moreBlock(`<p class="farming-desc">${escLines(d)}</p>`));
+
   function card(c) {
     const slow = c.temps.some((x) => x.mult > 1) ? Math.max(...c.temps.map((x) => x.mult)) : 1;
     return `
@@ -131,7 +143,7 @@ export async function initFarmingPage(root, params) {
         ${tempBar(c.temps)}
         ${tipText(c) ? `<p class="farming-tip">${esc(tipText(c))}</p>` : ''}
         <button type="button" class="farming-sim-btn" data-sim="${esc(c.id)}">${esc(t('farming.simulate'))}</button>
-        ${pick(c, 'desc') ? `<p class="farming-desc">${escLines(pick(c, 'desc'))}</p>` : ''}
+        ${descHtml(pick(c, 'desc'))}
         ${c.harvest?.length ? `<h4 class="farming-subtitle">${esc(t('farming.harvest'))}</h4>
           <div class="farming-harvest">${c.harvest.map((h) => `<span class="farming-drop">${ingredientChip(items, h.id, h.n[0] === h.n[1] ? h.n[0] : `${h.n[0]}–${h.n[1]}`)}${h.chance < 100 ? `<small>${esc(h.chance)}%</small>` : ''}</span>`).join('')}</div>` : ''}
       </article>`;

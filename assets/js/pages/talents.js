@@ -1,5 +1,5 @@
 import { t, tCount, pick } from '../i18n.js';
-import { loadData, esc, escLines, normalize, renderChunked, L } from '../data.js';
+import { loadData, esc, escLines, normalize, renderChunked, L, moreBlock } from '../data.js';
 import { loadFirebase, getUser, onUser } from '../cloud.js';
 import { summarize, starsDisplay, starsInput } from '../ratings.js';
 
@@ -79,6 +79,10 @@ export async function initTalentsPage(root, params) {
   excl.forEach((x) => exclSel.insertAdjacentHTML('beforeend', `<option value="${esc(x)}">${esc(x)}</option>`));
   if (params.get('q')) search.value = params.get('q');
 
+  // talentos com um texto por nível: o nível 1 fica à vista; os outros níveis e os IDs ficam no "Mostrar mais"
+  const folded = (x) => !pick(x, 'desc') && x.levels.length > 1;
+  const step = (l, i) => `<li><strong>${esc(t('common.level'))} ${i + 1}${pick(l, 'name') ? ` · ${esc(pick(l, 'name'))}` : ''}</strong> ${escLines(pick(l, 'desc'))}</li>`;
+
   function card(x) {
     const pal = TALENT_COLORS[x.type] || TALENT_COLORS.other;
     const isFav = favs.has(x.id);
@@ -97,9 +101,11 @@ export async function initTalentsPage(root, params) {
           </div>
         </div>
         <div class="talent-card-body">
-          <p class="talent-card-description">${escLines(pick(x, 'desc') || pick(x.levels[0], 'desc'))}</p>
+          ${pick(x, 'desc') || x.levels.length < 2
+            ? `<p class="talent-card-description">${escLines(pick(x, 'desc') || pick(x.levels[0], 'desc'))}</p>`
+            : `<ol class="talent-card-steps">${step(x.levels[0], 0)}</ol>`}
           ${ex ? `<div class="talent-card-exclusive"><strong class="talent-card-exclusive-label">${esc(t('talents.exclusive'))}</strong> <span class="talent-card-exclusive-value">${esc(ex)}</span></div>` : ''}
-          ${levels}
+          ${folded(x) ? moreBlock(`<ol class="talent-card-steps" start="2">${x.levels.slice(1).map((l, i) => step(l, i + 1)).join('')}</ol>${levels}`, { cls: 'talent-more' }) : levels}
           ${ratingHtml(x)}
         </div>
       </article>`;
@@ -112,7 +118,7 @@ export async function initTalentsPage(root, params) {
     const list = talents.filter((x) => (!typ || x.type === typ)
       && (!ex || exclLabels(x).includes(ex))
       && (!favOnly || favs.has(x.id))
-      && (!q || normalize(`${x.name_pt} ${x.name_en} ${x.desc_pt || ''} ${x.desc_en || ''} ${exclLabels(x).join(' ')} ${x.levels.map((l) => l.id).join(' ')}`).includes(q)));
+      && (!q || normalize(`${x.name_pt} ${x.name_en} ${x.desc_pt || ''} ${x.desc_en || ''} ${exclLabels(x).join(' ')} ${x.levels.map((l) => `${l.id} ${l.name_pt || ''} ${l.name_en || ''} ${x.desc_pt ? '' : `${l.desc_pt || ''} ${l.desc_en || ''}`}`).join(' ')}`).includes(q)));
     const sort = sortSel.value;
     if (sort !== 'name') {
       const score = (x) => { const r = ratingOf(x.id); return sort === 'votes' ? r.count * 10 + r.avg : (r.avg * r.count + 3 * 2) / (r.count + 2) + (r.count ? 0 : -1); };

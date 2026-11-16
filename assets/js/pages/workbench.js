@@ -9,7 +9,11 @@ export async function initWorkbenchPage(root, params) {
   const search = root.querySelector('#wb-search');
   const suggest = root.querySelector('#wb-suggest');
   const qtyEl = root.querySelector('#wb-qty');
-  const out = root.querySelector('#wb-result');
+  const out = root.querySelector('#wb-result');          // resumo dos materiais básicos
+  const treeArea = root.querySelector('#wb-tree-area');  // árvore, dentro da mesma caixa da busca
+  const main = root.querySelector('#wb-main');           // caixa da árvore + resumo (eventos)
+  const titleEl = root.querySelector('#wb-pick-title');
+  const hintEl = root.querySelector('#wb-hint');
   let items; let recipes; let benches; let sources; let creatures; let bosses;
   try {
     [items, recipes, benches, sources, creatures, bosses] = await Promise.all([
@@ -86,11 +90,13 @@ export async function initWorkbenchPage(root, params) {
     const qty = Math.max(1, Math.min(999, Number(qtyEl.value) || 1));
     const tree = `<ul class="wb-branch wb-root"><li class="wb-node">${itemNode(current, qty, 0, new Set())}</li></ul>`;
     const base = [...totals.entries()].sort((a, b) => name(a[0]).localeCompare(name(b[0])));
+    // a barra do topo passa a mostrar o item escolhido e a dica de leitura da árvore
+    titleEl.removeAttribute('data-i18n');
+    hintEl.removeAttribute('data-i18n');
+    titleEl.textContent = name(current);
+    hintEl.textContent = t('wb.treeHint');
+    treeArea.innerHTML = `<div class="wb-tree-scroll"><div class="wb-tree">${tree}</div></div>`;
     out.innerHTML = `
-      <section class="guide-tool wb-tree-box">
-        <header class="guide-tool-head"><div><h2>${esc(name(current))}</h2><p>${esc(t('wb.treeHint'))}</p></div></header>
-        <div class="wb-tree-scroll"><div class="wb-tree">${tree}</div></div>
-      </section>
       <section class="guide-tool">
         <header class="guide-tool-head"><div><h2>${esc(t('wb.baseTitle'))}</h2><p>${esc(t('wb.baseHint'))}</p></div></header>
         <div class="wb-base">${base.map(([id, n]) => {
@@ -101,7 +107,7 @@ export async function initWorkbenchPage(root, params) {
           </div>`;
         }).join('')}</div>
       </section>`;
-    const sc = out.querySelector('.wb-tree-scroll');
+    const sc = treeArea.querySelector('.wb-tree-scroll');
     if (sc) sc.scrollLeft = (sc.scrollWidth - sc.clientWidth) / 2;   // árvore larga começa centrada no produto
   }
 
@@ -131,11 +137,51 @@ export async function initWorkbenchPage(root, params) {
   suggest.addEventListener('click', (e) => { const b = e.target.closest('[data-pick]'); if (b) pickItem(b.dataset.pick); });
   document.addEventListener('click', (e) => { if (!root.contains(e.target) || !e.target.closest('.wb-pick')) suggest.hidden = true; });
   qtyEl.addEventListener('input', render);
-  out.addEventListener('change', (e) => {
+  main.addEventListener('change', (e) => {
     const s = e.target.closest('[data-alt]');
     if (s) { choice[s.dataset.alt] = Number(s.value); render(); }
   });
-  out.addEventListener('click', (e) => {
+  // arrastar a árvore com o mouse, como num mapa (no celular o dedo já rola a área sozinho).
+  // Só vira arrasto depois de mover alguns pixels; assim clicar em item, "Escolha um" e receita continua normal.
+  let drag = null;
+  let justDragged = false;
+  main.addEventListener('pointerdown', (e) => {
+    const sc = e.target.closest('.wb-tree-scroll');
+    if (!sc || e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest('select, input, textarea')) return;
+    drag = { sc, id: e.pointerId, x: e.clientX, y: e.clientY, left: sc.scrollLeft, top: sc.scrollTop, moving: false };
+  });
+  main.addEventListener('pointermove', (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x;
+    const dy = e.clientY - drag.y;
+    if (!drag.moving) {
+      if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
+      drag.moving = true;
+      drag.sc.classList.add('is-dragging');
+      try { drag.sc.setPointerCapture(e.pointerId); } catch (err) { /* ignora */ }
+    }
+    e.preventDefault();
+    drag.sc.scrollLeft = drag.left - dx;
+    drag.sc.scrollTop = drag.top - dy;
+  });
+  const endDrag = (e) => {
+    if (!drag || (e && e.pointerId !== drag.id)) return;
+    if (drag.moving) {
+      justDragged = true;   // o clique que vem logo depois do arrasto é ignorado
+      setTimeout(() => { justDragged = false; }, 0);
+      drag.sc.classList.remove('is-dragging');
+    }
+    drag = null;
+  };
+  main.addEventListener('pointerup', endDrag);
+  main.addEventListener('pointercancel', endDrag);
+  main.addEventListener('lostpointercapture', endDrag);
+  main.addEventListener('click', (e) => {
+    if (justDragged) { e.preventDefault(); e.stopPropagation(); justDragged = false; }
+  }, true);
+  main.addEventListener('dragstart', (e) => { if (e.target.closest('.wb-tree-scroll')) e.preventDefault(); });
+
+  main.addEventListener('click', (e) => {
     const opt = e.target.closest('[data-group]');
     if (opt) { groupPick[opt.dataset.group] = Number(opt.dataset.idx); render(); return; }
     const link = e.target.closest('[data-item-link]');

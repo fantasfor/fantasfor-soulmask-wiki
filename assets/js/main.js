@@ -10,6 +10,7 @@ import { initWeaponsPage } from './pages/weapons.js';
 import { initRecipesPage } from './pages/recipes.js';
 import { initMasksPage } from './pages/masks.js';
 import { initCreaturesPage } from './pages/creatures.js';
+import { initTameablePage } from './pages/tameable.js';
 import { initTierListPage } from './pages/tierlist.js';
 import { initBuilderPage } from './pages/builder.js';
 import { initCloud, mountAccountWidget } from './cloud.js';
@@ -42,6 +43,7 @@ const PAGE_INIT = {
   receitas: initRecipesPage,
   mascaras: initMasksPage,
   criaturas: initCreaturesPage,
+  animais: initTameablePage,
   'tier-list': initTierListPage,
   // editor (builder.js) + aba Comunidade (builder-community.js)
   'builder-maker': async (root, params) => { await initBuilderPage(root, params); await initBuilderCommunity(root, params); },

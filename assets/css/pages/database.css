@@ -465,6 +465,54 @@ button.item-card {
   height: 22px;
 }
 
+.creature-unconfirmed {
+  margin: 12px 0 0;
+  padding: 4px 8px;
+  border-left: 3px solid #e6a23c;
+  background: rgba(230, 162, 60, 0.1);
+  color: #f0c27a;
+  font-size: 0.76rem;
+}
+
+/* Criaturas: atributos base (nível 1) */
+.creature-stats {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.creature-stat-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.creature-stat-grid dd {
+  color: #ecd760;
+  font-weight: 700;
+}
+
+.creature-stats-more summary {
+  color: var(--accent);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.creature-stats-more[open] summary {
+  margin-bottom: 8px;
+}
+
+.creature-stats-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 480px) {
+  .creature-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .db-map-btn {
   display: inline-flex;
   align-items: center;
@@ -1282,6 +1330,15 @@ button.item-card {
   grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   padding-top: 10px;
+}
+
+/* "Mostrar mais" genérico (moreBlock em data.js): Talentos, Plantio e janela de item */
+.more-block {
+  margin: 6px 0 2px;
+}
+
+.more-block .boss-more-body > :first-child {
+  margin-top: 0;
 }
 
 .boss-unlocks {
