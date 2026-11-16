@@ -16,7 +16,8 @@
       "Nova página Animais domesticáveis: os 20 animais que as arapucas capturam, separados em montarias (têm sela), animais de criação (têm cercado de criação que dá para construir) e outros capturáveis; cada tópico (mapas e regiões, recursos que produz, abate com quantidade e chance, domesticação com arapuca, sela e cercado clicáveis, atributos base no nível 1, comidas aceitas) começa fechado com Mostrar mais; botão Ver no mapa e filtros por categoria e mapa",
       "Bancada de trabalho: a árvore de fabricação agora é movida clicando e arrastando (ou com o dedo no celular), sem barras de rolagem",
       "Bancada de trabalho: a busca do item e a quantidade agora ficam no topo da própria caixa da árvore, deixando a página mais compacta",
-      "Partes longas recolhidas com \"Mostrar mais\": na janela de cada item (onde conseguir mostra 5 fontes e agora lista até 40; \"Usado em\" mostra 12), nos Talentos (os outros níveis e os IDs) e no Plantio (descrição longa das plantações e a lista de plantações de cada fertilizante)"
+      "Partes longas recolhidas com \"Mostrar mais\": na janela de cada item (onde conseguir mostra 5 fontes e agora lista até 40; \"Usado em\" mostra 12), nos Talentos (os outros níveis e os IDs) e no Plantio (descrição longa das plantações e a lista de plantações de cada fertilizante)",
+      "Servidores: status ao vivo pela lista da Steam (online ou offline, jogadores/vagas, nome no jogo e hora da verificação), atualizado sozinho a cada 3 minutos, e nova ordem \"Mais jogadores agora\" (os servidores oficiais não aparecem na lista da Steam, então não entram)"
     ],
     "en": [
       "Home page: Armor icon fixed (no dark square behind it and the same size as the other icons)",
@@ -32,7 +33,8 @@
       "New Tameable animals page: the 20 animals the traps can catch, split into mounts (have a saddle), farm animals (have a buildable breeding pen) and other catchable animals; each topic (maps and regions, resources produced, butchering with amount and chance, taming with clickable trap, saddle and pen, base attributes at level 1, accepted foods) starts closed with Show more; See on map button and filters by category and map",
       "Workbench: drag the crafting tree with the mouse (or your finger on mobile) to move around it, with no scroll bars",
       "Workbench: item search and quantity now sit at the top of the crafting tree box, making the page more compact",
-      "Long sections folded behind \"Show more\": in each item's window (where to get shows 5 sources and now lists up to 40; \"Used in\" shows 12), in Talents (the other levels and the IDs) and in Farming (long crop descriptions and the crop list of each fertilizer)"
+      "Long sections folded behind \"Show more\": in each item's window (where to get shows 5 sources and now lists up to 40; \"Used in\" shows 12), in Talents (the other levels and the IDs) and in Farming (long crop descriptions and the crop list of each fertilizer)",
+      "Servers: live status from the Steam server list (online or offline, players/slots, in-game name and check time), refreshed every 3 minutes, and a new \"Most players now\" sort (official servers are not on the Steam list, so they are not shown)"
     ]
   },
   {

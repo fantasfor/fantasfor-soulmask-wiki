@@ -10,6 +10,18 @@ main.container {
   width: 100%;
 }
 
+/* Texto do Google (tools/build_seo.py): fica no HTML para os buscadores, mas não aparece
+   na tela durante o carregamento (o JS troca pela página de verdade logo em seguida) */
+.seo-prerender {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 #page-content {
   min-height: 100vh;
   width: 100%;

@@ -7,7 +7,7 @@
 // - Imagens: o documento guarda um ícone estático pequeno (WebP 128 px). O ícone animado (GIF) e o banner ficam
 //   num documento separado, serverMedia/{id}, para não estourar o limite de 1 MB do documento do servidor;
 //   o campo "media" (data em ms) avisa que esse documento existe.
-import { t } from '../i18n.js';
+import { t, locale } from '../i18n.js';
 import { esc, normalize, fmtNum } from '../data.js';
 import { loadFirebase, getUser, onUser, requireUser, publicName } from '../cloud.js';
 import { summarize, starsDisplay } from '../ratings.js';
@@ -110,6 +110,97 @@ export async function initServersPage(root, params) {
   const bannerOf = (d) => mediaCache.get(d.id)?.banner || '';
 
   const say = (msg) => { status.hidden = !msg; status.textContent = msg || ''; };
+
+  // ---------------------------------------------------------------- status ao vivo (lista da Steam, via Worker)
+  // O Worker consulta a Steam (IGameServersService) com cache de 3 min; aqui atualiza sozinho enquanto a página está aberta.
+  const api = String(config.apiBase || '').replace(/\/$/, '');
+  const LIVE_EVERY = (config.liveMinutes || 3) * 60 * 1000;
+  const live = new Map(); // "ip:porta" -> { online, players, maxPlayers, name, map, checkedAt }
+  let liveState = 'loading'; // loading | ok | nokey | error
+  let officials = null; // { servers, totalSoulmask, checkedAt } | 'nokey' | 'error'
+  const officialEl = root.querySelector('#srv-official');
+  const addrKey = (d) => (/^[a-z0-9.-]+:\d{1,5}$/i.test(String(d.address || '').trim()) ? String(d.address).trim().toLowerCase() : '');
+  const hhmm = (ms) => new Date(ms).toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
+
+  async function loadLive() {
+    const keys = [...new Set(docs.filter((d) => isActive(d) || isOwn(d)).map(addrKey).filter(Boolean))];
+    if (!api || !keys.length) { liveState = 'ok'; return; }
+    try {
+      for (let i = 0; i < keys.length; i += 30) {
+        const r = await fetch(`${api}/serverStatus?addrs=${encodeURIComponent(keys.slice(i, i + 30).join(','))}`);
+        if (r.status === 503) { liveState = 'nokey'; return; }
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const out = await r.json();
+        Object.entries(out.servers || {}).forEach(([k, v]) => live.set(k, v));
+      }
+      liveState = 'ok';
+    } catch (e) {
+      console.warn('server status', e);
+      liveState = 'error';
+    }
+  }
+
+  // Servidores oficiais: desligado (config.showOfficials). Testado em 16/11/2026 com a chave da Steam:
+  // a Steam lista 2182 servidores de Soulmask, mas os oficiais não estão entre eles (o jogo usa lista própria);
+  // o único com "Official" no nome era de comunidade. Religue só se a Steam passar a listá-los.
+  async function loadOfficials() {
+    if (!officialEl || !api || !config.showOfficials) return;
+    try {
+      const r = await fetch(`${api}/officialServers`);
+      officials = r.status === 503 ? 'nokey' : r.ok ? await r.json() : 'error';
+    } catch (e) {
+      officials = 'error';
+    }
+    renderOfficials();
+  }
+
+  const mapName = (m) => (!m ? '' : /dlc/i.test(m) ? t('srv.map.dlc') : t('srv.map.main'));
+
+  // bolinha + jogadores + hora da verificação
+  function liveHtml(d, { full = false } = {}) {
+    const k = addrKey(d);
+    if (!k || liveState === 'nokey') return '';
+    const s = live.get(k);
+    const region = `<span class="srv-live-region" title="${esc(t('srv.live.pingNote'))}">${esc(t(`events.reg.${d.region}`))}</span>`;
+    if (!s) return `<div class="srv-live is-wait"><span class="srv-dot"></span>${esc(t(liveState === 'error' ? 'srv.live.unknown' : 'srv.live.checking'))}</div>`;
+    if (s.online === null) return `<div class="srv-live is-wait"><span class="srv-dot"></span>${esc(t('srv.live.unknown'))}</div>`;
+    const when = `<span class="srv-live-time">${esc(t('srv.live.checked', { h: hhmm(s.checkedAt) }))}</span>`;
+    if (!s.online) {
+      return `<div class="srv-live is-off" title="${esc(t('srv.live.offHint'))}"><span class="srv-dot"></span><strong>${esc(t('srv.live.offline'))}</strong>${region}${when}</div>`;
+    }
+    return `<div class="srv-live is-on"><span class="srv-dot"></span><strong>${esc(t('srv.live.online'))}</strong>
+      <span class="srv-live-players">${esc(t('srv.live.players', { n: s.players, max: s.maxPlayers || d.slots || '?' }))}</span>${region}
+      ${full && s.name ? `<span class="srv-live-name">${esc(t('srv.live.gameName', { n: s.name }))}</span>` : ''}
+      ${full && s.map ? `<span class="srv-live-name">${esc(mapName(s.map))}</span>` : ''}${when}</div>`;
+  }
+
+  function renderOfficials() {
+    if (!officialEl) return;
+    const head = `<h2 class="comfort-section-title">${esc(t('srv.official.title'))}</h2>`;
+    if (!officials || officials === 'nokey') { officialEl.innerHTML = ''; return; }
+    if (officials === 'error') { officialEl.innerHTML = `${head}<p class="tier-muted">${esc(t('srv.live.unknown'))}</p>`; return; }
+    const list = officials.servers || [];
+    officialEl.innerHTML = `${head}
+      ${list.length ? `<div class="guide-table-wrap"><table class="guide-table srv-official-table">
+        <thead><tr><th>${esc(t('srv.official.name'))}</th><th>${esc(t('srv.official.players'))}</th><th>${esc(t('srv.fMap'))}</th></tr></thead>
+        <tbody>${list.map((s) => `<tr>
+          <td><span class="srv-dot is-on-dot"></span>${esc(s.name)}</td>
+          <td>${esc(`${s.players}/${s.maxPlayers}`)}</td>
+          <td>${esc(mapName(s.map))}</td></tr>`).join('')}</tbody>
+      </table></div>
+      <p class="tier-muted">${esc(t('srv.live.checked', { h: hhmm(officials.checkedAt) }))} · ${esc(t('srv.live.pingNote'))}</p>`
+      : `<p class="tier-muted">${esc(t('srv.official.none'))}</p>`}`;
+  }
+
+  // atualiza sozinho; para quando a pessoa sai da página
+  const timer = setInterval(async () => {
+    if (!root.isConnected) { clearInterval(timer); return; }
+    if (document.hidden || liveState === 'nokey') return;
+    await loadLive();
+    render();
+    if (config.showOfficials) loadOfficials();
+  }, LIVE_EVERY);
+
   const back = params?.get('destaque');
   if (back) say(t(`srv.boostBack.${back}`));
 
@@ -135,7 +226,8 @@ export async function initServersPage(root, params) {
       const snap = await fb.store.getDocs(fb.store.collection(fb.db, 'servers'));
       docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       render();
-      if (await loadMedia(docs.filter((d) => isActive(d) || isOwn(d)))) render();
+      const [mediaChanged] = await Promise.all([loadMedia(docs.filter((d) => isActive(d) || isOwn(d))), loadLive()]);
+      if (mediaChanged || live.size || liveState !== 'loading') render();
     } catch (e) {
       console.warn('servers', e);
       grid.innerHTML = `<div class="items-error">${esc(t('srv.loadError'))}</div>`;
@@ -177,6 +269,7 @@ export async function initServersPage(root, params) {
       </div>
       <div class="srv-row-side">
         ${ipBox(d)}
+        ${liveHtml(d)}
         <ul class="srv-stats">
           <li>${starsDisplay(r.avg, r.count)}</li>
           <li>${esc(t('social.commentsN', { n: commentCount(d) }))}</li>
@@ -197,6 +290,10 @@ export async function initServersPage(root, params) {
     rest.sort((a, b) => {
       if (sortEl.value === 'recent') return (b.d.createdAt?.seconds || 0) - (a.d.createdAt?.seconds || 0);
       if (sortEl.value === 'votes') return b.r.count - a.r.count || b.r.avg - a.r.avg;
+      if (sortEl.value === 'players') {
+        const p = (d) => { const s = live.get(addrKey(d)); return s?.online ? s.players : -1; };
+        return p(b.d) - p(a.d) || score(b.d) - score(a.d);
+      }
       return score(b.d) - score(a.d);
     });
     featured.innerHTML = top.length ? `
@@ -229,7 +326,7 @@ export async function initServersPage(root, params) {
       </header>
       <div class="srv-badges">${badges(d)}${d.slots ? `<span class="srv-chip">${esc(t('srv.slotsN', { n: d.slots }))}</span>` : ''}</div>
       ${d.desc ? `<p class="srv-view-desc">${escLines(d.desc)}</p>` : ''}
-      ${d.address ? `<div class="srv-view-ip">${ipBox(d)}</div>` : ''}
+      ${d.address ? `<div class="srv-view-ip">${ipBox(d)}${liveHtml(d, { full: true })}</div>` : ''}
       <div class="srv-links">
         ${isUrl(d.discord) ? `<a class="tier-btn primary" href="${esc(d.discord)}" target="_blank" rel="noopener noreferrer nofollow">Discord</a>` : ''}
         ${(d.links || []).filter((l) => isUrl(l?.url)).map((l) => `<a class="tier-btn" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer nofollow">${esc(l.label || t('srv.link'))}</a>`).join('')}
@@ -304,7 +401,8 @@ export async function initServersPage(root, params) {
           <label><span>${esc(t('srv.fLinkUrl', { n: i + 1 }))}</span><input class="tier-entry-input" name="linkUrl${i}" maxlength="200" placeholder="https://..." value="${esc(v.links?.[i]?.url || '')}" /></label>
         </div>`).join('')}
         <div class="srv-form-row">
-          <label><span>${esc(t('srv.fAddress'))}</span><input class="tier-entry-input" name="address" maxlength="80" placeholder="123.45.67.89:8777" value="${esc(v.address || '')}" /></label>
+          <label><span>${esc(t('srv.fAddress'))}</span><input class="tier-entry-input" name="address" maxlength="80" placeholder="123.45.67.89:8777" value="${esc(v.address || '')}" />
+            <small class="srv-form-hint">${esc(t('srv.fAddressHint'))}</small></label>
           <label><span>${esc(t('srv.fTags'))}</span><input class="tier-entry-input" name="tags" maxlength="130" placeholder="${esc(t('srv.fTagsPh'))}" value="${esc((v.tags || []).join(', '))}" /></label>
         </div>
         <div class="tier-publish-actions">
@@ -543,6 +641,7 @@ export async function initServersPage(root, params) {
     if (e.key === 'Escape' && !viewer.hidden) closeViewer();
   });
   onUser(() => { if (docs.length) render(); else if (openId) renderViewer(); });
+  loadOfficials();
   await load();
   // link direto: #servidores?id=ID (usado também pela página Comunidade)
   const linked = params?.get('id');

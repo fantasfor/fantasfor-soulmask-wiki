@@ -401,6 +401,73 @@ body .social-login {
   opacity: 0.6;
 }
 
+/* status ao vivo: bolinha, jogadores, região e hora da verificação */
+.srv-live {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.srv-dot {
+  display: inline-block;
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #686e73;
+}
+
+.srv-live.is-on .srv-dot,
+.srv-dot.is-on-dot {
+  background: #39d98a;
+  box-shadow: 0 0 8px rgba(57, 217, 138, 0.7);
+}
+
+.srv-live.is-off .srv-dot {
+  background: #e63946;
+}
+
+.srv-live.is-on strong { color: #39d98a; }
+.srv-live.is-off strong { color: #ff8a8a; }
+
+.srv-live-players {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.srv-live-region {
+  padding: 0 6px;
+  border: 1px solid #3a3d40;
+  font-size: 0.72rem;
+  cursor: help;
+}
+
+.srv-live-time,
+.srv-live-name {
+  flex-basis: 100%;
+  font-size: 0.72rem;
+}
+
+.srv-view-ip .srv-live {
+  margin-top: 8px;
+}
+
+.srv-form-hint {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.srv-official {
+  margin-top: 18px;
+}
+
+.srv-official-table .srv-dot {
+  margin-right: 8px;
+}
+
 /* formulário: ícone e banner */
 .srv-form-media {
   display: flex;

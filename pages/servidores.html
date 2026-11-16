@@ -1,6 +1,6 @@
 <section class="items-page db-page guide-page servers-page">
   <script type="application/json" id="serversConfig">
-    { "apiBase": "https://gdmbot-loja.gdmbot-loja.workers.dev/api", "boostAmounts": [10, 20, 50, 100], "activeDays": 60, "maxPerUser": 3 }
+    { "apiBase": "https://gdmbot-loja.gdmbot-loja.workers.dev/api", "boostAmounts": [10, 20, 50, 100], "activeDays": 60, "maxPerUser": 3, "liveMinutes": 3, "showOfficials": false }
   </script>
   <div class="items-header srv-header">
     <div>
@@ -31,10 +31,13 @@
       <option value="rating" data-i18n="tier.sortRating">Melhor avaliadas</option>
       <option value="votes" data-i18n="tier.sortVotes">Mais avaliadas</option>
       <option value="recent" data-i18n="tier.sortRecent">Mais recentes</option>
+      <option value="players" data-i18n="srv.sortPlayers">Mais jogadores agora</option>
     </select>
     <div class="items-stats"><span id="srv-count" data-i18n="site.loading">Carregando...</span></div>
   </div>
   <div id="srv-grid" class="srv-grid"></div>
+
+  <section class="srv-official" id="srv-official" aria-live="polite"></section>
 
   <div class="tier-viewer" id="srv-viewer" hidden>
     <section class="tier-viewer-dialog srv-dialog" role="dialog" aria-modal="true" aria-labelledby="srv-viewer-title">
