@@ -15,6 +15,11 @@
 
   <div class="items-filters srv-filters">
     <input type="search" id="srv-search" class="items-search-input" placeholder="Buscar servidor..." data-i18n-placeholder="srv.search" aria-label="Buscar servidor" data-i18n-aria="srv.search" />
+    <select id="srv-kind" class="items-search-input" aria-label="Tipo de servidor" data-i18n-aria="srv.kind.label">
+      <option value="" data-i18n="srv.kind.all">Oficiais e não oficiais</option>
+      <option value="official" data-i18n="srv.kind.official">Apenas oficiais</option>
+      <option value="community" data-i18n="srv.kind.community">Apenas não oficiais</option>
+    </select>
     <select id="srv-mode" class="items-search-input" aria-label="Modo" data-i18n-aria="srv.mode">
       <option value="" data-i18n="srv.allModes">Todos os modos</option>
       <option value="pvp">PvP</option><option value="pve">PvE</option><option value="pvpve">PvPvE</option>
@@ -36,8 +41,6 @@
     <div class="items-stats"><span id="srv-count" data-i18n="site.loading">Carregando...</span></div>
   </div>
   <div id="srv-grid" class="srv-grid"></div>
-
-  <section class="srv-official" id="srv-official" aria-live="polite"></section>
 
   <div class="tier-viewer" id="srv-viewer" hidden>
     <section class="tier-viewer-dialog srv-dialog" role="dialog" aria-modal="true" aria-labelledby="srv-viewer-title">

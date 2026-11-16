@@ -8,7 +8,7 @@
 //   num documento separado, serverMedia/{id}, para não estourar o limite de 1 MB do documento do servidor;
 //   o campo "media" (data em ms) avisa que esse documento existe.
 import { t, locale } from '../i18n.js';
-import { esc, normalize, fmtNum, moreBlock } from '../data.js';
+import { esc, normalize, fmtNum } from '../data.js';
 import { loadFirebase, getUser, onUser, requireUser, publicName } from '../cloud.js';
 import { summarize, starsDisplay } from '../ratings.js';
 import { reviewsHtml, bindReviews, commentCount, score } from '../social.js';
@@ -99,7 +99,7 @@ export async function initServersPage(root, params) {
   const status = root.querySelector('#srv-status');
   const viewer = root.querySelector('#srv-viewer');
   const body = root.querySelector('#srv-viewer-body');
-  const [qEl, modeEl, regionEl, sortEl] = ['#srv-search', '#srv-mode', '#srv-region', '#srv-sort'].map((s) => root.querySelector(s));
+  const [qEl, modeEl, regionEl, sortEl, kindEl] = ['#srv-search', '#srv-mode', '#srv-region', '#srv-sort', '#srv-kind'].map((s) => root.querySelector(s));
   let docs = [];
   let openId = null;
   const ACTIVE_DAYS = config.activeDays || 60;
@@ -117,8 +117,6 @@ export async function initServersPage(root, params) {
   const LIVE_EVERY = (config.liveMinutes || 3) * 60 * 1000;
   const live = new Map(); // "ip:porta" -> { online, players, maxPlayers, name, map, checkedAt }
   let liveState = 'loading'; // loading | ok | nokey | error
-  let officials = null; // { servers, totalSoulmask, checkedAt } | 'nokey' | 'error'
-  const officialEl = root.querySelector('#srv-official');
   const addrKey = (d) => (/^[a-z0-9.-]+:\d{1,5}$/i.test(String(d.address || '').trim()) ? String(d.address).trim().toLowerCase() : '');
   const hhmm = (ms) => new Date(ms).toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
 
@@ -142,25 +140,61 @@ export async function initServersPage(root, params) {
 
   // Servidores oficiais (config.showOfficials): vêm da mesma lista da Steam. Não têm "Official" no nome; o Worker
   // reconhece o padrão do jogo ([NA_PvE][05_1 Survival]Cloud_Mist_Forest_04P Tribe). Conferido em 16/11/2026: 264 oficiais.
+  // Entram na mesma lista dos servidores da comunidade, com ícone e banner oficiais (assets/img/servers).
+  const OFF_REGION = { NA: 'America', US: 'America', EU: 'Europe', AS: 'Asia', SA: 'SouthAmerica', OC: 'Oceania', AU: 'Oceania' };
+  const OFF_IMG = { icon: 'assets/img/servers/official-icon.webp', banner: 'assets/img/servers/official-banner.webp', cover: 'assets/img/servers/official-cover.webp' };
+  let officials = []; // itens no mesmo formato dos servidores (official: true)
+
+  function toOfficial(s, checkedAt) {
+    return {
+      id: `off:${s.name}`,
+      official: true,
+      code: `${s.region}-${s.num || '?'}`,
+      gameName: s.name,
+      mode: s.mode,
+      region: OFF_REGION[s.region] || '',
+      map: s.map === 'dlc' ? 'dlc' : 'main',
+      event: s.map === 'event' ? (s.event || 'event') : '',
+      slots: s.maxPlayers,
+      rules: s,
+      ratings: {},
+      live: { online: true, players: s.players, maxPlayers: s.maxPlayers, name: s.name, map: s.map === 'dlc' ? 'dlc' : 'main', checkedAt }
+    };
+  }
+
   async function loadOfficials() {
-    if (!officialEl || !api || !config.showOfficials) return;
+    if (!api || !config.showOfficials) return;
     try {
       const r = await fetch(`${api}/officialServers`);
-      officials = r.status === 503 ? 'nokey' : r.ok ? await r.json() : 'error';
+      if (!r.ok) return;
+      const out = await r.json();
+      officials = (out.servers || []).map((s) => toOfficial(s, out.checkedAt || Date.now()));
+      render();
     } catch (e) {
-      officials = 'error';
+      console.warn('official servers', e);
     }
-    renderOfficials();
   }
+
+  const displayName = (d) => (d.official ? t('srv.official.name2', { c: d.code }) : d.name);
+  const officialRules = (d) => {
+    const s = d.rules || {};
+    return [
+      s.survival ? t('srv.official.survival') : '',
+      s.longTerm ? t('srv.official.longTerm') : '',
+      s.noRaid ? t('srv.official.noRaid') : '',
+      s.tribe ? t('srv.official.tribe', { n: s.tribe }) : '',
+      s.raidUtc ? t('srv.official.raid', { a: s.raidUtc[0], b: s.raidUtc[1] }) : ''
+    ].filter(Boolean).join(' · ');
+  };
 
   const mapName = (m) => (!m ? '' : /dlc/i.test(m) ? t('srv.map.dlc') : t('srv.map.main'));
 
   // bolinha + jogadores + hora da verificação
   function liveHtml(d, { full = false } = {}) {
     const k = addrKey(d);
-    if (!k || liveState === 'nokey') return '';
-    const s = live.get(k);
-    const region = `<span class="srv-live-region" title="${esc(t('srv.live.pingNote'))}">${esc(t(`events.reg.${d.region}`))}</span>`;
+    if (!d.official && (!k || liveState === 'nokey')) return '';
+    const s = d.official ? d.live : live.get(k);
+    const region = d.region ? `<span class="srv-live-region" title="${esc(t('srv.live.pingNote'))}">${esc(t(`events.reg.${d.region}`))}</span>` : '';
     if (!s) return `<div class="srv-live is-wait"><span class="srv-dot"></span>${esc(t(liveState === 'error' ? 'srv.live.unknown' : 'srv.live.checking'))}</div>`;
     if (s.online === null) return `<div class="srv-live is-wait"><span class="srv-dot"></span>${esc(t('srv.live.unknown'))}</div>`;
     const when = `<span class="srv-live-time">${esc(t('srv.live.checked', { h: hhmm(s.checkedAt) }))}</span>`;
@@ -172,64 +206,6 @@ export async function initServersPage(root, params) {
       ${full && s.name ? `<span class="srv-live-name">${esc(t('srv.live.gameName', { n: s.name }))}</span>` : ''}
       ${full && s.map ? `<span class="srv-live-name">${esc(mapName(s.map))}</span>` : ''}${when}</div>`;
   }
-
-  // região do nome oficial ([NA_PvE]...) -> região usada no site
-  const OFF_REGION = { NA: 'America', US: 'America', EU: 'Europe', AS: 'Asia', SA: 'SouthAmerica', OC: 'Oceania', AU: 'Oceania' };
-  const offFilter = { region: '', mode: '', map: '' };
-  const OFF_SHOWN = 15;
-
-  function officialRow(s) {
-    const tags = [
-      s.survival ? t('srv.official.survival') : '',
-      s.longTerm ? t('srv.official.longTerm') : '',
-      s.noRaid ? t('srv.official.noRaid') : '',
-      s.tribe ? t('srv.official.tribe', { n: s.tribe }) : '',
-      s.raidUtc ? t('srv.official.raid', { a: s.raidUtc[0], b: s.raidUtc[1] }) : ''
-    ].filter(Boolean);
-    const reg = OFF_REGION[s.region];
-    return `<tr>
-      <td><span class="srv-dot is-on-dot" title="${esc(t('srv.live.online'))}"></span><strong>${esc(s.region)}-${esc(s.num || '?')}</strong>
-        <small class="srv-off-tags">${esc(tags.join(' · '))}</small></td>
-      <td>${esc(reg ? t(`events.reg.${reg}`) : s.region)}</td>
-      <td><span class="srv-mode srv-mode-${esc(s.mode)}">${esc(t(`srv.modeName.${s.mode}`))}</span></td>
-      <td>${esc(s.map === 'event' ? (s.event || t('srv.official.event')) : mapName(s.map === 'dlc' ? 'dlc' : 'main'))}</td>
-      <td class="srv-off-players">${esc(`${s.players}/${s.maxPlayers}`)}</td>
-    </tr>`;
-  }
-
-  function renderOfficials() {
-    if (!officialEl) return;
-    const head = `<h2 class="comfort-section-title">${esc(t('srv.official.title'))}</h2>`;
-    if (!officials || officials === 'nokey') { officialEl.innerHTML = ''; return; }
-    if (officials === 'error') { officialEl.innerHTML = `${head}<p class="tier-muted">${esc(t('srv.live.unknown'))}</p>`; return; }
-    const all = officials.servers || [];
-    if (!all.length) { officialEl.innerHTML = `${head}<p class="tier-muted">${esc(t('srv.official.none'))}</p>`; return; }
-    const list = all.filter((s) => (!offFilter.region || OFF_REGION[s.region] === offFilter.region)
-      && (!offFilter.mode || s.mode === offFilter.mode) && (!offFilter.map || s.map === offFilter.map));
-    const players = list.reduce((a, s) => a + s.players, 0);
-    const opt = (v, cur, label) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
-    const table = (rows) => `<div class="guide-table-wrap"><table class="guide-table srv-official-table">
-        <thead><tr><th>${esc(t('srv.official.name'))}</th><th>${esc(t('srv.region'))}</th><th>${esc(t('srv.mode'))}</th><th>${esc(t('srv.fMap'))}</th><th>${esc(t('srv.official.players'))}</th></tr></thead>
-        <tbody>${rows.map(officialRow).join('')}</tbody></table></div>`;
-    officialEl.innerHTML = `${head}
-      <p class="items-subtitle">${esc(t('srv.official.subtitle'))}</p>
-      <div class="items-filters srv-off-filters">
-        <select class="items-search-input" data-off="region" aria-label="${esc(t('srv.region'))}">${opt('', offFilter.region, t('srv.allRegions'))}${['SouthAmerica', 'America', 'Europe', 'Asia'].map((r) => opt(r, offFilter.region, t(`events.reg.${r}`))).join('')}</select>
-        <select class="items-search-input" data-off="mode" aria-label="${esc(t('srv.mode'))}">${opt('', offFilter.mode, t('srv.allModes'))}${['pve', 'pvp'].map((m) => opt(m, offFilter.mode, t(`srv.modeName.${m}`))).join('')}</select>
-        <select class="items-search-input" data-off="map" aria-label="${esc(t('srv.fMap'))}">${opt('', offFilter.map, t('srv.official.allMaps'))}${['main', 'dlc', 'event'].map((m) => opt(m, offFilter.map, m === 'event' ? t('srv.official.event') : t(`srv.map.${m}`))).join('')}</select>
-        <div class="items-stats">${esc(t('srv.official.count', { n: list.length, p: players }))}</div>
-      </div>
-      ${list.length ? `${table(list.slice(0, OFF_SHOWN))}${list.length > OFF_SHOWN ? moreBlock(table(list.slice(OFF_SHOWN))) : ''}`
-        : `<p class="tier-muted">${esc(t('cm.empty'))}</p>`}
-      <p class="tier-muted srv-off-note">${esc(t('srv.official.source', { h: hhmm(officials.checkedAt) }))} ${esc(t('srv.live.pingNote'))}</p>`;
-  }
-  officialEl?.addEventListener('change', (e) => {
-    const s = e.target.closest('[data-off]');
-    if (!s) return;
-    offFilter[s.dataset.off] = s.value;
-    renderOfficials();
-  });
-
   // atualiza sozinho; para quando a pessoa sai da página
   const timer = setInterval(async () => {
     if (!root.isConnected) { clearInterval(timer); return; }
@@ -273,44 +249,52 @@ export async function initServersPage(root, params) {
     }
   }
 
-  const badges = (d) => `
+  const badges = (d) => (d.official ? `
+    <span class="srv-chip srv-chip-official">${esc(t('srv.official.tag'))}</span>
+    <span class="srv-mode srv-mode-${esc(d.mode)}">${esc(t(`srv.modeName.${d.mode}`))}</span>
+    ${d.region ? `<span class="srv-chip">${esc(t(`events.reg.${d.region}`))}</span>` : ''}
+    <span class="srv-chip">${esc(d.event ? (d.event === 'event' ? t('srv.official.event') : d.event) : t(`srv.map.${d.map}`))}</span>` : `
     <span class="srv-mode srv-mode-${esc(d.mode)}">${esc(t(`srv.modeName.${d.mode}`))}</span>
     <span class="srv-chip">${esc(t(`events.reg.${d.region}`))}</span>
     ${d.lang ? `<span class="srv-chip">${esc(d.lang)}</span>` : ''}
     <span class="srv-chip">${esc(t(`srv.map.${d.map}`))}</span>
-    ${d.gameMode && d.gameMode !== 'custom' ? `<span class="srv-chip">${esc(t(`map.mode.${d.gameMode}`))}</span>` : ''}`;
+    ${d.gameMode && d.gameMode !== 'custom' ? `<span class="srv-chip">${esc(t(`map.mode.${d.gameMode}`))}</span>` : ''}`);
 
-  const ipBox = (d) => (d.address
+  const ipBox = (d) => (d.official
+    ? `<div class="srv-ip srv-ip-official"><span>${esc(t('srv.official.join'))}</span></div>`
+    : d.address
     ? `<div class="srv-ip"><code title="${esc(d.address)}">${esc(d.address)}</code><button type="button" class="srv-ip-copy" data-copy="${esc(d.address)}">${esc(t('srv.copyIp'))}</button></div>`
     : isUrl(d.discord) ? `<div class="srv-ip"><a class="srv-ip-copy srv-ip-discord" href="${esc(d.discord)}" target="_blank" rel="noopener noreferrer nofollow">Discord</a></div>` : '');
 
   // linha da lista (modelo: listas de servidores de Minecraft): ícone e nome | banner e descrição | IP e números
   function row(d, pos, rank = 0) {
     const r = summarize(d.ratings);
-    const icon = iconOf(d);
-    const banner = bannerOf(d);
+    const icon = d.official ? OFF_IMG.icon : iconOf(d);
+    const banner = d.official ? OFF_IMG.banner : bannerOf(d);
     const descMax = rank === 1 ? 260 : 170;
-    const tag = !isActive(d) ? `<span class="srv-boost-tag srv-inactive-tag">${esc(t('srv.active.tag'))}</span>`
-      : boosted(d) ? `<span class="srv-boost-tag">${esc(t('srv.featuredTag'))}</span>` : '';
-    return `<article class="srv-row${rank ? ` srv-place srv-place-${rank}` : ''}${boosted(d) ? ' is-boosted' : ''}${isActive(d) ? '' : ' is-inactive'}" data-open="${esc(d.id)}" tabindex="0" aria-label="${esc(d.name)}">
+    const desc = d.official ? officialRules(d) : d.desc;
+    const tag = d.official ? `<span class="srv-boost-tag srv-official-tag">${esc(t('srv.official.tag'))}</span>`
+      : !isActive(d) ? `<span class="srv-boost-tag srv-inactive-tag">${esc(t('srv.active.tag'))}</span>`
+        : boosted(d) ? `<span class="srv-boost-tag">${esc(t('srv.featuredTag'))}</span>` : '';
+    return `<article class="srv-row${rank ? ` srv-place srv-place-${rank}` : ''}${boosted(d) ? ' is-boosted' : ''}${d.official ? ' is-official' : ''}${isActive(d) ? '' : ' is-inactive'}" data-open="${esc(d.id)}" tabindex="0" aria-label="${esc(displayName(d))}">
       <div class="srv-row-id">
         ${icon ? `<img class="srv-icon" src="${esc(icon)}" alt="" loading="lazy" />` : '<span class="srv-icon srv-icon-empty"></span>'}
-        <strong class="srv-row-name">${esc(d.name)}</strong>
+        <strong class="srv-row-name">${esc(displayName(d))}</strong>
         <span class="srv-row-pos">#${pos}</span>
         ${tag}
       </div>
       <div class="srv-row-mid">
         ${banner ? `<img class="srv-banner" src="${esc(banner)}" alt="" loading="lazy" />`
           : `<span class="srv-banner srv-banner-empty"><span>${esc(d.name)}</span></span>`}
-        ${d.desc ? `<p class="srv-desc">${esc(d.desc.slice(0, descMax))}${d.desc.length > descMax ? '...' : ''}</p>` : ''}
+        ${desc ? `<p class="srv-desc">${esc(desc.slice(0, descMax))}${desc.length > descMax ? '...' : ''}</p>` : ''}
         <span class="srv-badges">${badges(d)}</span>
       </div>
       <div class="srv-row-side">
         ${ipBox(d)}
         ${liveHtml(d)}
         <ul class="srv-stats">
-          <li>${starsDisplay(r.avg, r.count)}</li>
-          <li>${esc(t('social.commentsN', { n: commentCount(d) }))}</li>
+          ${d.official ? '' : `<li>${starsDisplay(r.avg, r.count)}</li>
+          <li>${esc(t('social.commentsN', { n: commentCount(d) }))}</li>`}
           ${d.slots ? `<li>${esc(t('srv.slotsN', { n: d.slots }))}</li>` : ''}
         </ul>
         ${(d.tags || []).length ? `<span class="srv-tags">${d.tags.slice(0, 4).map((x) => `<i>#${esc(x)}</i>`).join('')}</span>` : ''}
@@ -318,36 +302,69 @@ export async function initServersPage(root, params) {
     </article>`;
   }
 
+  // lista exibida aos poucos (com os oficiais são centenas)
+  const PAGE = 40;
+  let shown = PAGE;
+  const findAny = (id) => docs.find((x) => x.id === id) || officials.find((x) => x.id === id);
+  const playersOf = (d) => { const s = d.official ? d.live : live.get(addrKey(d)); return s?.online ? s.players : -1; };
+
   function render() {
     const q = normalize(qEl.value);
+    const kind = kindEl?.value || '';
+    const match = (d) => (!modeEl.value || d.mode === modeEl.value) && (!regionEl.value || d.region === regionEl.value);
     // inativos (sem confirmação há 60 dias) só aparecem para o próprio dono
-    const list = docs.filter((d) => (isActive(d) || isOwn(d)) && (!modeEl.value || d.mode === modeEl.value) && (!regionEl.value || d.region === regionEl.value)
+    const community = kind === 'official' ? [] : docs.filter((d) => (isActive(d) || isOwn(d)) && match(d)
       && (!q || normalize(`${d.name} ${d.desc} ${(d.tags || []).join(' ')} ${d.lang} ${d.author} ${d.address}`).includes(q)));
-    const top = list.filter((d) => boosted(d) && isActive(d)).sort((a, b) => (b.boost || 0) - (a.boost || 0) || lastCheck(b) - lastCheck(a));
+    const offs = kind === 'community' ? [] : officials.filter((d) => match(d)
+      && (!q || normalize(`${displayName(d)} ${d.gameName} ${officialRules(d)} ${d.event} ${t('srv.official.tag')}`).includes(q)));
+    const list = [...community, ...offs];
+    const top = community.filter((d) => boosted(d) && isActive(d)).sort((a, b) => (b.boost || 0) - (a.boost || 0) || lastCheck(b) - lastCheck(a));
     const rest = list.filter((d) => !(boosted(d) && isActive(d))).map((d) => ({ d, r: summarize(d.ratings) }));
     rest.sort((a, b) => {
+      if (sortEl.value === 'players') return playersOf(b.d) - playersOf(a.d) || score(b.d) - score(a.d);
+      // nas outras ordens, os da comunidade vêm antes dos oficiais (que não têm avaliação nem data)
+      if (a.d.official !== b.d.official) return a.d.official ? 1 : -1;
+      if (a.d.official) return playersOf(b.d) - playersOf(a.d) || a.d.code.localeCompare(b.d.code);
       if (sortEl.value === 'recent') return (b.d.createdAt?.seconds || 0) - (a.d.createdAt?.seconds || 0);
       if (sortEl.value === 'votes') return b.r.count - a.r.count || b.r.avg - a.r.avg;
-      if (sortEl.value === 'players') {
-        const p = (d) => { const s = live.get(addrKey(d)); return s?.online ? s.players : -1; };
-        return p(b.d) - p(a.d) || score(b.d) - score(a.d);
-      }
       return score(b.d) - score(a.d);
     });
     featured.innerHTML = top.length ? `
       <h2 class="comfort-section-title">${esc(t('srv.featured'))}</h2>
       <div class="srv-list">${top.map((d, i) => row(d, i + 1, i < 3 ? i + 1 : 0)).join('')}</div>` : '';
-    count.textContent = t('srv.count', { n: list.length });
+    count.textContent = offs.length ? t('srv.countMixed', { n: list.length, o: offs.length }) : t('srv.count', { n: list.length });
+    const page = rest.slice(0, shown);
     grid.innerHTML = rest.length ? `${top.length ? `<h2 class="comfort-section-title">${esc(t('srv.allServers'))}</h2>` : ''}
-      <div class="srv-list">${rest.map(({ d }, i) => row(d, top.length + i + 1)).join('')}</div>`
+      <div class="srv-list">${page.map(({ d }, i) => row(d, top.length + i + 1)).join('')}</div>
+      ${rest.length > shown ? `<button type="button" class="tier-btn srv-more" data-more-servers>${esc(t('srv.moreServers', { n: rest.length - shown }))}</button>` : ''}`
       : (top.length ? '' : `<p class="tier-muted">${esc(t('srv.empty'))}</p>`);
     if (openId) renderViewer();
   }
 
   // ---------------------------------------------------------------- janela do servidor
+  // oficial: capa do jogo, regras do servidor e como entrar (sem avaliações: não há cadastro no site)
+  function renderOfficialViewer(d) {
+    body.innerHTML = `
+      <img class="srv-banner srv-banner-lg srv-official-cover" src="${esc(OFF_IMG.cover)}" alt="" />
+      <header class="srv-view-head">
+        <img class="srv-icon srv-icon-lg" src="${esc(OFF_IMG.icon)}" alt="" />
+        <div>
+          <h2 id="srv-viewer-title">${esc(displayName(d))}</h2>
+          <p class="tier-card-meta">${esc(t('srv.official.by'))}</p>
+        </div>
+      </header>
+      <div class="srv-badges">${badges(d)}<span class="srv-chip">${esc(t('srv.slotsN', { n: d.slots }))}</span></div>
+      ${officialRules(d) ? `<p class="srv-view-desc">${esc(officialRules(d))}</p>` : ''}
+      <div class="srv-view-ip">${liveHtml(d, { full: true })}</div>
+      <p class="tier-muted">${esc(t('srv.official.joinLong', { c: d.code }))}</p>
+      <p class="tier-muted">${esc(t('srv.official.sourceNote'))}</p>`;
+    viewer.hidden = false;
+  }
+
   function renderViewer() {
-    const d = docs.find((x) => x.id === openId);
+    const d = findAny(openId);
     if (!d) { closeViewer(); return; }
+    if (d.official) { renderOfficialViewer(d); return; }
     const own = isOwn(d);
     const r = summarize(d.ratings);
     const icon = iconOf(d);
@@ -574,7 +591,13 @@ export async function initServersPage(root, params) {
   const onListKey = (e) => {
     if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-open]')) { e.preventDefault(); openServer(e.target.dataset.open); }
   };
-  [qEl, modeEl, regionEl, sortEl].forEach((el) => el.addEventListener('input', render));
+  [qEl, modeEl, regionEl, sortEl, kindEl].filter(Boolean).forEach((el) => el.addEventListener('input', () => { shown = PAGE; render(); }));
+  grid.addEventListener('click', (e) => {
+    if (!e.target.closest('[data-more-servers]')) return;
+    e.stopPropagation();
+    shown += PAGE;
+    render();
+  }, true);
   [grid, featured].forEach((el) => { el.addEventListener('click', onListClick); el.addEventListener('keydown', onListKey); });
   root.querySelector('#srv-add').addEventListener('click', async () => {
     const u = await requireUser();

@@ -468,6 +468,35 @@ body .social-login {
   margin-right: 8px;
 }
 
+/* servidores oficiais na mesma lista */
+.srv-official-tag,
+.srv-chip-official {
+  border-color: #90d1ee !important;
+  color: #90d1ee !important;
+  font-weight: 700;
+}
+
+.srv-row.is-official {
+  border-color: rgba(144, 209, 238, 0.35);
+}
+
+.srv-ip-official {
+  display: block;
+  padding: 7px 8px;
+  border-color: rgba(144, 209, 238, 0.45);
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.srv-official-cover {
+  aspect-ratio: 616 / 353;
+}
+
+.srv-more {
+  display: block;
+  margin: 0 auto 18px;
+}
+
 .srv-off-tags {
   display: block;
   margin: 2px 0 0 18px;
