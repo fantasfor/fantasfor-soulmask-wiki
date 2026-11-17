@@ -407,11 +407,20 @@ async function renderHomeUpdates() {
       list.innerHTML = `<article class="home-update-card"><h3>${esc(t('home.notesNone'))}</h3></article>`;
       return;
     }
-    const version = (u) => `
+    // estilo de changelog: "[1.0.2] - 16/11/26" e seções Adicionado / Modificado / Corrigido
+    // (cada idioma em updates.json é { added: [], changed: [], fixed: [] }; lista simples ainda funciona)
+    const shortDate = (d) => new Date(`${d}T12:00:00`).toLocaleDateString(locale(), { day: '2-digit', month: '2-digit', year: '2-digit' });
+    const version = (u) => {
+      const notes = u[getLang()] || u.pt || [];
+      const groups = Array.isArray(notes) ? [['', notes]] : ['added', 'changed', 'fixed'].map((k) => [k, notes[k] || []]);
+      return `
           <div class="home-update-version">
-            <strong>${esc(u.version)}${u.date ? ` — ${esc(new Date(`${u.date}T12:00:00`).toLocaleDateString(locale()))}` : ''}</strong>
-            <ul>${(u[getLang()] || u.pt || []).map((c) => `<li>${esc(c)}</li>`).join('')}</ul>
+            <strong class="home-update-head">[${esc(u.version)}]${u.date ? ` - ${esc(shortDate(u.date))}` : ''}</strong>
+            ${groups.filter(([, list]) => list.length).map(([k, list]) => `
+              ${k ? `<h4 class="home-update-kind">${esc(t(`home.notes.${k}`))}</h4>` : ''}
+              <ul>${list.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>`).join('')}
           </div>`;
+    };
     // só a versão mais nova à vista; as anteriores ficam em "Mostrar mais"
     const older = updates.slice(1);
     list.innerHTML = `

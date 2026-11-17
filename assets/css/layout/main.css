@@ -343,6 +343,18 @@ main.container {
   font-size: 15px;
 }
 
+.home-update-version .home-update-head {
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.home-update-kind {
+  margin: 6px 0 0;
+  color: #f5f2ea;
+  font-size: 15px;
+  font-weight: 700;
+}
+
 .home-update-card h3 {
   margin: 0;
   font-size: 16px;

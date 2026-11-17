@@ -142,7 +142,7 @@ export async function initServersPage(root, params) {
   // reconhece o padrão do jogo ([NA_PvE][05_1 Survival]Cloud_Mist_Forest_04P Tribe). Conferido em 16/11/2026: 264 oficiais.
   // Entram na mesma lista dos servidores da comunidade, com ícone e banner oficiais (assets/img/servers).
   const OFF_REGION = { NA: 'America', US: 'America', EU: 'Europe', AS: 'Asia', SA: 'SouthAmerica', OC: 'Oceania', AU: 'Oceania' };
-  const OFF_IMG = { icon: 'assets/img/servers/oficial-soulmask.webp', banner: 'assets/img/servers/official-banner.webp', cover: 'assets/img/servers/official-cover.webp' };
+  const OFF_IMG = { icon: 'assets/img/servers/oficial-soulmask.webp', banner: 'assets/img/servers/official-banner-art.webp', cover: 'assets/img/servers/official-cover.webp' };
   let officials = []; // itens no mesmo formato dos servidores (official: true)
 
   function toOfficial(s, checkedAt) {

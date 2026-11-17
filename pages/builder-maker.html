@@ -1383,9 +1383,106 @@
       grid-template-columns: repeat(3, 1fr);
     }
 
+    /* resumo em 2 colunas: atributos das peças | efeitos dos alimentos (empilha no celular) */
     .build-totals {
       display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 14px;
+      align-items: start;
+    }
+
+    .build-totals > .set-bonus-empty {
+      grid-column: 1 / -1;
+    }
+
+    .bt-col {
+      display: grid;
       gap: 10px;
+      min-width: 0;
+    }
+
+    .bt-col-food {
+      padding-left: 12px;
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .bt-food-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .bt-food {
+      display: grid;
+      gap: 4px;
+      padding: 6px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.22);
+    }
+
+    .bt-food-head {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      font-size: 0.8rem;
+    }
+
+    .bt-food-icon {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      flex: none;
+    }
+
+    .bt-food-name {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .bt-food-dur {
+      flex: none;
+      color: var(--builder-muted);
+      font-size: 0.72rem;
+    }
+
+    .bt-food-total {
+      margin-top: 8px;
+    }
+
+    .bt-food-total h4 {
+      margin: 0 0 4px;
+      color: var(--builder-muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .build-totals .stat-value {
+      text-align: right;
+    }
+
+    .stat-food {
+      display: block;
+      color: #8fd18f;
+      font-size: 0.7rem;
+      font-weight: 400;
+      text-align: right;
+    }
+
+    @media (max-width: 600px) {
+      .build-totals {
+        grid-template-columns: 1fr;
+      }
+
+      .bt-col-food {
+        padding: 10px 0 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-left: 0;
+      }
     }
 
     .build-totals h3 {
@@ -1648,13 +1745,6 @@
           <h2 class="panel-section-title" data-i18n="builder.totals">Resumo da build</h2>
           <div class="build-totals" id="buildTotals">
             <p class="set-bonus-empty" data-i18n="builder.totalsEmpty">Equipe peças e escolha alimentos para ver os totais.</p>
-          </div>
-        </div>
-
-        <div class="panel-block">
-          <h2 class="panel-section-title" data-i18n="builder.setBonus">Bônus de conjunto</h2>
-          <div class="set-bonus-panel" id="setBonusPanel">
-            <p class="set-bonus-empty" data-i18n="builder.setBonusEmpty">Equipe peças para ver os bônus.</p>
           </div>
         </div>
 

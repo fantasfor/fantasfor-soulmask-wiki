@@ -120,7 +120,6 @@ export async function initBuilderPage(root, params) {
     hTitle: $('#builderHeaderTitle'),
     saved: $('#savedBuildsSelect'),
     savedDel: $('#savedBuildDelete'),
-    setBonus: $('#setBonusPanel'),
     totals: $('#buildTotals'),
     importInput: $('#buildImportInput'),
     status: $('#buildSaveStatus'),
@@ -498,18 +497,16 @@ export async function initBuilderPage(root, params) {
     return [...counts].map(([id, n]) => ({ set: sets.get(String(id)), n })).filter((x) => x.set).sort((a, b) => b.n - a.n);
   }
 
-  function renderSetBonus() {
+  // bônus de conjunto: fica no "Resumo da build", logo abaixo dos atributos das peças (vazio sem conjunto)
+  function setBonusHtml() {
     const eq = equippedSets();
-    if (!eq.length) {
-      el.setBonus.innerHTML = `<p class="set-bonus-empty">${esc(t('builder.setBonusEmpty'))}</p>`;
-      return;
-    }
-    el.setBonus.innerHTML = eq.map(({ set, n }) => `
+    if (!eq.length) return '';
+    return `<div><h3>${esc(t('builder.setBonus'))}</h3><div class="set-bonus-panel">${eq.map(({ set, n }) => `
       <article class="set-bonus-card">
-        <h3 class="set-bonus-title">${esc(pick(set, 'name'))} (${n}/6)</h3>
+        <h4 class="set-bonus-title">${esc(pick(set, 'name'))} (${n}/6)</h4>
         ${n < 2 ? `<p class="set-bonus-locked">${esc(t('builder.setLocked'))}</p>` : ''}
         ${bonusHtml(meta, set, n)}
-      </article>`).join('');
+      </article>`).join('')}</div></div>`;
   }
 
   function addStat(map, s, mult = 1) {
@@ -539,11 +536,31 @@ export async function initBuilderPage(root, params) {
     }).join('');
     const sortStats = (m) => [...m.values()].filter((s) => Math.abs(s.v) > 1e-9)
       .sort((a, b) => statParts(meta, a).label.localeCompare(statParts(meta, b).label));
-    const blocks = [];
-    if (gear.size) blocks.push(`<div><h3>${esc(t('builder.totalArmor'))}${quality() ? ` · ${esc(qualityName(quality()))}` : ''}</h3>${statList(meta, sortStats(gear))}</div>`);
-    if (weaponLines) blocks.push(`<div><h3>${esc(t('builder.weapons'))}</h3><ul class="stat-list">${weaponLines}</ul></div>`);
-    if (food.size) blocks.push(`<div><h3>${esc(t('builder.totalFood'))}${maxDur ? ` · ${esc(fmtDuration(maxDur))}` : ''}</h3>${statList(meta, sortStats(food))}</div>`);
-    el.totals.innerHTML = blocks.join('') || `<p class="set-bonus-empty">${esc(t('builder.totalsEmpty'))}</p>`;
+    // coluna da esquerda: atributos das peças; quando um alimento mexe no mesmo atributo, aparece "+X alimentos" na linha
+    const gearLines = sortStats(gear).map((s) => {
+      const { label, value } = statParts(meta, s);
+      const f = food.get(`${s.a}|${s.op}`);
+      const extra = f && Math.abs(f.v) > 1e-9 ? `<small class="stat-food">${esc(t('builder.fromFood', { v: statParts(meta, f).value }))}</small>` : '';
+      return `<li class="stat-line"><span class="stat-label">${esc(label)}</span><span class="stat-value">${esc(value)}${extra}</span></li>`;
+    }).join('');
+    const left = [];
+    if (gearLines) left.push(`<div><h3>${esc(t('builder.totalArmor'))}${quality() ? ` · ${esc(qualityName(quality()))}` : ''}</h3><ul class="stat-list">${gearLines}</ul></div>`);
+    const bonus = setBonusHtml();
+    if (bonus) left.push(bonus);
+    if (weaponLines) left.push(`<div><h3>${esc(t('builder.weapons'))}</h3><ul class="stat-list">${weaponLines}</ul></div>`);
+    // coluna da direita: cada alimento escolhido com a duração e os efeitos (dados de foods.json, os mesmos da página Alimentos)
+    const chosen = state.foods.map((id) => foodsIdx.get(id)).filter((f) => f?.effects?.length);
+    const foodCards = chosen.map((f) => `
+      <div class="bt-food">
+        <div class="bt-food-head">${iconImg(f, 'bt-food-icon', '')}<span class="bt-food-name">${esc(pick(f, 'name'))}</span>${f.duration ? `<span class="bt-food-dur">${esc(fmtDuration(f.duration))}</span>` : ''}</div>
+        ${statList(meta, f.effects)}
+      </div>`).join('');
+    const foodTotal = chosen.length > 1 && food.size
+      ? `<div class="bt-food-total"><h4>${esc(t('builder.foodTotal'))}${maxDur ? ` · ${esc(fmtDuration(maxDur))}` : ''}</h4>${statList(meta, sortStats(food))}</div>` : '';
+    const right = `<div><h3>${esc(t('builder.totalFood'))}</h3>${foodCards ? `<div class="bt-food-list">${foodCards}</div>${foodTotal}` : `<p class="set-bonus-empty">${esc(t('builder.foodEmpty'))}</p>`}</div>`;
+    el.totals.innerHTML = left.length || chosen.length
+      ? `<div class="bt-col">${left.join('') || `<p class="set-bonus-empty">${esc(t('builder.totalsEmpty'))}</p>`}</div><div class="bt-col bt-col-food">${right}</div>`
+      : `<p class="set-bonus-empty">${esc(t('builder.totalsEmpty'))}</p>`;
   }
 
   // ---------------------------------------------------------------- GDMbot
@@ -651,7 +668,6 @@ export async function initBuilderPage(root, params) {
     renderFoodSlots();
     renderGear();
     renderClassWeapons();
-    renderSetBonus();
     renderTotals();
     renderTalentGrid();
     renderSaved();

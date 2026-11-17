@@ -2,151 +2,185 @@
   {
     "version": "1.0.2",
     "date": "2026-11-16",
-    "pt": [
-      "Página inicial: ícone de Armaduras corrigido (sem o quadrado escuro de fundo e do mesmo tamanho dos outros ícones)",
-      "Máscaras: \"Onde encontrar\" abre o mapa já com o baú ou o inimigo da máscara destacado e com a janela dele aberta",
-      "Mapa: lugares do \"Procurar loot\" ganham um anel quando são poucos, para achar fácil",
-      "Mapa: ao clicar numa criatura aparecem os recursos ao esquartejar, os outros recursos ao terminar, as chances e as quantidades, só da versão que o bicho é (comum ou elite)",
-      "Criaturas: recursos ao esquartejar e outros recursos vêm do mesmo banco de dados do mapa; o que não é confirmado pelo jogo aparece marcado",
-      "Mapa no celular: nomes dos itens nas tabelas de drop não quebram mais letra a letra",
-      "Mapa: animais das ruínas e outros animais que apareciam como inimigo sem drop (Jacaré (Ruínas), Lobo (Ruínas), Hiena (Ruínas) etc.) agora mostram o que dão ao esquartejar; jacarés comuns, gigantes e elites voltaram a ser animais com a tabela confirmada pelo jogo",
-      "Mapa: líderes, reis, elites e inimigos humanos agora mostram o equipamento que podem soltar (armadura de corpo, pernas, braços e pés, anel, colar e armas) com a chance de cada parte, nos dois mapas; o \"Procurar loot\" também acha essas peças",
-      "Criaturas: atributos base do jogo no nível 1 (vida, ataque, defesa, vigor, carga, velocidade e, em \"Mostrar mais\", crítico, resistências, fôlego, fome, sede e espaços do inventário)",
-      "Talentos: 95 talentos que apareciam sem o nível 3 (ou com o nível 3 como talento separado) agora mostram os níveis 1, 2 e 3; quando o texto muda entre os níveis, cada nível aparece com o seu efeito",
-      "Nova página Animais domesticáveis: os 20 animais que as arapucas capturam, separados em montarias (têm sela), animais de criação (têm cercado de criação que dá para construir) e outros capturáveis; cada tópico (mapas e regiões, recursos que produz, abate com quantidade e chance, domesticação com arapuca, sela e cercado clicáveis, atributos base no nível 1, comidas aceitas) começa fechado com Mostrar mais; botão Ver no mapa e filtros por categoria e mapa",
-      "Bancada de trabalho: a árvore de fabricação agora é movida clicando e arrastando (ou com o dedo no celular), sem barras de rolagem",
-      "Bancada de trabalho: a busca do item e a quantidade agora ficam no topo da própria caixa da árvore, deixando a página mais compacta",
-      "Partes longas recolhidas com \"Mostrar mais\": na janela de cada item (onde conseguir mostra 5 fontes e agora lista até 40; \"Usado em\" mostra 12), nos Talentos (os outros níveis e os IDs) e no Plantio (descrição longa das plantações e a lista de plantações de cada fertilizante)",
-      "Servidores: status ao vivo pela lista da Steam (online ou offline, jogadores/vagas, nome no jogo e hora da verificação), atualizado sozinho a cada 3 minutos, e nova ordem \"Mais jogadores agora\"; os servidores oficiais do jogo entram na mesma lista, com ícone e banner do Soulmask, status ao vivo, regras de cada um e filtro \"Apenas oficiais\" / \"Apenas não oficiais\"",
-      "Clicar no nome Soulmask / Fantasfor Wiki no topo da barra lateral volta para a página inicial",
-      "Ao apertar F5, o texto de resumo da página não pisca mais na tela antes de ela carregar",
-      "Mais segurança: o GDMbot só se conecta à sua conta depois de você confirmar no site, e as fotos e ícones das publicações só aceitam imagens do próprio site ou do Google"
-    ],
-    "en": [
-      "Home page: Armor icon fixed (no dark square behind it and the same size as the other icons)",
-      "Masks: \"Where to find\" opens the map with the mask's chest or enemy highlighted and its panel already open",
-      "Map: \"Search for loot\" places get a ring when there are only a few, so they are easy to spot",
-      "Map: clicking a creature shows butchering resources, other resources when butchering is finished, chances and amounts, only for the version the animal actually is (common or elite)",
-      "Creatures: butchering and other resources come from the same database as the map; anything not confirmed by the game is marked",
-      "Map on mobile: item names in drop tables no longer break letter by letter",
-      "Map: ruin animals and other animals that showed up as enemies with no drops (Crocodile (Ruins), Wolf (Ruins), Hyena (Ruins) etc.) now show their butchering resources; common, giant and elite crocodiles are animals again with the table confirmed by the game",
-      "Map: leaders, kings, elites and human enemies now show the gear they can drop (body, legs, arms and feet armor, ring, necklace and weapons) with the chance for each part, on both maps; \"Search for loot\" also finds these pieces",
-      "Creatures: base game attributes at level 1 (health, attack, defense, stamina, carry weight, speed and, under \"Show more\", crit, resistances, breath, food, water and inventory slots)",
-      "Talents: 95 talents that showed up without level 3 (or with level 3 as a separate talent) now show levels 1, 2 and 3; when the text changes between levels, each level is shown with its own effect",
-      "New Tameable animals page: the 20 animals the traps can catch, split into mounts (have a saddle), farm animals (have a buildable breeding pen) and other catchable animals; each topic (maps and regions, resources produced, butchering with amount and chance, taming with clickable trap, saddle and pen, base attributes at level 1, accepted foods) starts closed with Show more; See on map button and filters by category and map",
-      "Workbench: drag the crafting tree with the mouse (or your finger on mobile) to move around it, with no scroll bars",
-      "Workbench: item search and quantity now sit at the top of the crafting tree box, making the page more compact",
-      "Long sections folded behind \"Show more\": in each item's window (where to get shows 5 sources and now lists up to 40; \"Used in\" shows 12), in Talents (the other levels and the IDs) and in Farming (long crop descriptions and the crop list of each fertilizer)",
-      "Servers: live status from the Steam server list (online or offline, players/slots, in-game name and check time), refreshed every 3 minutes, and a new \"Most players now\" sort; the game's official servers join the same list, with the Soulmask icon and banner, live status, each server's rules and an \"Official only\" / \"Unofficial only\" filter",
-      "Clicking the Soulmask / Fantasfor Wiki name at the top of the sidebar takes you back to the home page",
-      "Pressing F5 no longer flashes the page summary text on screen before the page loads",
-      "Better security: GDMbot only connects to your account after you confirm on the site, and post photos and icons only accept images from the site itself or Google"
-    ]
+    "pt": {
+      "added": [
+        "Mapa: ao clicar numa criatura aparecem os recursos ao esquartejar, os outros recursos ao terminar, as chances e as quantidades, só da versão que o bicho é (comum ou elite)",
+        "Mapa: líderes, reis, elites e inimigos humanos agora mostram o equipamento que podem soltar (armadura de corpo, pernas, braços e pés, anel, colar e armas) com a chance de cada parte, nos dois mapas; o \"Procurar loot\" também acha essas peças",
+        "Criaturas: atributos base do jogo no nível 1 (vida, ataque, defesa, vigor, carga, velocidade e, em \"Mostrar mais\", crítico, resistências, fôlego, fome, sede e espaços do inventário)",
+        "Nova página Animais domesticáveis: os 20 animais que as arapucas capturam, separados em montarias (têm sela), animais de criação (têm cercado de criação que dá para construir) e outros capturáveis; cada tópico (mapas e regiões, recursos que produz, abate com quantidade e chance, domesticação com arapuca, sela e cercado clicáveis, atributos base no nível 1, comidas aceitas) começa fechado com Mostrar mais; botão Ver no mapa e filtros por categoria e mapa",
+        "Servidores: status ao vivo pela lista da Steam (online ou offline, jogadores/vagas, nome no jogo e hora da verificação), atualizado sozinho a cada 3 minutos, e nova ordem \"Mais jogadores agora\"; os servidores oficiais do jogo entram na mesma lista, com ícone e banner do Soulmask, status ao vivo, regras de cada um e filtro \"Apenas oficiais\" / \"Apenas não oficiais\"",
+        "Builder Maker: no resumo da build, os atributos das peças e o bônus de conjunto ficam à esquerda e os efeitos dos alimentos à direita, com cada alimento, a duração e os efeitos dele; quando um alimento melhora o mesmo atributo de uma peça, a linha mostra \"+X alimentos\""
+      ],
+      "changed": [
+        "Máscaras: \"Onde encontrar\" abre o mapa já com o baú ou o inimigo da máscara destacado e com a janela dele aberta",
+        "Mapa: lugares do \"Procurar loot\" ganham um anel quando são poucos, para achar fácil",
+        "Criaturas: recursos ao esquartejar e outros recursos vêm do mesmo banco de dados do mapa; o que não é confirmado pelo jogo aparece marcado",
+        "Bancada de trabalho: a árvore de fabricação agora é movida clicando e arrastando (ou com o dedo no celular), sem barras de rolagem",
+        "Bancada de trabalho: a busca do item e a quantidade agora ficam no topo da própria caixa da árvore, deixando a página mais compacta",
+        "Partes longas recolhidas com \"Mostrar mais\": na janela de cada item (onde conseguir mostra 5 fontes e agora lista até 40; \"Usado em\" mostra 12), nos Talentos (os outros níveis e os IDs) e no Plantio (descrição longa das plantações e a lista de plantações de cada fertilizante)",
+        "Clicar no nome Soulmask / Fantasfor Wiki no topo da barra lateral volta para a página inicial",
+        "Mais segurança: o GDMbot só se conecta à sua conta depois de você confirmar no site, e as fotos e ícones das publicações só aceitam imagens do próprio site ou do Google"
+      ],
+      "fixed": [
+        "Página inicial: ícone de Armaduras corrigido (sem o quadrado escuro de fundo e do mesmo tamanho dos outros ícones)",
+        "Mapa no celular: nomes dos itens nas tabelas de drop não quebram mais letra a letra",
+        "Mapa: animais das ruínas e outros animais que apareciam como inimigo sem drop (Jacaré (Ruínas), Lobo (Ruínas), Hiena (Ruínas) etc.) agora mostram o que dão ao esquartejar; jacarés comuns, gigantes e elites voltaram a ser animais com a tabela confirmada pelo jogo",
+        "Talentos: 95 talentos que apareciam sem o nível 3 (ou com o nível 3 como talento separado) agora mostram os níveis 1, 2 e 3; quando o texto muda entre os níveis, cada nível aparece com o seu efeito",
+        "Ao apertar F5, o texto de resumo da página não pisca mais na tela antes de ela carregar"
+      ]
+    },
+    "en": {
+      "added": [
+        "Map: clicking a creature shows butchering resources, other resources when butchering is finished, chances and amounts, only for the version the animal actually is (common or elite)",
+        "Map: leaders, kings, elites and human enemies now show the gear they can drop (body, legs, arms and feet armor, ring, necklace and weapons) with the chance for each part, on both maps; \"Search for loot\" also finds these pieces",
+        "Creatures: base game attributes at level 1 (health, attack, defense, stamina, carry weight, speed and, under \"Show more\", crit, resistances, breath, food, water and inventory slots)",
+        "New Tameable animals page: the 20 animals the traps can catch, split into mounts (have a saddle), farm animals (have a buildable breeding pen) and other catchable animals; each topic (maps and regions, resources produced, butchering with amount and chance, taming with clickable trap, saddle and pen, base attributes at level 1, accepted foods) starts closed with Show more; See on map button and filters by category and map",
+        "Servers: live status from the Steam server list (online or offline, players/slots, in-game name and check time), refreshed every 3 minutes, and a new \"Most players now\" sort; the game's official servers join the same list, with the Soulmask icon and banner, live status, each server's rules and an \"Official only\" / \"Unofficial only\" filter",
+        "Builder Maker: in the build summary, gear stats and the set bonus sit on the left and food effects on the right, with each food, its duration and its effects; when a food boosts the same stat as a gear piece, the line shows \"+X from food\""
+      ],
+      "changed": [
+        "Masks: \"Where to find\" opens the map with the mask's chest or enemy highlighted and its panel already open",
+        "Map: \"Search for loot\" places get a ring when there are only a few, so they are easy to spot",
+        "Creatures: butchering and other resources come from the same database as the map; anything not confirmed by the game is marked",
+        "Workbench: drag the crafting tree with the mouse (or your finger on mobile) to move around it, with no scroll bars",
+        "Workbench: item search and quantity now sit at the top of the crafting tree box, making the page more compact",
+        "Long sections folded behind \"Show more\": in each item's window (where to get shows 5 sources and now lists up to 40; \"Used in\" shows 12), in Talents (the other levels and the IDs) and in Farming (long crop descriptions and the crop list of each fertilizer)",
+        "Clicking the Soulmask / Fantasfor Wiki name at the top of the sidebar takes you back to the home page",
+        "Better security: GDMbot only connects to your account after you confirm on the site, and post photos and icons only accept images from the site itself or Google"
+      ],
+      "fixed": [
+        "Home page: Armor icon fixed (no dark square behind it and the same size as the other icons)",
+        "Map on mobile: item names in drop tables no longer break letter by letter",
+        "Map: ruin animals and other animals that showed up as enemies with no drops (Crocodile (Ruins), Wolf (Ruins), Hyena (Ruins) etc.) now show their butchering resources; common, giant and elite crocodiles are animals again with the table confirmed by the game",
+        "Talents: 95 talents that showed up without level 3 (or with level 3 as a separate talent) now show levels 1, 2 and 3; when the text changes between levels, each level is shown with its own effect",
+        "Pressing F5 no longer flashes the page summary text on screen before the page loads"
+      ]
+    }
   },
   {
     "version": "1.0.1",
     "date": "2026-11-15",
-    "pt": [
-      "Bancada de trabalho: linhas da árvore corrigidas e mais grossas, rolagem horizontal e vertical na árvore e ícone de cada bancada",
-      "Builder Maker: exportação para o GDMbot simplificada (só limpar e adicionar talentos) com o aviso do gm key 123456",
-      "Builder Maker: builds salvas num menu ao lado do nome da build, também no celular",
-      "Builder Maker: o nome da tribo não aparece mais repetido no talento de tribo",
-      "Comandos: destaque explicando como ativar o GM em Solo/Host com gm key 123456 antes dos outros comandos",
-      "Mapa: todo covil e fera mostra a criatura (com foto) e o drop dela, mesmo quando ela nasce um pouco longe do ícone",
-      "Mapa: ícone de baú menor e com uma cor por tipo (relíquia, relíquia sagrada/máscara, suprimentos, armazenamento, tralhas, núcleo)",
-      "Mapa: novo painel \"Procurar loot\": escolha um item e veja só os baús, criaturas, inimigos e minérios que o dão, com a quantidade de cada um",
-      "Mapa: botão direito (ou segurar o dedo) num marcador marca ou desmarca como visitado",
-      "Mapa: os baús de máscara (Relíquia Sagrada) agora mostram qual máscara dão",
-      "Criaturas: botão \"Ver no mapa\" e recursos clicáveis que abrem o item",
-      "Máscaras: botão \"Onde encontrar\" que abre o mapa nos baús ou inimigos que dão a máscara",
-      "Atributos: valores corrigidos com a regra do jogo (valor = base × qualidade ÷ 10: vermelho +40% a +50%, dourado +30% a +39%, roxo +20% a +29%, azul +10% a +19%, verde até +9%), com controle de qualidade",
-      "Proficiência: qualidade de fabricação dos marcos (+7% por material) agora entra na conta, qualidade por material com o nome certo, bônus em etapas e talentos que ajudam cada proficiência (o clique abre a aba Talentos)",
-      "Armaduras: atributos aleatórios possíveis de cada peça com a chance de cada um, e comparação de atributos entre dois conjuntos ou duas peças com as diferenças em destaque",
-      "Plantio: nova seção de Fertilizantes (tipo, pontos por unidade, EXP de Plantio, quais plantações usam) e as unidades de adubo que cada plantação precisa",
-      "Alimentos: onde conseguir cada alimento e link direto para a receita na Bancada",
-      "Conforto: a calculadora trava no limite de cada item ou estrutura",
-      "Itens: botão \"Mostrar mais\" que carrega os itens aos poucos",
-      "Eventos de invasão: resumo curto do que cada evento traz e um horário principal por fuso, sem repetições",
-      "Página inicial: feed centralizado, todos os ícones no mesmo branco e atalho para a Comunidade",
-      "Nova página Comunidade: builds, tier lists e servidores publicados num só lugar, com filtro por tipo, ordem, busca, estrelas e comentários",
-      "Favoritos: toque na estrela ao lado do nome de uma página na barra lateral e ela entra na nova categoria Favoritos, no topo do menu; também dá para favoritar publicações. Sincroniza pela conta e funciona sem login",
-      "Builder Maker: nova aba Comunidade para publicar a sua build e ver, abrir, avaliar e comentar as builds dos outros jogadores",
-      "Servidores: lista no formato das listas de servidores (ícone e nome, banner e descrição, IP com botão Copiar IP e números), ícone em GIF animado e banner personalizado",
-      "Tier List, Servidores e Builds: dá para apagar a própria avaliação, o autor responde os comentários e cada publicação tem link próprio para compartilhar"
-    ],
-    "en": [
-      "Workbench: crafting tree lines fixed and thicker, horizontal and vertical scrolling in the tree and an icon for each bench",
-      "Builder Maker: simpler GDMbot export (only clear and add talents) with the gm key 123456 reminder",
-      "Builder Maker: saved builds in a dropdown next to the build name, mobile included",
-      "Builder Maker: the tribe name is no longer repeated for tribe talents",
-      "Commands: highlighted box on enabling GM in Solo/Host with gm key 123456 before other commands",
-      "Map: every lair and beast shows its creature (with photo) and drops, even when it spawns a bit away from the icon",
-      "Map: smaller chest icons with one color per type (relic, holy relic/mask, supplies, storage, junk, core)",
-      "Map: new \"Search for loot\" panel: pick an item and see only the chests, creatures, enemies and ores that give it, with a count for each",
-      "Map: right-click (or long-press) a marker to mark or unmark it as visited",
-      "Map: mask chests (Holy Relics) now show which mask they give",
-      "Creatures: \"See on map\" button and clickable resources that open the item",
-      "Masks: \"Where to find\" button that opens the map on the chests or enemies that give the mask",
-      "Attributes: values fixed with the game rule (value = base × quality ÷ 10: red +40% to +50%, gold +30% to +39%, purple +20% to +29%, blue +10% to +19%, green up to +9%), with a quality slider",
-      "Proficiency: milestone crafting quality (+7% per material) now counted, quality per material with its real name, step bonuses listed and talents that help each proficiency (click opens the Talents tab)",
-      "Armor: possible random stats of each piece with the chance of each one, and a stat comparison between two sets or two pieces with the differences highlighted",
-      "Farming: new Fertilizers section (type, points per unit, Farming EXP, which crops use it) and the fertilizer units each crop needs",
-      "Food: where to get each food and a direct link to its recipe in the Workbench",
-      "Comfort: the calculator stops at the limit of each item or structure",
-      "Items: \"Show more\" button that loads items in batches",
-      "Invasion events: short summary of what each event brings and one main city per time zone, without repeats",
-      "Home page: centered feed, every icon in the same white and a shortcut to the Community",
-      "New Community page: published builds, tier lists and servers in one place, with type filter, sorting, search, stars and comments",
-      "Favorites: tap the star next to a page name in the sidebar and it goes to the new Favorites category at the top of the menu; posts can be favorited too. Synced with your account and works without signing in",
-      "Build Maker: new Community tab to publish your build and see, open, rate and comment on other players' builds",
-      "Servers: list in the classic server-list format (icon and name, banner and description, IP with a Copy IP button and stats), animated GIF icon and custom banner",
-      "Tier List, Servers and Builds: delete your own rating, authors can reply to comments and every post has its own share link"
-    ]
+    "pt": {
+      "added": [
+        "Builder Maker: builds salvas num menu ao lado do nome da build, também no celular",
+        "Comandos: destaque explicando como ativar o GM em Solo/Host com gm key 123456 antes dos outros comandos",
+        "Mapa: todo covil e fera mostra a criatura (com foto) e o drop dela, mesmo quando ela nasce um pouco longe do ícone",
+        "Mapa: novo painel \"Procurar loot\": escolha um item e veja só os baús, criaturas, inimigos e minérios que o dão, com a quantidade de cada um",
+        "Mapa: botão direito (ou segurar o dedo) num marcador marca ou desmarca como visitado",
+        "Mapa: os baús de máscara (Relíquia Sagrada) agora mostram qual máscara dão",
+        "Criaturas: botão \"Ver no mapa\" e recursos clicáveis que abrem o item",
+        "Máscaras: botão \"Onde encontrar\" que abre o mapa nos baús ou inimigos que dão a máscara",
+        "Armaduras: atributos aleatórios possíveis de cada peça com a chance de cada um, e comparação de atributos entre dois conjuntos ou duas peças com as diferenças em destaque",
+        "Plantio: nova seção de Fertilizantes (tipo, pontos por unidade, EXP de Plantio, quais plantações usam) e as unidades de adubo que cada plantação precisa",
+        "Alimentos: onde conseguir cada alimento e link direto para a receita na Bancada",
+        "Itens: botão \"Mostrar mais\" que carrega os itens aos poucos",
+        "Nova página Comunidade: builds, tier lists e servidores publicados num só lugar, com filtro por tipo, ordem, busca, estrelas e comentários",
+        "Favoritos: toque na estrela ao lado do nome de uma página na barra lateral e ela entra na nova categoria Favoritos, no topo do menu; também dá para favoritar publicações. Sincroniza pela conta e funciona sem login",
+        "Builder Maker: nova aba Comunidade para publicar a sua build e ver, abrir, avaliar e comentar as builds dos outros jogadores",
+        "Tier List, Servidores e Builds: dá para apagar a própria avaliação, o autor responde os comentários e cada publicação tem link próprio para compartilhar"
+      ],
+      "changed": [
+        "Builder Maker: exportação para o GDMbot simplificada (só limpar e adicionar talentos) com o aviso do gm key 123456",
+        "Mapa: ícone de baú menor e com uma cor por tipo (relíquia, relíquia sagrada/máscara, suprimentos, armazenamento, tralhas, núcleo)",
+        "Eventos de invasão: resumo curto do que cada evento traz e um horário principal por fuso, sem repetições",
+        "Página inicial: feed centralizado, todos os ícones no mesmo branco e atalho para a Comunidade",
+        "Servidores: lista no formato das listas de servidores (ícone e nome, banner e descrição, IP com botão Copiar IP e números), ícone em GIF animado e banner personalizado"
+      ],
+      "fixed": [
+        "Bancada de trabalho: linhas da árvore corrigidas e mais grossas, rolagem horizontal e vertical na árvore e ícone de cada bancada",
+        "Builder Maker: o nome da tribo não aparece mais repetido no talento de tribo",
+        "Atributos: valores corrigidos com a regra do jogo (valor = base × qualidade ÷ 10: vermelho +40% a +50%, dourado +30% a +39%, roxo +20% a +29%, azul +10% a +19%, verde até +9%), com controle de qualidade",
+        "Proficiência: qualidade de fabricação dos marcos (+7% por material) agora entra na conta, qualidade por material com o nome certo, bônus em etapas e talentos que ajudam cada proficiência (o clique abre a aba Talentos)",
+        "Conforto: a calculadora trava no limite de cada item ou estrutura"
+      ]
+    },
+    "en": {
+      "added": [
+        "Builder Maker: saved builds in a dropdown next to the build name, mobile included",
+        "Commands: highlighted box on enabling GM in Solo/Host with gm key 123456 before other commands",
+        "Map: every lair and beast shows its creature (with photo) and drops, even when it spawns a bit away from the icon",
+        "Map: new \"Search for loot\" panel: pick an item and see only the chests, creatures, enemies and ores that give it, with a count for each",
+        "Map: right-click (or long-press) a marker to mark or unmark it as visited",
+        "Map: mask chests (Holy Relics) now show which mask they give",
+        "Creatures: \"See on map\" button and clickable resources that open the item",
+        "Masks: \"Where to find\" button that opens the map on the chests or enemies that give the mask",
+        "Armor: possible random stats of each piece with the chance of each one, and a stat comparison between two sets or two pieces with the differences highlighted",
+        "Farming: new Fertilizers section (type, points per unit, Farming EXP, which crops use it) and the fertilizer units each crop needs",
+        "Food: where to get each food and a direct link to its recipe in the Workbench",
+        "Items: \"Show more\" button that loads items in batches",
+        "New Community page: published builds, tier lists and servers in one place, with type filter, sorting, search, stars and comments",
+        "Favorites: tap the star next to a page name in the sidebar and it goes to the new Favorites category at the top of the menu; posts can be favorited too. Synced with your account and works without signing in",
+        "Build Maker: new Community tab to publish your build and see, open, rate and comment on other players' builds",
+        "Tier List, Servers and Builds: delete your own rating, authors can reply to comments and every post has its own share link"
+      ],
+      "changed": [
+        "Builder Maker: simpler GDMbot export (only clear and add talents) with the gm key 123456 reminder",
+        "Map: smaller chest icons with one color per type (relic, holy relic/mask, supplies, storage, junk, core)",
+        "Invasion events: short summary of what each event brings and one main city per time zone, without repeats",
+        "Home page: centered feed, every icon in the same white and a shortcut to the Community",
+        "Servers: list in the classic server-list format (icon and name, banner and description, IP with a Copy IP button and stats), animated GIF icon and custom banner"
+      ],
+      "fixed": [
+        "Workbench: crafting tree lines fixed and thicker, horizontal and vertical scrolling in the tree and an icon for each bench",
+        "Builder Maker: the tribe name is no longer repeated for tribe talents",
+        "Attributes: values fixed with the game rule (value = base × quality ÷ 10: red +40% to +50%, gold +30% to +39%, purple +20% to +29%, blue +10% to +19%, green up to +9%), with a quality slider",
+        "Proficiency: milestone crafting quality (+7% per material) now counted, quality per material with its real name, step bonuses listed and talents that help each proficiency (click opens the Talents tab)",
+        "Comfort: the calculator stops at the limit of each item or structure"
+      ]
+    }
   },
   {
     "version": "1.0.0",
     "date": "2026-11-14",
-    "pt": [
-      "Site completo em português e inglês",
-      "Novo mapa interativo com portais, tábuas, pirâmides, ruínas, baús, minérios, tribos, chefes e onde nasce cada animal e inimigo; busca, filtros e lugares visitados por save",
-      "Builder Maker refeito: slots com nome, armaduras avançadas e de ruínas, armas aprimoradas, roupa de transformação da máscara e seletor de talentos novo",
-      "Conta com login Google: builds, tier lists, favoritos e marcadores salvos na nuvem",
-      "Tier list da comunidade com estrelas e comentários; avaliação de talentos",
-      "Novas páginas: Armas, Receitas, Criaturas (com fotos), Chefes, Conforto, Plantio (com simulador) e Apoie",
-      "Reportar problema e enviar sugestão direto pelo site",
-      "Mapa interativo com os 2 mapas (Floresta de Névoa Nuvem e Areias Errantes), os 5 modos de jogo e a chance de drop de cada item",
-      "Novas páginas: Proficiência (com calculadora), Maestria de Armas, Eventos de invasão (horários por região), Comandos de console (busca por frase) e Servidores da comunidade",
-      "Bancada de trabalho: escolha um item e veja toda a árvore de fabricação até os materiais básicos, com onde conseguir cada um",
-      "Itens e Receitas agora são uma página só, e cada item mostra onde conseguir",
-      "Novas abas: Atributos (qualidade do NPC) e Cristais Vermelhos",
-      "Mapa interativo com os nomes das regiões, tipo e nível, iguais aos do mapa do jogo",
-      "Altares de invocação do Crocodilo de Sobek, Cão das Almas (Anúbis) e Escaravelho de Ônix no mapa das Areias Errantes",
-      "Eventos de invasão também no mapa das Areias Errantes; inimigos, animais, mecânicos e chefes de tribo com bolinhas coloridas no mapa",
-      "Mapa: informações num painel no canto direito; covis mostram as feras, ruínas os inimigos e minas os inimigos e recursos, com o drop de cada um; altares dos chefes também na Floresta",
-      "Masmorras no mapa: custo de entrada, tempo, jogadores, inimigos e baús com o que cada um dropa; mapa mais largo",
-      "Chefes com foto de fundo, oferenda do altar em espaços de inventário e drops no botão Mostrar mais",
-      "Servidores: destaque com valor livre e sem prazo (maior total fica no topo); o dono confirma a cada 60 dias que o servidor está ativo"
-    ],
-    "en": [
-      "Full site in Portuguese and English",
-      "New interactive map with teleports, tablets, pyramids, ruins, chests, ores, tribes, bosses and where every animal and enemy spawns; search, filters and visited places per save",
-      "Builder Maker rebuilt: named slots, advanced and ruins armor, enhanced weapons, mask transformation outfit and a new talent picker",
-      "Google sign-in: builds, tier lists, favorites and markers saved to the cloud",
-      "Community tier lists with stars and comments; talent ratings",
-      "New pages: Weapons, Recipes, Creatures (with photos), Bosses, Comfort, Farming (with simulator) and Support",
-      "Report a problem or send a suggestion right from the site",
-      "Interactive map with both maps (Cloud Mist Forest and Shifting Sands), the 5 game modes and the drop chance of every item",
-      "New pages: Proficiency (with calculator), Weapon Mastery, Invasion Events (times by region), Console Commands (search by sentence) and community Servers",
-      "Workbench: pick an item and see its whole crafting tree down to base materials, with where to get each one",
-      "Items and Recipes are now a single page, and every item shows where to get it",
-      "New tabs: Attributes (NPC quality) and Red Crystals",
-      "Interactive map with region names, type and level, just like the in-game map",
-      "Summoning altars for the Sobek Crocodile, Anubis Hound and Onyx Scarab on the Shifting Sands map",
-      "Invasion events now on the Shifting Sands map too; enemies, animals, mechanical enemies and tribe bosses shown as colored dots",
-      "Map: info in a panel on the right; lairs show their beasts, ruins their enemies and mines their enemies and resources, with drops; boss altars on the Forest map too",
-      "Dungeons on the map: entrance cost, time, players, enemies and chests with their drops; wider map",
-      "Bosses with a background photo, altar offering shown as inventory slots and drops behind a Show more button",
-      "Servers: feature with any amount and no time limit (highest total on top); owners confirm every 60 days that the server is active"
-    ]
+    "pt": {
+      "added": [
+        "Site completo em português e inglês",
+        "Novo mapa interativo com portais, tábuas, pirâmides, ruínas, baús, minérios, tribos, chefes e onde nasce cada animal e inimigo; busca, filtros e lugares visitados por save",
+        "Conta com login Google: builds, tier lists, favoritos e marcadores salvos na nuvem",
+        "Tier list da comunidade com estrelas e comentários; avaliação de talentos",
+        "Novas páginas: Armas, Receitas, Criaturas (com fotos), Chefes, Conforto, Plantio (com simulador) e Apoie",
+        "Reportar problema e enviar sugestão direto pelo site",
+        "Mapa interativo com os 2 mapas (Floresta de Névoa Nuvem e Areias Errantes), os 5 modos de jogo e a chance de drop de cada item",
+        "Novas páginas: Proficiência (com calculadora), Maestria de Armas, Eventos de invasão (horários por região), Comandos de console (busca por frase) e Servidores da comunidade",
+        "Bancada de trabalho: escolha um item e veja toda a árvore de fabricação até os materiais básicos, com onde conseguir cada um",
+        "Novas abas: Atributos (qualidade do NPC) e Cristais Vermelhos",
+        "Mapa interativo com os nomes das regiões, tipo e nível, iguais aos do mapa do jogo",
+        "Altares de invocação do Crocodilo de Sobek, Cão das Almas (Anúbis) e Escaravelho de Ônix no mapa das Areias Errantes",
+        "Eventos de invasão também no mapa das Areias Errantes; inimigos, animais, mecânicos e chefes de tribo com bolinhas coloridas no mapa",
+        "Masmorras no mapa: custo de entrada, tempo, jogadores, inimigos e baús com o que cada um dropa; mapa mais largo",
+        "Chefes com foto de fundo, oferenda do altar em espaços de inventário e drops no botão Mostrar mais"
+      ],
+      "changed": [
+        "Builder Maker refeito: slots com nome, armaduras avançadas e de ruínas, armas aprimoradas, roupa de transformação da máscara e seletor de talentos novo",
+        "Itens e Receitas agora são uma página só, e cada item mostra onde conseguir",
+        "Mapa: informações num painel no canto direito; covis mostram as feras, ruínas os inimigos e minas os inimigos e recursos, com o drop de cada um; altares dos chefes também na Floresta",
+        "Servidores: destaque com valor livre e sem prazo (maior total fica no topo); o dono confirma a cada 60 dias que o servidor está ativo"
+      ]
+    },
+    "en": {
+      "added": [
+        "Full site in Portuguese and English",
+        "New interactive map with teleports, tablets, pyramids, ruins, chests, ores, tribes, bosses and where every animal and enemy spawns; search, filters and visited places per save",
+        "Google sign-in: builds, tier lists, favorites and markers saved to the cloud",
+        "Community tier lists with stars and comments; talent ratings",
+        "New pages: Weapons, Recipes, Creatures (with photos), Bosses, Comfort, Farming (with simulator) and Support",
+        "Report a problem or send a suggestion right from the site",
+        "Interactive map with both maps (Cloud Mist Forest and Shifting Sands), the 5 game modes and the drop chance of every item",
+        "New pages: Proficiency (with calculator), Weapon Mastery, Invasion Events (times by region), Console Commands (search by sentence) and community Servers",
+        "Workbench: pick an item and see its whole crafting tree down to base materials, with where to get each one",
+        "New tabs: Attributes (NPC quality) and Red Crystals",
+        "Interactive map with region names, type and level, just like the in-game map",
+        "Summoning altars for the Sobek Crocodile, Anubis Hound and Onyx Scarab on the Shifting Sands map",
+        "Invasion events now on the Shifting Sands map too; enemies, animals, mechanical enemies and tribe bosses shown as colored dots",
+        "Dungeons on the map: entrance cost, time, players, enemies and chests with their drops; wider map",
+        "Bosses with a background photo, altar offering shown as inventory slots and drops behind a Show more button"
+      ],
+      "changed": [
+        "Builder Maker rebuilt: named slots, advanced and ruins armor, enhanced weapons, mask transformation outfit and a new talent picker",
+        "Items and Recipes are now a single page, and every item shows where to get it",
+        "Map: info in a panel on the right; lairs show their beasts, ruins their enemies and mines their enemies and resources, with drops; boss altars on the Forest map too",
+        "Servers: feature with any amount and no time limit (highest total on top); owners confirm every 60 days that the server is active"
+      ]
+    }
   }
 ]
