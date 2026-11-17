@@ -1,6 +1,6 @@
 // Google Analytics 4: conta quantas pessoas abrem cada página do site.
 // Cole aqui o "ID da métrica" do GA4 (formato G-XXXXXXXXXX). Vazio = analytics desligado.
-const GA_ID = '';
+const GA_ID = 'G-JZL5THFBCG';
 
 // Base dos endereços enviados ao GA: cada seção aparece como /fantasfor-soulmask-wiki/<pagina>
 const BASE_PATH = '/fantasfor-soulmask-wiki/';

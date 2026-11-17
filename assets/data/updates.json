@@ -9,7 +9,8 @@
         "Criaturas: atributos base do jogo no nível 1 (vida, ataque, defesa, vigor, carga, velocidade e, em \"Mostrar mais\", crítico, resistências, fôlego, fome, sede e espaços do inventário)",
         "Nova página Animais domesticáveis: os 20 animais que as arapucas capturam, separados em montarias (têm sela), animais de criação (têm cercado de criação que dá para construir) e outros capturáveis; cada tópico (mapas e regiões, recursos que produz, abate com quantidade e chance, domesticação com arapuca, sela e cercado clicáveis, atributos base no nível 1, comidas aceitas) começa fechado com Mostrar mais; botão Ver no mapa e filtros por categoria e mapa",
         "Servidores: status ao vivo pela lista da Steam (online ou offline, jogadores/vagas, nome no jogo e hora da verificação), atualizado sozinho a cada 3 minutos, e nova ordem \"Mais jogadores agora\"; os servidores oficiais do jogo entram na mesma lista, com ícone e banner do Soulmask, status ao vivo, regras de cada um e filtro \"Apenas oficiais\" / \"Apenas não oficiais\"",
-        "Builder Maker: no resumo da build, os atributos das peças e o bônus de conjunto ficam à esquerda e os efeitos dos alimentos à direita, com cada alimento, a duração e os efeitos dele; quando um alimento melhora o mesmo atributo de uma peça, a linha mostra \"+X alimentos\""
+        "Builder Maker: no resumo da build, os atributos das peças e o bônus de conjunto ficam à esquerda e os efeitos dos alimentos à direita, com cada alimento, a duração e os efeitos dele; quando um alimento melhora o mesmo atributo de uma peça, a linha mostra \"+X alimentos\"",
+        "Contador de visitas do site (Google Analytics), para saber quais páginas são mais usadas e melhorar o que importa"
       ],
       "changed": [
         "Máscaras: \"Onde encontrar\" abre o mapa já com o baú ou o inimigo da máscara destacado e com a janela dele aberta",
@@ -36,7 +37,8 @@
         "Creatures: base game attributes at level 1 (health, attack, defense, stamina, carry weight, speed and, under \"Show more\", crit, resistances, breath, food, water and inventory slots)",
         "New Tameable animals page: the 20 animals the traps can catch, split into mounts (have a saddle), farm animals (have a buildable breeding pen) and other catchable animals; each topic (maps and regions, resources produced, butchering with amount and chance, taming with clickable trap, saddle and pen, base attributes at level 1, accepted foods) starts closed with Show more; See on map button and filters by category and map",
         "Servers: live status from the Steam server list (online or offline, players/slots, in-game name and check time), refreshed every 3 minutes, and a new \"Most players now\" sort; the game's official servers join the same list, with the Soulmask icon and banner, live status, each server's rules and an \"Official only\" / \"Unofficial only\" filter",
-        "Builder Maker: in the build summary, gear stats and the set bonus sit on the left and food effects on the right, with each food, its duration and its effects; when a food boosts the same stat as a gear piece, the line shows \"+X from food\""
+        "Builder Maker: in the build summary, gear stats and the set bonus sit on the left and food effects on the right, with each food, its duration and its effects; when a food boosts the same stat as a gear piece, the line shows \"+X from food\"",
+        "Site visit counter (Google Analytics), to see which pages are used most and improve what matters"
       ],
       "changed": [
         "Masks: \"Where to find\" opens the map with the mask's chest or enemy highlighted and its panel already open",
