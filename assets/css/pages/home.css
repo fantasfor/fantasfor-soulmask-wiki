@@ -48,6 +48,125 @@
 	border-color: #1aecec;
 }
 
+/* 3 servidores em destaque (home-servers.js), logo abaixo do "Bem-vindo" */
+.home-servers {
+	max-width: 900px;
+	margin: 18px 0 0;
+}
+
+.home-servers[hidden] {
+	display: none;
+}
+
+.home-servers-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 6px 12px;
+	margin-bottom: 10px;
+}
+
+.home-servers-head h2 {
+	margin: 0;
+	font-family: Cinzel, serif;
+	font-size: 1.1rem;
+	color: #ecd760;
+}
+
+.home-servers-all {
+	color: var(--accent);
+	font-size: 0.85rem;
+	text-decoration: none;
+}
+
+.home-servers-all:hover {
+	text-decoration: underline;
+}
+
+.home-servers-list {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 10px;
+}
+
+.home-srv-card {
+	display: flex;
+	gap: 10px;
+	min-width: 0;
+	padding: 10px;
+	border: 1px solid #3a3d40;
+	background: #141515;
+	color: var(--text);
+	text-decoration: none;
+	transition: border-color 160ms ease;
+}
+
+.home-srv-card:hover,
+.home-srv-card:focus-visible {
+	border-color: var(--accent);
+	outline: none;
+}
+
+.home-srv-card.is-boosted {
+	border-color: #ecd760;
+	background: linear-gradient(100deg, rgba(236, 215, 96, 0.1), #141515 55%);
+}
+
+.home-srv-icon {
+	flex: none;
+	width: 52px;
+	height: 52px;
+	border: 1px solid #686e73;
+	background: #0d0d0d;
+	object-fit: cover;
+}
+
+.home-srv-body {
+	display: grid;
+	align-content: start;
+	gap: 4px;
+	min-width: 0;
+}
+
+.home-srv-name {
+	overflow: hidden;
+	color: #ecd760;
+	font-family: Cinzel, serif;
+	font-size: 0.9rem;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.home-srv-meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px 10px;
+	font-size: 0.78rem;
+}
+
+.home-srv-players {
+	font-weight: 700;
+}
+
+.home-srv-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.home-srv-boost {
+	border-color: #ecd760 !important;
+	color: #ecd760 !important;
+}
+
+@media (max-width: 760px) {
+	.home-servers-list {
+		grid-template-columns: 1fr;
+	}
+}
+
 /* lista de páginas favoritas (usada no filtro Favoritos da página Comunidade) */
 .cm-fav-pages h2 {
 	margin: 0 0 12px;

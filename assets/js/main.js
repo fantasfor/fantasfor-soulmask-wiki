@@ -32,6 +32,7 @@ import { initRedCrystalsPage } from './pages/red-crystals.js';
 import { initCommunityPage } from './pages/community.js';
 import { initBuilderCommunity } from './pages/builder-community.js';
 import { initFavorites } from './favorites.js';
+import { initHomeServers } from './pages/home-servers.js';
 
 // página -> função de inicialização (recebe o elemento raiz e os parâmetros da URL)
 const PAGE_INIT = {
@@ -48,6 +49,7 @@ const PAGE_INIT = {
   // editor (builder.js) + aba Comunidade (builder-community.js)
   'builder-maker': async (root, params) => { await initBuilderPage(root, params); await initBuilderCommunity(root, params); },
   comunidade: initCommunityPage,
+  home: initHomeServers, // 3 servidores em destaque (carrega em segundo plano)
   mapa: initMapPage,
   plantio: initFarmingPage,
   reportar: initReportPage,
@@ -89,6 +91,8 @@ function adoptLandingPage() {
   history.replaceState(null, '', `./${location.search}#${file}`);
 }
 adoptLandingPage();
+// título feito para o Google (tools/build_seo.py) da página por onde a pessoa entrou: fica nela
+const SEO_TITLE = { page: currentPageName(), title: document.title };
 
 // ------------------------------------------------------------------ busca global
 const SEARCH_SOURCES = [
@@ -191,6 +195,7 @@ function setupLangSwitch() {
 }
 
 function updateDocumentTitle() {
+  if (currentPageName() === SEO_TITLE.page && SEO_TITLE.title) { document.title = SEO_TITLE.title; return; }
   const link = document.querySelector(`a.nav-link[data-page="${currentPageName()}"]`);
   document.title = link ? `Soulmask Fantasfor Wiki — ${link.textContent.trim()}` : 'Soulmask Fantasfor Wiki';
 }

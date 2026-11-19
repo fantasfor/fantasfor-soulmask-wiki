@@ -1,5 +1,27 @@
 [
   {
+    "version": "1.0.3",
+    "date": "2026-11-18",
+    "pt": {
+      "added": [
+        "Página inicial: 3 servidores em destaque logo abaixo do \"Bem-vindo\" (oficiais ou da comunidade): primeiro quem mais apoiou, depois os com mais jogadores online agora; mostra online/offline, jogadores/vagas e o selo de apoiador, e o clique abre o servidor na página Servidores"
+      ],
+      "changed": [
+        "Busca no Google: cada página ganhou título e descrição com os termos que o pessoal pesquisa (ex.: \"Mapa interativo Soulmask (PT-BR)\"), trilha de navegação, dados estruturados ligando a wiki ao site principal e links para todas as seções, para aparecer melhor e com sitelinks no Google"
+      ],
+      "fixed": []
+    },
+    "en": {
+      "added": [
+        "Home page: 3 featured servers right below the \"Welcome\" block (official or community): top supporters first, then the ones with the most players online now; shows online/offline, players/slots and the supporter badge, and clicking opens the server on the Servers page"
+      ],
+      "changed": [
+        "Google search: every page got a title and description with the terms people search for (e.g. \"Mapa interativo Soulmask (PT-BR)\"), a breadcrumb trail, structured data linking the wiki to the main site and links to every section, to show up better and with sitelinks on Google"
+      ],
+      "fixed": []
+    }
+  },
+  {
     "version": "1.0.2",
     "date": "2026-11-16",
     "pt": {
@@ -20,14 +42,17 @@
         "Bancada de trabalho: a busca do item e a quantidade agora ficam no topo da própria caixa da árvore, deixando a página mais compacta",
         "Partes longas recolhidas com \"Mostrar mais\": na janela de cada item (onde conseguir mostra 5 fontes e agora lista até 40; \"Usado em\" mostra 12), nos Talentos (os outros níveis e os IDs) e no Plantio (descrição longa das plantações e a lista de plantações de cada fertilizante)",
         "Clicar no nome Soulmask / Fantasfor Wiki no topo da barra lateral volta para a página inicial",
-        "Mais segurança: o GDMbot só se conecta à sua conta depois de você confirmar no site, e as fotos e ícones das publicações só aceitam imagens do próprio site ou do Google"
+        "Mapa: pontos de renascimento com o ícone de fogueira do jogo, no mesmo estilo preto e branco dos outros lugares; agora também aparecem na Floresta (17 pontos nas ruínas), além dos 23 das Areias Errantes",
+        "Mais segurança: o GDMbot só se conecta à sua conta depois de você confirmar no site, e as fotos e ícones das publicações só aceitam imagens do próprio site ou do Google",
+        "Servidores: a busca ficou mais fácil: não precisa digitar o nome exato, aceita palavras em qualquer ordem, ignora acentos, entende sinônimos (BR, Brasil, Brazil e América do Sul; PT e Português; EN e Inglês) e pequenos erros de digitação; o que bate exatamente aparece primeiro"
       ],
       "fixed": [
         "Página inicial: ícone de Armaduras corrigido (sem o quadrado escuro de fundo e do mesmo tamanho dos outros ícones)",
         "Mapa no celular: nomes dos itens nas tabelas de drop não quebram mais letra a letra",
         "Mapa: animais das ruínas e outros animais que apareciam como inimigo sem drop (Jacaré (Ruínas), Lobo (Ruínas), Hiena (Ruínas) etc.) agora mostram o que dão ao esquartejar; jacarés comuns, gigantes e elites voltaram a ser animais com a tabela confirmada pelo jogo",
         "Talentos: 95 talentos que apareciam sem o nível 3 (ou com o nível 3 como talento separado) agora mostram os níveis 1, 2 e 3; quando o texto muda entre os níveis, cada nível aparece com o seu efeito",
-        "Ao apertar F5, o texto de resumo da página não pisca mais na tela antes de ela carregar"
+        "Ao apertar F5, o texto de resumo da página não pisca mais na tela antes de ela carregar",
+        "Mapa: ao apagar o texto da busca ou do filtro do \"Procurar loot\" (ou ao clicar em Limpar busca), o mapa volta aos seus filtros de categoria, sem busca, e o link da página perde a busca antiga"
       ]
     },
     "en": {
@@ -48,14 +73,17 @@
         "Workbench: item search and quantity now sit at the top of the crafting tree box, making the page more compact",
         "Long sections folded behind \"Show more\": in each item's window (where to get shows 5 sources and now lists up to 40; \"Used in\" shows 12), in Talents (the other levels and the IDs) and in Farming (long crop descriptions and the crop list of each fertilizer)",
         "Clicking the Soulmask / Fantasfor Wiki name at the top of the sidebar takes you back to the home page",
-        "Better security: GDMbot only connects to your account after you confirm on the site, and post photos and icons only accept images from the site itself or Google"
+        "Map: respawn points use the game's bonfire icon, in the same black and white style as the other places; they now also show on the Cloud Mist Forest (17 points in ruins), besides the 23 in the Shifting Sands",
+        "Better security: GDMbot only connects to your account after you confirm on the site, and post photos and icons only accept images from the site itself or Google",
+        "Servers: easier search: no need to type the exact name; words in any order, accents ignored, synonyms understood (BR, Brasil, Brazil and South America; PT and Portuguese; EN and English) and small typos tolerated; exact matches show first"
       ],
       "fixed": [
         "Home page: Armor icon fixed (no dark square behind it and the same size as the other icons)",
         "Map on mobile: item names in drop tables no longer break letter by letter",
         "Map: ruin animals and other animals that showed up as enemies with no drops (Crocodile (Ruins), Wolf (Ruins), Hyena (Ruins) etc.) now show their butchering resources; common, giant and elite crocodiles are animals again with the table confirmed by the game",
         "Talents: 95 talents that showed up without level 3 (or with level 3 as a separate talent) now show levels 1, 2 and 3; when the text changes between levels, each level is shown with its own effect",
-        "Pressing F5 no longer flashes the page summary text on screen before the page loads"
+        "Pressing F5 no longer flashes the page summary text on screen before the page loads",
+        "Map: clearing the search text or the \"Search for loot\" filter (or clicking Clear search) brings the map back to your category filters with no search, and the page link drops the old search"
       ]
     }
   },

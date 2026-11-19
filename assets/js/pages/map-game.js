@@ -40,7 +40,7 @@ const CATS = {
   cave: { size: 22, on: true, group: 'places' },
   island: { size: 30, on: true, group: 'places' },
   floatIsland: { size: 30, on: true, group: 'places' },
-  respawn: { size: 20, on: true, group: 'places' },
+  respawn: { size: 22, on: true, group: 'places' },   // fogueira na moldura dos lugares (mesmo tamanho das ruínas)
   firefly: { size: 18, on: false, group: 'other' },
   iron: { size: 20, on: false, group: 'resources' },
   copper: { size: 20, on: false, group: 'resources' },
@@ -444,9 +444,22 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
   // ---------------------------------------------------------------- busca
   let query = '';
   let nameOnly = false;   // busca vinda da URL: só pelo nome do ponto (não pelos itens que ele dá)
+  // tira da URL a busca que veio por link (q, item, creature) sem recarregar a página;
+  // assim, ao apagar a busca, recarregar ou compartilhar o link não volta para o resultado antigo
+  function cleanUrl() {
+    const [route, qs] = location.hash.split('?');
+    if (!qs) return;
+    const p = new URLSearchParams(qs);
+    if (!['q', 'item', 'creature'].some((k) => p.has(k))) return;
+    ['q', 'item', 'creature'].forEach((k) => p.delete(k));
+    const rest = p.toString();
+    try { history.replaceState(history.state, '', `${location.pathname}${location.search}${route}${rest ? `?${rest}` : ''}`); } catch (e) { /* ignora */ }
+  }
   searchEl.addEventListener('input', () => {
     query = normalize(searchEl.value.trim());
     nameOnly = false;
+    cleanUrl();   // o texto mudou: a URL não representa mais esta busca
+    // sem texto: volta ao mapa normal, com os filtros de categoria do usuário (on[], que a busca não altera)
     layer.redraw();
   });
   const nameHay = (o) => normalize([
@@ -455,7 +468,9 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     o.fol?.name_pt, o.fol?.name_en, o.baby ? babyName(o.baby) : '',
     o.boss ? bossById.get(o.boss)?.name_pt : '', o.boss ? bossById.get(o.boss)?.name_en : '',
     o.dg?.title_pt, o.dg?.title_en,
-    ORE.includes(o.k) ? t('src.veinOf', { name: t(`map.game.${o.k}`) }) : ''
+    ORE.includes(o.k) ? t('src.veinOf', { name: t(`map.game.${o.k}`) }) : '',
+    // lugar sem nome próprio (ex.: ponto de renascimento): acha pelo nome da categoria
+    CATS[o.k] && !(o.label >= 0) ? t(`map.game.${o.k}`) : ''
   ].filter(Boolean).join(' '));
   const matches = (o) => (nameOnly ? nameHay(o).includes(query) : hay(o).includes(query));
 
@@ -585,21 +600,31 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       <button type="button" class="map-btn map-btn-sm" data-loot-clear>${esc(t('map.loot.clear'))}</button>`;
     renderLootItems();
     renderLootSources();
-    lootEl.querySelector('[data-loot-filter]').addEventListener('input', (e) => { lootFilter = e.target.value.trim(); renderLootItems(); });
+    lootEl.querySelector('[data-loot-filter]').addEventListener('input', (e) => {
+      lootFilter = e.target.value.trim();
+      // filtro apagado: sai do "procurar loot" e volta aos filtros de categoria do usuário
+      if (!lootFilter && focusKeys) { clearFocus(); cleanUrl(); }
+      renderLootItems();
+    });
     lootEl.addEventListener('click', (e) => {
       const b = e.target.closest('[data-loot-item]');
       if (b) {
         lootSel = b.dataset.lootItem;
         lootEl.querySelectorAll('[data-loot-item]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
         if (searchEl.value) { searchEl.value = ''; query = ''; }
+        cleanUrl();   // outro item escolhido: a busca que veio pelo link não vale mais
         focusOnItems([lootSel]);
         return;
       }
       if (e.target.closest('[data-loot-clear]')) {
+        // "Limpar busca": apaga as duas buscas e volta aos filtros de categoria do usuário
         clearFocus();
         lootFilter = '';
         lootEl.querySelector('[data-loot-filter]').value = '';
+        searchEl.value = ''; query = ''; nameOnly = false;
+        cleanUrl();
         renderLootItems();
+        layer.redraw();
       }
     });
     lootEl.addEventListener('change', (e) => {

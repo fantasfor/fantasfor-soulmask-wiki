@@ -9,6 +9,7 @@
 //   o campo "media" (data em ms) avisa que esse documento existe.
 import { t, locale } from '../i18n.js';
 import { esc, normalize, fmtNum } from '../data.js';
+import { fuzzyQuery, fuzzyText, fuzzyScore, isExact } from '../fuzzy.js';
 import { loadFirebase, getUser, onUser, requireUser, publicName } from '../cloud.js';
 import { summarize, starsDisplay } from '../ratings.js';
 import { reviewsHtml, bindReviews, commentCount, score } from '../social.js';
@@ -170,6 +171,9 @@ export async function initServersPage(root, params) {
       const out = await r.json();
       officials = (out.servers || []).map((s) => toOfficial(s, out.checkedAt || Date.now()));
       render();
+      // link direto para um oficial (#servidores?id=off:...), vindo da página inicial
+      const want = params?.get('id');
+      if (want?.startsWith('off:') && !openId && officials.some((d) => d.id === want)) openServer(want);
     } catch (e) {
       console.warn('official servers', e);
     }
@@ -308,19 +312,42 @@ export async function initServersPage(root, params) {
   const findAny = (id) => docs.find((x) => x.id === id) || officials.find((x) => x.id === id);
   const playersOf = (d) => { const s = d.official ? d.live : live.get(addrKey(d)); return s?.online ? s.players : -1; };
 
+  // texto onde a busca procura (nome, descrição, tags, região, modo, mapa, idioma, nome no jogo, IP), guardado por idioma
+  const hayCache = new WeakMap();
+  function hayOf(d) {
+    const lang = locale();
+    const hit = hayCache.get(d);
+    if (hit && hit.lang === lang) return hit.hay;
+    const common = [d.mode, t(`srv.modeName.${d.mode}`), d.region, d.region ? t(`events.reg.${d.region}`) : '', t(`srv.map.${d.map}`)];
+    const text = d.official
+      ? [displayName(d), d.code, d.gameName, officialRules(d), d.event, t('srv.official.tag'), t('srv.official.by'), ...common]
+      : [d.name, d.desc, (d.tags || []).join(' '), d.lang, d.author, d.address, live.get(addrKey(d))?.name,
+        d.gameMode && d.gameMode !== 'custom' ? t(`map.mode.${d.gameMode}`) : '', ...common];
+    const hay = fuzzyText(text.filter(Boolean).join(' '));
+    hayCache.set(d, { lang, hay });
+    return hay;
+  }
+
   function render() {
-    const q = normalize(qEl.value);
+    // busca tolerante (fuzzy.js): palavras em qualquer ordem, sinônimos e pequenos erros de digitação
+    const query = fuzzyQuery(qEl.value);
+    const found = new Map(); // doc -> pontos da busca
+    const hits = (d) => { if (!query.length) return true; const s = fuzzyScore(query, hayOf(d)); if (s) found.set(d, s); return s > 0; };
     const kind = kindEl?.value || '';
     const match = (d) => (!modeEl.value || d.mode === modeEl.value) && (!regionEl.value || d.region === regionEl.value);
     // inativos (sem confirmação há 60 dias) só aparecem para o próprio dono
-    const community = kind === 'official' ? [] : docs.filter((d) => (isActive(d) || isOwn(d)) && match(d)
-      && (!q || normalize(`${d.name} ${d.desc} ${(d.tags || []).join(' ')} ${d.lang} ${d.author} ${d.address}`).includes(q)));
-    const offs = kind === 'community' ? [] : officials.filter((d) => match(d)
-      && (!q || normalize(`${displayName(d)} ${d.gameName} ${officialRules(d)} ${d.event} ${t('srv.official.tag')}`).includes(q)));
+    const community = kind === 'official' ? [] : docs.filter((d) => (isActive(d) || isOwn(d)) && match(d) && hits(d));
+    const offs = kind === 'community' ? [] : officials.filter((d) => match(d) && hits(d));
     const list = [...community, ...offs];
     const top = community.filter((d) => boosted(d) && isActive(d)).sort((a, b) => (b.boost || 0) - (a.boost || 0) || lastCheck(b) - lastCheck(a));
     const rest = list.filter((d) => !(boosted(d) && isActive(d))).map((d) => ({ d, r: summarize(d.ratings) }));
     rest.sort((a, b) => {
+      // com busca: o que bate igual (ou por sinônimo) vem antes do que só bate parecido
+      if (query.length) {
+        const ea = isExact(query, found.get(a.d) || 0);
+        const eb = isExact(query, found.get(b.d) || 0);
+        if (ea !== eb) return ea ? -1 : 1;
+      }
       if (sortEl.value === 'players') return playersOf(b.d) - playersOf(a.d) || score(b.d) - score(a.d);
       // nas outras ordens, os da comunidade vêm antes dos oficiais (que não têm avaliação nem data)
       if (a.d.official !== b.d.official) return a.d.official ? 1 : -1;

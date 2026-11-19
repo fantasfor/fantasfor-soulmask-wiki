@@ -1157,6 +1157,9 @@ const STRINGS = {
     'srv.moreServers': 'Mostrar mais servidores ({n})',
     'srv.fAddressHint': 'Use IP:porta (porta do jogo, ex.: 8777, ou de consulta, ex.: 27015) para mostrar online/offline e jogadores ao vivo.',
     'srv.sortPlayers': 'Mais jogadores agora',
+    'home.servers.title': 'Servidores em destaque',
+    'home.servers.all': 'Ver todos os servidores',
+    'home.servers.supporter': 'Apoiador',
 
     'talents.sortName': 'Ordem alfabética',
     'talents.sortRating': 'Melhor avaliados',
@@ -2445,6 +2448,9 @@ const STRINGS = {
     'srv.moreServers': 'Show more servers ({n})',
     'srv.fAddressHint': 'Use IP:port (game port, e.g. 8777, or query port, e.g. 27015) to show online/offline and live players.',
     'srv.sortPlayers': 'Most players now',
+    'home.servers.title': 'Featured servers',
+    'home.servers.all': 'See all servers',
+    'home.servers.supporter': 'Supporter',
 
     'talents.sortName': 'Alphabetical',
     'talents.sortRating': 'Top rated',

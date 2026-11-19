@@ -1563,7 +1563,8 @@ def _marker_kind(c):
     if m:
         return "ore", m.group(1).lower()
     # BP_BuLuoGLQ (gerente da tribo) fica no mesmo lugar do acampamento/quartel/fortaleza oficial: não vira marcador
-    if c.startswith(("BP_Building_RuinsRespawnPoint", "BP_Building_CentralCoreRespawnPoint")):
+    # pontos de renascimento: Areias Errantes (RuinsRespawnPoint / CentralCore) e Floresta (YiJiFuHuoDian, nas ruínas)
+    if c.startswith(("BP_Building_RuinsRespawnPoint", "BP_Building_CentralCoreRespawnPoint", "BP_JiGuan_YiJiFuHuoDian")):
         return "respawn", None
     if c.startswith("BP_CrowdNPC_Firefly"):
         return "firefly", None
@@ -1734,6 +1735,46 @@ def map_icon(tex_path, size=64, tint=None):
                     px[xx, yy] = (int(tint[0] * lum), int(tint[1] * lum), int(tint[2] * lum), a)
         img.thumbnail((size, size), 1)
         img.save(out, "WEBP", quality=90, method=4)
+    return MAP_ICON_URL + name + ".webp"
+
+
+def map_icon_glyph(frame_tex, glyph_tex, name, size=64):
+    """Ícone de lugar montado: moldura em losango de um ícone do jogo (o símbolo dela é apagado) com outro
+    símbolo do jogo, branco, no centro. Ex.: ponto de renascimento = moldura das ruínas + fogueira."""
+    os.makedirs(MAP_ICON_DIR, exist_ok=True)
+    out = os.path.join(MAP_ICON_DIR, name + ".webp")
+    if not os.path.isfile(out) or FORCE_ICONS:
+        fp, gp = Package.open(frame_tex), Package.open(glyph_tex)
+        frame = extract_texture(fp) if fp else None
+        glyph = extract_texture(gp) if gp else None
+        if frame is None or glyph is None:
+            return None
+        frame, glyph = frame.convert("RGBA"), glyph.convert("RGBA")
+        w, h = frame.size
+        cx, cy = w / 2.0, h / 2.0
+        px = frame.load()
+        dark = [px[x, y] for y in range(int(cy * 0.6), int(cy * 1.4)) for x in range(int(cx * 0.6), int(cx * 1.4))
+                if px[x, y][3] > 200 and sum(px[x, y][:3]) < 200]
+        fill = tuple(int(sum(c[i] for c in dark) / len(dark)) for i in range(3)) + (255,) if dark else (20, 20, 20, 255)
+        # miolo do losango (até antes da borda branca): pinta tudo com o fundo escuro, apagando o símbolo antigo
+        # borda = anel branco mais externo; o miolo vai até um pouco antes dele
+        outer = max((abs(x - cx) + abs(y - cy) for y in range(h) for x in range(w)
+                     if px[x, y][3] > 200 and sum(px[x, y][:3]) > 600), default=w * 0.5)
+        r = outer - w * 0.035
+        for y in range(h):
+            for x in range(w):
+                if abs(x - cx) + abs(y - cy) < r and px[x, y][3] > 0:
+                    px[x, y] = fill
+        g = glyph.copy()
+        g = g.crop(g.getbbox() or (0, 0, g.width, g.height))   # sem a margem vazia do desenho
+        g.thumbnail((int(w * 0.46), int(h * 0.46)), 1)
+        gpx = g.load()
+        for y in range(g.height):
+            for x in range(g.width):
+                gpx[x, y] = (255, 255, 255, gpx[x, y][3])   # símbolo inteiro branco (chama e lenha)
+        frame.alpha_composite(g, (int(cx - g.width / 2), int(cy - g.height / 2)))
+        frame.thumbnail((size, size), 1)
+        frame.save(out, "WEBP", quality=90, method=4)
     return MAP_ICON_URL + name + ".webp"
 
 
@@ -2089,6 +2130,11 @@ def build_map_markers(loc, creature_ids, items=None):
         url = map_icon(tex, tint=MAP_CAT_TINT.get(cat))
         if url:
             out["icons"][cat] = url
+    # ponto de renascimento: fogueira oficial do jogo (ShaiXuan/gouhuo_1, o mesmo desenho de
+    # DiTuBiaoJiIcon/ditubiaojiicon_11 sem brilho) na moldura em losango dos outros lugares (ruínas)
+    url = map_icon_glyph(J + "DiTuIcon/gudaiyizhi_1", J + "ShaiXuan/gouhuo_1", "respawn_fogueira")
+    if url:
+        out["icons"]["respawn"] = url
     # baús: o mesmo ícone pintado numa cor por tipo de conteúdo (map-game.js chestKind)
     out["icons"]["chestTint"] = {}
     for kind, rgb in CHEST_TINT.items():
