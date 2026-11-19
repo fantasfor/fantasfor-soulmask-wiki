@@ -23,12 +23,12 @@ function setup() {
   return ready;
 }
 
-export function trackPageView(page) {
+export function trackPageView(page, title) {
   if (!setup() || page === lastPage) return;
   lastPage = page;
   const path = page === 'home' ? BASE_PATH : `${BASE_PATH}${page}`;
   window.gtag('event', 'page_view', {
-    page_title: document.title,
+    page_title: title || document.title,
     page_location: `${location.origin}${path}`,
     page_path: path,
     language: document.documentElement.lang || undefined

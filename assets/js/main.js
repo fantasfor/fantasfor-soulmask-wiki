@@ -197,7 +197,13 @@ function setupLangSwitch() {
 function updateDocumentTitle() {
   if (currentPageName() === SEO_TITLE.page && SEO_TITLE.title) { document.title = SEO_TITLE.title; return; }
   const link = document.querySelector(`a.nav-link[data-page="${currentPageName()}"]`);
-  document.title = link ? `Soulmask Fantasfor Wiki — ${link.textContent.trim()}` : 'Soulmask Fantasfor Wiki';
+  document.title = pageLabelTitle();
+}
+
+// Título estável por seção (o GA4 não separa a mesma página em duas linhas por causa do título de SEO)
+function pageLabelTitle() {
+  const link = document.querySelector(`a.nav-link[data-page="${currentPageName()}"]`);
+  return link ? `Soulmask Fantasfor Wiki — ${link.textContent.trim()}` : 'Soulmask Fantasfor Wiki';
 }
 
 // ------------------------------------------------------------------ troca de conteúdo
@@ -242,7 +248,7 @@ async function loadPageFromHash(opts = {}) {
   }
   if (token !== loadToken || !view) return;
   updateDocumentTitle();
-  trackPageView(page);
+  trackPageView(page, pageLabelTitle());
   const init = PAGE_INIT[page];
   if (init) {
     const root = view.firstElementChild || view;
