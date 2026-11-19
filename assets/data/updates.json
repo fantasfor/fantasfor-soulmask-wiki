@@ -9,7 +9,9 @@
       "changed": [
         "Busca no Google: cada página ganhou título e descrição com os termos que o pessoal pesquisa (ex.: \"Mapa interativo Soulmask (PT-BR)\"), trilha de navegação, dados estruturados ligando a wiki ao site principal e links para todas as seções, para aparecer melhor e com sitelinks no Google"
       ],
-      "fixed": []
+      "fixed": [
+        "Menu lateral: o nome lido por leitores de tela aparecia com acentos quebrados (\"NavegaÃ§Ã£o lateral\"); agora é \"Navegação lateral\""
+      ]
     },
     "en": {
       "added": [
@@ -18,7 +20,9 @@
       "changed": [
         "Google search: every page got a title and description with the terms people search for (e.g. \"Mapa interativo Soulmask (PT-BR)\"), a breadcrumb trail, structured data linking the wiki to the main site and links to every section, to show up better and with sitelinks on Google"
       ],
-      "fixed": []
+      "fixed": [
+        "Sidebar: the name read by screen readers had broken accents; it is now shown correctly"
+      ]
     }
   },
   {
