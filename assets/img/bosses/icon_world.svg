@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#f3efe8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+  <!-- chefe do mundo: coroa sobre um crânio -->
+  <path d="M14 22 L18 8 L26 16 L32 6 L38 16 L46 8 L50 22 Z"/>
+  <path d="M16 28 Q16 22 32 22 Q48 22 48 28 L48 40 Q48 46 42 46 L42 54 L22 54 L22 46 Q16 46 16 40 Z"/>
+  <path d="M22 34 L28 34 M36 34 L42 34 M32 38 L30 43 L34 43 Z M27 50 L27 54 M32 50 L32 54 M37 50 L37 54"/>
+</svg>

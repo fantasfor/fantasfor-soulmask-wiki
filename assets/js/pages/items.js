@@ -1,7 +1,7 @@
 // Itens e Receitas: todos os itens, com a receita de cada um (materiais e bancada) no próprio cartão.
 // A antiga página Receitas (#receitas) agora abre esta, já filtrada pela bancada.
 import { t, tCount, pick } from '../i18n.js';
-import { loadData, esc, normalize, fmtNum, categoryLabel, iconImg, qualityClass, openItemModal, recipeBlock } from '../data.js';
+import { loadData, esc, normalize, fmtNum, categoryLabel, iconImg, qualityClass, openItemModal, recipeBlock, rarityIcon } from '../data.js';
 
 export async function initItemsPage(root, params) {
   const search = root.querySelector('#items-search');
@@ -57,7 +57,7 @@ export async function initItemsPage(root, params) {
         <button type="button" class="item-card-header recipe-card-head" data-item-id="${esc(it.id)}">
           ${iconImg(it, 'item-card-icon')}
           <div class="item-card-title-section">
-            <h3 class="item-card-title">${esc(pick(it, 'name'))}${r?.count ? ` ×${esc(r.count)}` : ''}</h3>
+            <h3 class="item-card-title">${it.quality ? `${rarityIcon(meta, it.quality)} ` : ''}${esc(pick(it, 'name'))}${r?.count ? ` ×${esc(r.count)}` : ''}</h3>
             <span class="item-card-category">${esc(categoryLabel(meta, it.cat))}${r?.level ? ` · ${esc(t('common.level'))} ${esc(r.level)}` : ''}${it.dlc ? ' · DLC' : ''}</span>
           </div>
         </button>

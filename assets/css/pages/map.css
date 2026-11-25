@@ -1029,12 +1029,39 @@
   color: #90d1ee;
   font-family: Consolas, monospace;
   font-size: 0.8rem;
-  white-space: pre;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
   pointer-events: none;
+}
+
+.map-coords-hover.is-pinned {
+  pointer-events: auto;
+  border-color: #90d1ee;
+}
+
+.map-coords-x {
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .map-coords-hover[hidden] {
   display: none;
+}
+
+.mp-coords-btns {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.mp-coords-btns .map-btn-sm {
+  margin-left: 0;
 }
 
 .mp-coords {
@@ -1167,10 +1194,9 @@
 }
 
 .map-switch .map-btn[aria-pressed="true"] {
-  border-color: var(--accent);
-  background: rgba(144, 209, 238, 0.14);
   color: #fff;
 }
+/* borda dupla ciano do selecionado: components/game-buttons.css */
 
 .map-mode-box {
   display: grid;
@@ -1386,7 +1412,49 @@
 }
 
 .map-loot-list {
-  max-height: 210px;
+  max-height: 300px;
+}
+
+/* busca única: cabeçalho de cada grupo de resultados */
+.map-find-head {
+  position: sticky;
+  top: -4px;
+  z-index: 1;
+  margin: 4px -4px 2px;
+  padding: 4px 8px;
+  background: #222424;
+  border-bottom: 1px solid #3a3d40;
+  color: #90d1ee;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.map-find-head:first-child {
+  margin-top: -4px;
+}
+
+.map-find-head small {
+  color: var(--muted);
+}
+
+.map-loot-item span small {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.map-find-more {
+  padding: 2px 6px;
+  font-size: 0.72rem;
+}
+
+/* resultado sem ícone no jogo (região): losango com traço branco, no estilo dos ícones do mapa */
+.map-loot-item i.map-find-ico {
+  width: 14px;
+  height: 14px;
+  margin: 4px;
+  border: 1.5px solid #e8e8e8;
+  transform: rotate(45deg);
 }
 
 .map-loot-srcs {

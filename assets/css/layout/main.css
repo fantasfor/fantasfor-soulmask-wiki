@@ -430,20 +430,11 @@ main.container {
   justify-content: center;
   padding: 10px 14px;
   min-width: 88px;
-  background: #191a1a;
-  border: 2px solid #686e73;
-  border-radius: 3px;
   color: var(--text);
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
-  transition: background 200ms ease, border-color 200ms ease;
-}
-
-.home-feed-item-button:hover {
-  background: #232425;
-  border-color: #1aecec;
 }
 
 .home-feed-column li {

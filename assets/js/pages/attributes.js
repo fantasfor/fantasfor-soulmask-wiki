@@ -4,7 +4,7 @@
 //   branco 1,0 · verde 1,0–1,1 · azul 1,1–1,2 · roxo 1,2–1,3 · dourado 1,3–1,4 · vermelho 1,4–1,5
 // Velocidade de movimento e fôlego não mudam com a qualidade.
 import { t } from '../i18n.js';
-import { loadData, esc, fmtNum, L } from '../data.js';
+import { loadData, esc, fmtNum, L, rarityIcon } from '../data.js';
 
 const TIERS = [
   { id: 'base', n: 1, color: '#d9d9d9', name: { pt: 'Branco (base)', en: 'White (base)' } },
@@ -70,7 +70,8 @@ export async function initAttributesPage(root) {
   let q = 15;
   try { const v = Number(localStorage.getItem(LS_KEY)); if (v >= 10 && v <= 15) q = v; } catch (e) { /* ignora */ }
 
-  const dot = (tier) => `<i class="attr-dot" style="--c:${tier.color}"></i>`;
+  // losango de qualidade do jogo (o mesmo ícone de cor da tela do NPC)
+  const dot = (tier) => rarityIcon(null, tier.n, { decorative: true, title: L(tier.name) });
   const pctTxt = (x) => `+${fmtNum(x, 0)}%`;
   tiersEl.innerHTML = TIERS.map((tier) => `<div class="attr-tier" style="--c:${tier.color}">${dot(tier)}<strong>${esc(L(tier.name))}</strong><span>${esc(tier.range)}</span><small>${tier.n === 1 ? '+0%' : `${pctTxt((tier.lo / 10 - 1) * 100)} ~ ${pctTxt((tier.hi / 10 - 1) * 100)}`}</small></div>`).join('');
   glossEl.innerHTML = STATS.map((s) => `<div class="attr-gloss-item"><strong>${esc(L(s.name))}</strong><p>${esc(L(s.d))}</p></div>`).join('');
@@ -107,7 +108,7 @@ export async function initAttributesPage(root) {
         return `<div class="attr-row${s.fixed ? ' is-fixed' : ''}">
           <span class="attr-name">${esc(L(s.name))}</span>
           <span>${esc(fmt(s, b))}</span>
-          <span class="attr-val" style="--c:${tier.color}">${esc(fmt(s, v))}</span>
+          <span class="attr-val" style="--c:${tier.color}">${s.fixed ? '' : dot(tier)}${esc(fmt(s, v))}</span>
           <span class="attr-range">${s.fixed || lo === hi ? esc(fmt(s, lo)) : `${esc(fmt(s, lo))} – ${esc(fmt(s, hi))}`}</span>
           <span class="attr-gain"><i class="attr-bar" style="--w:${(gain / 50) * 100}%;--c:${tier.color}"></i>${gain > 0.05 ? `+${esc(fmtNum(gain, 0))}%` : '—'}</span>
         </div>`;

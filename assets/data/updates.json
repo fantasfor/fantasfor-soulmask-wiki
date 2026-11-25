@@ -1,29 +1,99 @@
 [
   {
-    "version": "1.0.3",
-    "date": "2026-11-18",
+    "version": "1.0.4",
+    "date": "2026-11-25",
     "pt": {
       "added": [
-        "Página inicial: 3 servidores em destaque logo abaixo do \"Bem-vindo\" (oficiais ou da comunidade): primeiro quem mais apoiou, depois os com mais jogadores online agora; mostra online/offline, jogadores/vagas e o selo de apoiador, e o clique abre o servidor na página Servidores"
+        "Novas páginas Conquistas (121 marcos da jornada e 265 estelas, com como fazer, recompensa e \"Ver no mapa\"), Ranks de caçador (6 títulos, calculadora dos 60 níveis de caça e dicas) e Humor dos NPCs (5 faixas, efeito por profissão e o que sobe ou baixa o humor); Atributos mostra o losango de raridade ao lado de cada valor",
+        "Chefes: novas categorias Líderes de tribo (15), Líderes saqueadores (15, com os Bandidos da Areia da DLC) e Chefes de ruína (13, guardiões mecânicos e o Finalizador das masmorras), com abas no topo (Todos / Chefes / Líderes de tribo / Líderes saqueadores / Chefes de ruína); cada um mostra nome oficial, nível, região, link \"Ver no mapa\" para cada local, drops e a armadura e armas que pode soltar",
+        "Domesticáveis e montarias: cada montaria mostra o status tirado dos arquivos do jogo (velocidade correndo, andando e no trote, vigor, passageiros, capacidade de carga e espaços da bolsa); cada comida mostra quanto sacia, o bônus de crescimento e se reduz radiação ou veneno; selos de dieta (herbívoro, carnívoro, insetívoro)",
+        "Mapa interativo: coordenadas X, Y e Z do jogo na mesma unidade do comando de teleporte (gm Go X Y Z); o canto mostra X e Y onde está o mouse, clicar num lugar vazio fixa os valores com o botão \"Copiar X Y\" e a janela de cada ponto mostra X, Y e Z com os botões \"Copiar X Y Z\" e \"Copiar gm Go\"",
+        "Máscaras: atributos de cada máscara tirados dos arquivos do jogo, em barras de 1 a 5 (Energia, Recuperação, Consumo de Energia, Limite de Cristal e Dissuasão), e cartões com capacidade de energia e limite de cristal do nível 1 ao 10 da máscara",
+        "Máscaras, Onde encontrar: mostra também onde conseguir o núcleo da máscara (o Módulo Restritivo que repara o mimetismo), com botão que abre o baú no mapa",
+        "Builder Maker: nova seção Maestria de armas embaixo dos talentos; para cada arma equipada dá para escolher várias habilidades de maestria (dados da página Maestria de armas), e o resumo da build mostra o efeito de cada uma; a escolha fica salva na build e no link"
       ],
       "changed": [
-        "Busca no Google: cada página ganhou título e descrição com os termos que o pessoal pesquisa (ex.: \"Mapa interativo Soulmask (PT-BR)\"), trilha de navegação, dados estruturados ligando a wiki ao site principal e links para todas as seções, para aparecer melhor e com sitelinks no Google"
+        "Bancada de trabalho: novo layout que cabe na tela do PC sem rolar: à esquerda a busca, a quantidade e os materiais totais; à direita a árvore; abre com o Couro Delicado quando não há item no link; cada bancada aparece como ícone grande ao lado do item, com moldura azul tracejada e selo de bancada; no celular tudo fica empilhado",
+        "Domesticáveis e montarias: busca, categorias e mapas numa linha só no topo: a caixa de busca, os botões Todos / Montaria / Criação / Outros (mesmo estilo da página Chefes) e dois botões de mapa (Floresta de Névoa Nuvem e Areias Errantes; clicar de novo no escolhido volta a mostrar os dois); no celular a linha quebra",
+        "Mapa interativo: uma busca só (no lugar do antigo \"Procurar loot\", agora \"Buscar no mapa\") que acha tudo: itens e loot, criaturas e inimigos, chefes e líderes, lugares e pontos (baús, ruínas, renascimento, estelas, recursos...) e regiões; resultados agrupados por tipo; enquanto digita só a lista muda, e clicar num resultado destaca no mapa (ou abre o lugar, ou enquadra a região); aceita sem acento, palavras fora de ordem e pequenos erros de digitação, em PT e EN; apagar o texto volta aos seus filtros, e links antigos com busca continuam funcionando",
+        "Máscaras com visual novo: lista das máscaras à esquerda (ícone, nome e raridade) e, à direita, o painel da máscara escolhida (efeito, atributos, onde encontrar, roupa da transformação e melhorias); no celular a lista vira um seletor em cima, e o link guarda a máscara aberta",
+        "Animais domesticáveis virou \"Domesticáveis e montarias\" (menu, página e busca no Google), com visual novo: lista de animais à esquerda e, à direita, o painel do animal escolhido com Status da montaria, Alimentação, Como domesticar e Onde encontrar; no celular a lista vira um seletor em cima",
+        "Chefes: todos os chefes da lista e de cada categoria aparecem de uma vez, sem o botão \"Mostrar mais\" escondendo chefes (o \"Mostrar mais\" dentro de cada card, com os drops, continua)",
+        "Chefes: nova seção Chefes do mundo na aba Chefes (Núcleo Central dos dois mapas, Punição Divina e Tempestade de Areia Mortal das Areias Errantes, com XP e o que dá ao esquartejar); os 2 Deuses da Guerra das tribos; a receita de duelo no Posto de desafio de 23 líderes de tribo e saqueadores; e foto do modelo do jogo nos chefes mecânicos e do mundo",
+        "Conquistas: quando não há recompensa, o cartão não mostra mais a linha de recompensa",
+        "Página inicial: as abas marcadas como favoritas aparecem primeiro na grade de ícones, com uma borda dourada, e a ordem se atualiza na hora ao marcar ou desmarcar",
+        "Botões do site padronizados no estilo dos ícones da página inicial , sem a rotação: fundo escuro, cantos retos e borda dupla (borda cinza por fora e uma moldura fina cinza por dentro, com um pequeno espaço entre as duas); ao passar o mouse ou quando selecionado, as duas bordas ficam ciano. Abas e filtros (Chefes, Domesticáveis e montarias, Conquistas, Comandos, Maestria, Cristais, Atributos, Alimentos, Talentos, Tier List) têm o mesmo visual; \"Ver no mapa\", \"Mostrar mais\", ingredientes e botões de Alimentos também seguem o padrão"
       ],
       "fixed": [
-        "Contador de visitas: cada página aparece com um nome só (a página inicial não fica mais dividida em duas linhas quando a pessoa chega pelo Google)",
-        "Menu lateral: o nome lido por leitores de tela aparecia com acentos quebrados (\"NavegaÃ§Ã£o lateral\"); agora é \"Navegação lateral\""
+        "Máscaras: caixas do painel da direita não passam mais da borda nem ficam umas sobre as outras (conferido em 1920, 1366, 1024 e no celular, com nomes longos); em telas médias a lista vira o seletor de cima para o painel ter a largura toda",
+        "Mapa interativo: dicas, avisos e legendas mais curtos e diretos (PT e EN), sem a frase de ajuda da busca",
+        "Favoritos: Conquistas, Ranks de caçador, Humor dos NPCs e Domesticáveis e montarias não aceitavam a estrela de favorito; agora toda página da barra lateral pode ser favoritada, aparece em Favoritos e continua lá ao recarregar"
       ]
     },
     "en": {
       "added": [
-        "Home page: 3 featured servers right below the \"Welcome\" block (official or community): top supporters first, then the ones with the most players online now; shows online/offline, players/slots and the supporter badge, and clicking opens the server on the Servers page"
+        "New pages Achievements (121 trip milestones and 265 steles, with how to get them, reward and \"View on map\"), Hunter Ranks (6 titles, a calculator for the 60 hunting levels and tips) and NPC Mood (5 stages, effect by profession and what raises or lowers mood); Attributes shows the rarity diamond next to each value",
+        "Bosses: new categories Tribe leaders (15), Plunderer leaders (15, including the DLC Sand Bandits) and Ruin bosses (13, mechanical guardians and the dungeon Terminator), with tabs at the top (All / Bosses / Tribe leaders / Plunderer leaders / Ruin bosses); each shows the official name, level, region, a \"View on map\" link for each spot, drops and the armor and weapons it can drop",
+        "Tameables & Mounts: each mount shows its stats from the game files (running, walking and trot speed, stamina, passengers, carry weight and bag slots); each food shows how much it fills, its growth bonus and whether it reduces radiation or poison; diet badges (herbivore, carnivore, insectivore)",
+        "Interactive map: game coordinates X, Y and Z in the same unit the teleport command uses (gm Go X Y Z); the corner shows X and Y under the mouse, clicking an empty spot pins them with a \"Copy X Y\" button, and every point's window shows X, Y and Z with \"Copy X Y Z\" and \"Copy gm Go\" buttons",
+        "Masks: each mask's attributes from the game files, shown as bars from 1 to 5 (Energy, Recovery, Energy Consumption, Crystal Limit and Deterrence), plus info cards for energy capacity and crystal limit from mask level 1 to 10",
+        "Masks, Where to find: also shows where to get the mask core (the Restrictive Module needed to repair its Mimicry), with a button that opens the chest on the map",
+        "Build Maker: new Weapon mastery section below the talents; for each equipped weapon you can pick several mastery skills (data from the Weapon Mastery page), and the build summary shows each one's effect; the choice is saved in the build and in the link"
       ],
       "changed": [
-        "Google search: every page got a title and description with the terms people search for (e.g. \"Mapa interativo Soulmask (PT-BR)\"), a breadcrumb trail, structured data linking the wiki to the main site and links to every section, to show up better and with sitelinks on Google"
+        "Workbench: new layout that fits the PC screen without scrolling: search, quantity and total materials on the left, crafting tree on the right; opens with Delicate Leather when the link has no item; each bench shows as a large icon next to the item, with a dashed blue frame and a bench badge; on mobile everything stacks",
+        "Tameables & Mounts: search, categories and maps in a single row at the top: the search box, All / Mount / Farm / Other buttons (same style as the Bosses page) and two map buttons (Cloud Mist Forest and Shifting Sands; clicking the chosen one again shows both); on mobile the row wraps",
+        "Interactive map: a single search (replacing the old \"Search for loot\", now \"Search the map\") that finds everything: items and loot, creatures and enemies, bosses and leaders, places and points (chests, ruins, respawn points, steles, resources...) and regions; results grouped by type; while typing only the list changes, and clicking a result highlights it on the map (or opens the place, or frames the region); works without accents, with words in any order and small typos, in PT and EN; clearing the text brings back your filters, and old links with a search still work",
+        "Masks has a new look: mask list on the left (icon, name and rarity) and the chosen mask's panel on the right (effect, attributes, where to find, transformation outfit and upgrades); on mobile the list becomes a picker at the top, and the link keeps the open mask",
+        "Tameable animals is now \"Tameables & Mounts\" (menu, page and Google search), with a new look: animal list on the left and, on the right, the chosen animal's panel with Mount stats, Feeding, How to tame and Where to find; on mobile the list becomes a picker at the top",
+        "Bosses: every boss in the list and in each category now shows at once, with no \"Show more\" button hiding bosses (the \"Show more\" inside each card for drops stays)",
+        "Bosses: new World bosses section in the Bosses tab (the Central Core of both maps, plus Divine Punishment and the Death Sandstorm of the Shifting Sands, with XP and butchering loot); the 2 tribe War Gods; the duel recipe at the Duel Platform for 23 tribe and plunderer leaders; and a photo of the game model for the mechanical and world bosses",
+        "Achievements: when there is no reward, the card no longer shows a reward line",
+        "Home page: tabs marked as favorites come first in the icon grid, with a gold border, and the order updates right away when you mark or unmark one",
+        "Site buttons standardized in the style of the home page icons , without the rotation: dark background, square corners and a double border (gray outer border plus a thin gray inner frame with a small gap between them); on hover or when selected, both borders turn cyan. Tabs and filters (Bosses, Tameables & Mounts, Achievements, Commands, Mastery, Crystals, Attributes, Foods, Talents, Tier List) share one look; \"View on map\", \"Show more\", ingredients and the Foods buttons follow the same pattern"
+      ],
+      "fixed": [
+        "Masks: boxes in the right panel no longer spill past the edge or overlap (checked at 1920, 1366, 1024 and on mobile, with long names); on medium screens the list becomes the picker at the top so the panel gets the full width",
+        "Interactive map: shorter, more direct tips, notices and captions (PT and EN), without the search help sentence",
+        "Favorites: Achievements, Hunter Ranks, NPC Mood and Tameables & Mounts did not accept the favorite star; now every sidebar page can be favorited, shows up under Favorites and stays there after reloading"
+      ]
+    }
+  },
+  {
+    "version": "1.0.3",
+    "date": "2026-11-18",
+    "pt": {
+      "added": [
+        "Barra lateral: ícones do YouTube, Discord e Twitch do Fantasfor ao lado do nome do site",
+        "Página inicial: 3 servidores em destaque logo abaixo do \"Bem-vindo\" (oficiais ou da comunidade): primeiro quem mais apoiou, depois os com mais jogadores online agora; mostra online/offline, jogadores/vagas e o selo de apoiador, e o clique abre o servidor na página Servidores",
+        "Ícones de raridade do jogo (losangos branco, verde, azul, roxo, dourado e vermelho) ao lado do nome em Itens, janela do item, Armas, Máscaras, Bancada, drops e Procurar loot do mapa, Atributos, Cristais Vermelhos e Builder Maker, com o nome oficial da qualidade ao passar o mouse; no Builder, a qualidade do equipamento agora mostra o nome certo (o vermelho é Mítico)"
+      ],
+      "changed": [
+        "Busca no Google: cada página ganhou título e descrição com os termos que o pessoal pesquisa (ex.: \"Mapa interativo Soulmask (PT-BR)\"), trilha de navegação, dados estruturados ligando a wiki ao site principal e links para todas as seções, para aparecer melhor e com sitelinks no Google",
+        "Link compartilhado (Discord, WhatsApp, X, Reddit): o cartão do site agora tem imagem grande (banner com o logo e um chefe do jogo) e título e descrição curtos em inglês, para chamar o público de fora",
+        "Idioma automático: na primeira visita o site abre em português para quem está no Brasil, em Portugal ou em outro país de língua portuguesa (mesmo com o computador em inglês) e em inglês para o resto do mundo; a escolha feita no botão PT/EN continua valendo"
+      ],
+      "fixed": [
+        "Contador de visitas: cada página aparece com um nome só (a página inicial não fica mais dividida em duas linhas quando a pessoa chega pelo Google)",
+        "Menu lateral: o nome lido por leitores de tela aparecia com acentos quebrados (\"NavegaÃ§Ã£o lateral\"); agora é \"Navegação lateral\"",
+        "Cristais Vermelhos: ATQ, PV Máximo e DEF pareciam repetidos nos atributos extras; são duas versões do jogo (valor fixo e porcentagem) e agora aparecem como \"(fixo)\" e \"(%)\", com uma nota explicando; o \"–\" entre o mínimo e o máximo ficou mais apagado que os números; os 30 cristais foram conferidos com os dados do jogo (valores, tipo, nomes e ícones)"
+      ]
+    },
+    "en": {
+      "added": [
+        "Sidebar: Fantasfor's YouTube, Discord and Twitch icons next to the site name",
+        "Home page: 3 featured servers right below the \"Welcome\" block (official or community): top supporters first, then the ones with the most players online now; shows online/offline, players/slots and the supporter badge, and clicking opens the server on the Servers page",
+        "In-game rarity icons (white, green, blue, purple, gold and red diamonds) next to names in Items, the item window, Weapons, Masks, Workbench, map drops and Search for loot, Attributes, Red Crystals and Builder Maker, with the official quality name on hover; in the Builder, gear quality now shows the right name (red is Mythic)"
+      ],
+      "changed": [
+        "Google search: every page got a title and description with the terms people search for (e.g. \"Mapa interativo Soulmask (PT-BR)\"), a breadcrumb trail, structured data linking the wiki to the main site and links to every section, to show up better and with sitelinks on Google",
+        "Shared links (Discord, WhatsApp, X, Reddit): the site card now has a large image (banner with the logo and an in-game boss) and a short English title and description",
+        "Automatic language: on the first visit the site opens in Portuguese for people in Brazil, Portugal or other Portuguese-speaking countries (even with the computer in English) and in English for everyone else; the PT/EN button choice still wins"
       ],
       "fixed": [
         "Visit counter: each page shows up under a single name (the home page is no longer split into two rows when people arrive from Google)",
-        "Sidebar: the name read by screen readers had broken accents; it is now shown correctly"
+        "Sidebar: the name read by screen readers had broken accents; it is now shown correctly",
+        "Red Crystals: ATK, Max HP and DEF looked repeated in the extra attributes; they are two game versions (flat and percentage) and now show as \"(flat)\" and \"(%)\", with a note explaining it; the \"–\" between minimum and maximum is now dimmer than the numbers; all 30 crystals were checked against the game data (values, type, names and icons)"
       ]
     }
   },

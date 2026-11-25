@@ -155,26 +155,12 @@
 
 .guide-chip {
   padding: 6px 12px;
-  border: 1px solid #686e73;
-  background: #191a1a;
   color: #d9d2c5;
   font: inherit;
   font-size: 0.82rem;
   cursor: pointer;
-  transition: border-color var(--transition), color var(--transition);
 }
-
-.guide-chip:hover {
-  border-color: var(--accent);
-  color: #fff;
-}
-
-.guide-chip.is-active {
-  border-color: var(--accent);
-  background: rgba(144, 209, 238, 0.14);
-  color: #fff;
-  box-shadow: 0 0 10px rgba(144, 209, 238, 0.15);
-}
+/* borda, hover e selecionado: components/game-buttons.css */
 
 /* ---------------------------------------------------------------- proficiência */
 .prof-result {
@@ -1207,15 +1193,9 @@ a.src-name {
   display: grid;
   gap: 4px;
   padding: 12px;
-  border: 1px solid #686e73;
-  background: #191a1a;
   color: var(--text);
   cursor: pointer;
   text-align: left;
-}
-
-.map-pick-btn:hover:not(:disabled) {
-  border-color: #90d1ee;
 }
 
 .map-pick-btn small {
@@ -1237,47 +1217,111 @@ a.src-name {
   min-width: 0;
 }
 
-/* barra compacta no topo da caixa da árvore: título/dica à esquerda, busca e quantidade à direita */
-.wb-bar {
+/* duas colunas: busca, quantidade e materiais à esquerda; árvore à direita.
+   No PC a altura é a que sobra na tela (--wb-h, calculada no workbench.js): a página não precisa rolar */
+.wb-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
+  height: var(--wb-h, 78vh);
+}
+
+.wb-layout > .guide-tool {
+  margin: 0;
+  min-height: 0;
+}
+
+.wb-side {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px 18px;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  scrollbar-color: #686e73 #111212;
 }
 
-.wb-bar-title {
-  flex: 1 1 260px;
-  min-width: 0;
+.wb-side h2,
+.wb-tree-head h2 {
+  margin: 0;
 }
 
-.wb-bar-title p {
+.wb-side-hint {
   margin: 4px 0 0;
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
 }
 
-.wb-bar-tools {
-  display: flex;
-  flex: 1 1 380px;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  max-width: 560px;
+.wb-side .wb-pick {
+  max-width: none;
 }
 
-.wb-bar-tools .wb-pick {
-  flex: 1;
-  min-width: 0;
+.wb-side .wb-pick .items-search-input {
+  width: 100%;
 }
 
-.wb-bar-tools .items-search-input {
-  padding-top: 8px;
-  padding-bottom: 8px;
+.wb-qty-label {
+  justify-content: space-between;
 }
 
 .wb-qty-label .wb-qty {
-  width: 76px;
+  width: 90px;
+}
+
+.wb-result {
+  display: grid;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid #3a3d40;
+}
+
+.wb-base-title {
+  margin: 0;
+  color: #ecd760;
+  font-family: "Cinzel", serif;
+  font-size: 0.88rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.wb-side .wb-base {
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.wb-side .wb-base-row {
+  padding: 6px 8px;
+}
+
+.wb-tree-box {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+#wb-tree-area {
+  display: grid;
+  min-height: 0;
+}
+
+.wb-layout .wb-tree-scroll {
+  max-height: none;
+  height: 100%;
+  min-height: 0;
+}
+
+@media (max-width: 900px) {
+  .wb-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .wb-side {
+    overflow: visible;
+  }
+
+  .wb-layout .wb-tree-scroll {
+    height: auto;
+    max-height: 75vh;
+  }
 }
 
 .wb-empty {
@@ -1286,18 +1330,6 @@ a.src-name {
   border: 1px dashed #3a3d40;
   color: var(--muted);
   text-align: center;
-}
-
-@media (max-width: 600px) {
-  .wb-bar-tools {
-    flex-basis: 100%;
-    flex-wrap: wrap;
-    max-width: none;
-  }
-
-  .wb-bar-tools .wb-pick {
-    flex-basis: 100%;
-  }
 }
 
 .wb-pick {
@@ -1606,9 +1638,17 @@ a.src-name {
 }
 
 .attr-val {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: var(--c);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+.attr-val .rarity-icon {
+  width: 14px;
+  height: 14px;
 }
 
 .attr-gain {
@@ -1708,6 +1748,12 @@ a.src-name {
 .rc-head h3 {
   margin: 0;
   font-size: 0.95rem;
+}
+
+/* "–" entre o mínimo e o máximo: mais apagado que os números */
+.rc-range-sep {
+  color: var(--muted);
+  font-weight: 400;
 }
 
 .rc-effects {
@@ -1879,6 +1925,52 @@ a.src-name {
 .wb-frame .wb-icon {
   width: 44px;
   height: 44px;
+}
+
+/* bancada: ícone grande ao lado do item (fora do centro, para a linha da árvore continuar chegando no item),
+   com moldura azul tracejada e um selo de bancada no canto */
+.wb-frames {
+  position: relative;
+  display: inline-block;
+}
+
+.wb-tree .wb-card:has(.wb-bench-frame) {
+  min-width: 210px;
+}
+
+.wb-bench-frame {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 10px);
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border: 1px dashed var(--wb-accent);
+  background: rgba(144, 209, 238, 0.07);
+  box-shadow: 0 0 10px rgba(144, 209, 238, 0.15);
+}
+
+.wb-bench-frame img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.wb-bench-seal {
+  position: absolute;
+  right: -7px;
+  bottom: -7px;
+  width: 18px;
+  height: 18px;
+  padding: 2px;
+  border: 1px solid var(--wb-accent);
+  background: #0d0e0e;
+  fill: none;
+  stroke: var(--wb-accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .wb-tree .wb-name {

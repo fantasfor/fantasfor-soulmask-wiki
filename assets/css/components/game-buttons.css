@@ -1,111 +1,136 @@
-/* Botões no estilo dos botões de navegação da página inicial (sem a rotação):
-   fundo escuro, borda cinza de 2px com uma moldura fina por dentro, ciano ao passar o mouse. */
+/* Padrão de botões do site: o mesmo quadrado da grade da página inicial (.home-nav-box), sem a rotação.
+   Borda dupla: borda externa + uma moldura fina por dentro, com um pequeno espaço entre as duas; cantos retos.
+   - normal: fundo #191a1a, as duas bordas cinza #686e73;
+   - hover / foco / selecionado: fundo #232425, as duas bordas ciano #1aecec;
+   - pequeno (chips, fechar, "Mostrar mais"): borda externa de 1px e espaço menor, mesma borda dupla;
+   - destaque: .primary azul claro, comprar/Apoie dourado, .danger vermelho (as duas bordas na cor).
+   Abas com cor própria (--tab-color, ex.: dificuldade dos chefes) ganham uma barra embaixo quando selecionadas.
+   Para um botão novo, use uma classe que já está nas listas abaixo (ex.: tier-btn, guide-chip). */
+
+/* ------------------------------------------------------------ normal */
 body :is(
   .build-action-btn, .tier-btn, .tier-tab, .tier-category, .arm-seg-btn, .arm-compare-btn, .arm-small-btn,
   .map-btn:not(.map-btn-sm), .report-tab, .support-amount, .gb-btn, .talents-filter-btn,
-  .talent-tab, .account-login, .home-support-btn, .add-optional-slot, .boss-tab, .comfort-tab, .action-card
+  .talent-tab, .account-login, .home-support-btn, .add-optional-slot, .boss-tab, .comfort-tab, .action-card,
+  .guide-chip, .bosses-groups > button, .foods-view-button, .foods-columns-button, .map-pick-btn,
+  .home-feed-item-button, .db-map-btn
 ) {
-  border: 2px solid #686e73;
-  border-radius: 0;
-  background-color: #191a1a;
-  box-shadow: inset 0 0 0 2px #191a1a, inset 0 0 0 3px rgba(255, 255, 255, 0.08);
-  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+  --gb-line: #686e73;
+  --gb-bg: #191a1a;
+  --gb-gap: 3px;
+  border: 2px solid var(--gb-line);
 }
 
+/* ------------------------------------------------------------ pequeno */
+body :is(
+  .saved-build-btn, .map-btn-sm, .map-filter, .farming-sim-btn, .complete-armor-set-button, .account-logout,
+  .lang-switch-btn, .talent-picker-close, .mask-detail-close, .tier-viewer-close, .item-modal-close,
+  .tier-entry-submit, .tier-entry-remove, .map-marker-del, .slot-remove, .remove-optional-slot,
+  .boss-more > summary, .food-where-more, .ing-chip
+) {
+  --gb-line: #686e73;
+  --gb-bg: #191a1a;
+  --gb-gap: 2px;
+  border: 1px solid var(--gb-line);
+}
+
+/* ------------------------------------------------------------ desenho comum (borda dupla) */
 body :is(
   .build-action-btn, .tier-btn, .tier-tab, .tier-category, .arm-seg-btn, .arm-compare-btn, .arm-small-btn,
   .map-btn:not(.map-btn-sm), .report-tab, .support-amount, .gb-btn, .talents-filter-btn,
-  .talent-tab, .account-login, .home-support-btn, .add-optional-slot, .boss-tab, .comfort-tab, .action-card
-):is(:hover, :focus-visible):not(:disabled) {
-  border-color: #1aecec;
-  background-color: #232425;
-  box-shadow: inset 0 0 0 2px #232425, inset 0 0 0 3px rgba(255, 255, 255, 0.16);
-  outline: none;
-}
-
-/* Botões pequenos: no estilo dos slots de escolher armadura do Builder
-   (borda fina cinza, fundo escuro; azul claro ao passar o mouse). */
-body :is(
+  .talent-tab, .account-login, .home-support-btn, .add-optional-slot, .boss-tab, .comfort-tab, .action-card,
+  .guide-chip, .bosses-groups > button, .foods-view-button, .foods-columns-button, .map-pick-btn,
+  .home-feed-item-button, .db-map-btn,
   .saved-build-btn, .map-btn-sm, .map-filter, .farming-sim-btn, .complete-armor-set-button, .account-logout,
   .lang-switch-btn, .talent-picker-close, .mask-detail-close, .tier-viewer-close, .item-modal-close,
-  .tier-entry-submit, .tier-entry-remove, .map-marker-del, .slot-remove, .remove-optional-slot
+  .tier-entry-submit, .tier-entry-remove, .map-marker-del, .slot-remove, .remove-optional-slot,
+  .boss-more > summary, .food-where-more, .ing-chip
 ) {
-  border: 1px solid #686e73;
+  border-color: var(--gb-line);
   border-radius: 0;
-  background-color: #191a1a;
-  box-shadow: none;
-  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+  background-color: var(--gb-bg);
+  background-image: none;
+  box-shadow: inset 0 0 0 var(--gb-gap) var(--gb-bg), inset 0 0 0 calc(var(--gb-gap) + 1px) var(--gb-line);
+  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
 }
 
+/* hover / foco: as duas bordas ciano */
 body :is(
+  .build-action-btn, .tier-btn, .tier-tab, .tier-category, .arm-seg-btn, .arm-compare-btn, .arm-small-btn,
+  .map-btn:not(.map-btn-sm), .report-tab, .support-amount, .gb-btn, .talents-filter-btn,
+  .talent-tab, .account-login, .home-support-btn, .add-optional-slot, .boss-tab, .comfort-tab, .action-card,
+  .guide-chip, .bosses-groups > button, .foods-view-button, .foods-columns-button, .map-pick-btn,
+  .home-feed-item-button, .db-map-btn,
   .saved-build-btn, .map-btn-sm, .map-filter, .farming-sim-btn, .complete-armor-set-button, .account-logout,
   .lang-switch-btn, .talent-picker-close, .mask-detail-close, .tier-viewer-close, .item-modal-close,
-  .tier-entry-submit, .tier-entry-remove, .map-marker-del, .slot-remove, .remove-optional-slot
+  .tier-entry-submit, .tier-entry-remove, .map-marker-del, .slot-remove, .remove-optional-slot,
+  .boss-more > summary, .food-where-more, .ing-chip
 ):is(:hover, :focus-visible):not(:disabled) {
-  border-color: var(--accent);
-  background-color: rgba(144, 209, 238, 0.1);
+  --gb-line: #1aecec;
+  --gb-bg: #232425;
+  color: var(--text);
   outline: none;
 }
 
-/* selecionado / ativo */
-body :is(.tier-tab, .report-tab, .talent-tab, .boss-tab, .comfort-tab)[aria-selected="true"],
-body :is(.arm-seg-btn)[aria-pressed="true"],
+/* selecionado / ativo: igual ao hover; abas com cor própria ganham a barra embaixo */
+body :is(.tier-tab, .report-tab, .talent-tab, .boss-tab, .comfort-tab, .guide-chip, .bosses-groups > button)[aria-selected="true"],
+body :is(.arm-seg-btn, .guide-chip, .lang-switch-btn, .map-filter, .map-btn)[aria-pressed="true"],
 body :is(.support-amount)[aria-checked="true"],
-body :is(.tier-category, .arm-compare-btn, .talents-filter-btn).is-active,
-body .talents-filter-btn.active {
-  border-color: #1aecec;
-  background-color: #232425;
+body :is(.tier-category, .arm-compare-btn, .talents-filter-btn, .guide-chip, .boss-tab, .bosses-groups > button, .foods-view-button).is-active,
+body .talents-filter-btn.active,
+body .foods-columns-button[aria-expanded="true"] {
+  --gb-line: #1aecec;
+  --gb-bg: #232425;
   color: var(--text);
 }
 
-body :is(.lang-switch-btn, .map-filter)[aria-pressed="true"] {
-  border-color: var(--accent);
-  background-color: rgba(144, 209, 238, 0.1);
-  color: var(--text);
+body :is(.talent-tab, .boss-tab):is([aria-selected="true"], .is-active) {
+  box-shadow: inset 0 -3px 0 var(--tab-color, #1aecec), inset 0 0 0 var(--gb-gap) var(--gb-bg), inset 0 0 0 calc(var(--gb-gap) + 1px) var(--gb-line);
 }
 
-/* destaque (ação principal / compra): mesma moldura, cor própria */
-body :is(.build-action-btn.primary, .tier-btn.primary, .map-btn.primary) {
-  border-color: var(--accent);
+/* ------------------------------------------------------------ destaque */
+body :is(.build-action-btn.primary, .tier-btn.primary, .map-btn.primary, .db-map-btn) {
+  --gb-line: var(--accent);
 }
 
-body :is(.gb-btn.buy, .home-support-btn) {
-  border-color: #ecd760;
+body :is(.build-action-btn.primary, .tier-btn.primary, .map-btn.primary, .db-map-btn):is(:hover, :focus-visible):not(:disabled) {
+  --gb-line: var(--accent);
+  --gb-bg: #1d2a30;
+}
+
+body :is(.gb-btn.buy, .home-support-btn, .support-submit),
+body .support-amount[aria-checked="true"] {
+  --gb-line: #ecd760;
   color: #ecd760;
 }
 
-body :is(.gb-btn.buy, .home-support-btn):is(:hover, :focus-visible) {
-  border-color: #ecd760;
-  background-color: rgba(236, 215, 96, 0.14);
-}
-
-body .tier-btn.danger,
-body .saved-build-btn.delete {
-  border-color: rgba(255, 62, 80, 0.6);
-}
-
-/* Botões coloridos mantêm a própria cor ao passar o mouse (sem trocar de amarelo/azul para ciano) */
-body :is(.gb-btn.buy, .home-support-btn, .support-submit):is(:hover, :focus-visible):not(:disabled) {
-  border-color: #ecd760;
-  background-color: rgba(236, 215, 96, 0.16);
-  box-shadow: inset 0 0 0 2px rgba(25, 26, 26, 0.6), inset 0 0 0 3px rgba(236, 215, 96, 0.25);
+body :is(.gb-btn.buy, .home-support-btn, .support-submit):is(:hover, :focus-visible):not(:disabled),
+body .support-amount[aria-checked="true"]:is(:hover, :focus-visible) {
+  --gb-line: #ecd760;
+  --gb-bg: #2a2814;
   color: #ecd760;
 }
 
-body :is(.build-action-btn.primary, .tier-btn.primary, .map-btn.primary):is(:hover, :focus-visible):not(:disabled) {
-  border-color: var(--accent);
-  background-color: rgba(144, 209, 238, 0.16);
-  box-shadow: inset 0 0 0 2px rgba(25, 26, 26, 0.6), inset 0 0 0 3px rgba(144, 209, 238, 0.25);
+body :is(.tier-btn.danger, .saved-build-btn.delete) {
+  --gb-line: rgba(255, 62, 80, 0.6);
 }
 
 body :is(.tier-btn.danger, .saved-build-btn.delete):is(:hover, :focus-visible):not(:disabled) {
-  border-color: #ff6a78;
-  background-color: rgba(255, 62, 80, 0.12);
+  --gb-line: #ff6a78;
+  --gb-bg: #2a1a1c;
 }
-body .support-amount[aria-checked="true"]:is(:hover, :focus-visible) {
-  border-color: #ecd760;
-  background-color: rgba(236, 215, 96, 0.16);
-  color: #ecd760;
+
+/* ------------------------------------------------------------ botões de imagem (ícone que abre os detalhes) */
+body :is(.farming-icon-btn, .mask-card-icon-btn) :is(img, .farming-icon, .mask-card-icon) {
+  transition: border-color 160ms ease;
+}
+
+body :is(.farming-icon-btn, .mask-card-icon-btn):is(:hover, :focus-visible) :is(img, .farming-icon, .mask-card-icon) {
+  border-color: #1aecec;
+}
+
+body :is(.farming-icon-btn, .mask-card-icon-btn):focus-visible {
+  outline: none;
 }
 
 /* slots com cor de qualidade (Builder) e talentos dourados não trocam de cor ao passar o mouse */

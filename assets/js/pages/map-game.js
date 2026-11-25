@@ -4,8 +4,14 @@
 // - Busca por item, lugar, inimigo ou animal.
 // - "Visitados": marque lugares por save (vários saves), guardados no navegador e na conta.
 // Formato do ponto: [categoria, x, y, z, ...] com x/y em 0..1024 sobre o desenho do mapa.
-import { t, pick } from '../i18n.js';
-import { esc, normalize, loadData, loadIndex, L as Lbl } from '../data.js';
+import { t, tLang, pick } from '../i18n.js';
+import { esc, normalize, loadData, loadIndex, L as Lbl, rarityIcon } from '../data.js';
+import { fuzzyQuery, fuzzyText, fuzzyScore } from '../fuzzy.js';
+
+// nomes oficiais das qualidades (tooltip do ícone de raridade); carrega à parte, sem atrasar o mapa
+let qualityMeta = null;
+loadData('meta').then((m) => { qualityMeta = m; }).catch(() => {});
+const rarityOf = (it) => (it?.quality ? `${rarityIcon(qualityMeta, it.quality)} ` : '');
 
 const SIZE = 1024;
 const VISITED_KEY = 'soulmask-map-visited';
@@ -86,7 +92,6 @@ const isHarvestBag = (b) => /^(cr|hv):/.test(b || '');
 
 export async function initGameLayers(L, map, root, mapId = 'main', startQuery = '', params = null) {
   const panel = root.querySelector('#map-layers');
-  const searchEl = root.querySelector('#map-search');
   const visitEl = root.querySelector('#map-visits');
   const modeEl = root.querySelector('#map-mode');
   let data; let creatures; let items; let bosses;
@@ -228,24 +233,6 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     o.id = `${mapId === 'main' ? '' : `${mapId}:`}${idKey}@${x},${y}`;
     return o;
   }).filter((o) => o.icon);
-
-  // texto de busca de cada ponto: nome, tipo, criatura, chefe e os itens que pode dar
-  const bagText = {};
-  const itemName = (id) => { const it = items.get(id); return it ? `${it.name_pt} ${it.name_en}` : id; };
-  Object.entries(data.bags || {}).forEach(([k, rows]) => { bagText[k] = rows.map((r) => itemName(r[0])).join(' '); });
-  function hay(o) {
-    if (o._hay !== undefined) return o._hay;
-    const parts = [t(`map.game.${typeKey(o)}`)];
-    if (o.label >= 0) parts.push(m.labels[o.label]?.pt, m.labels[o.label]?.en);
-    if (o.creature) { const c = creatures.get(o.creature); if (c) parts.push(c.name_pt, c.name_en); }
-    if (o.fol) parts.push(o.fol.name_pt, o.fol.name_en);
-    if (o.baby) parts.push(babyName(o.baby));
-    if (o.inv) parts.push(data.invasionTypes?.[o.inv]?.name_pt, data.invasionTypes?.[o.inv]?.name_en);
-    if (o.bag) parts.push(bagText[o.bag]);
-    if (o.boss) { const b = bossById.get(o.boss); if (b) parts.push(b.name_pt, b.name_en, ...(b.tiers || []).flatMap((ti) => [...(ti.summon || []).map((s) => itemName(s.ids[0])), ...(ti.drops || []).map((d) => itemName(d.id))])); }
-    o._hay = normalize(parts.filter(Boolean).join(' '));
-    return o._hay;
-  }
 
   // ---------------------------------------------------------------- filtros
   const animals = {}; const enemies = {}; const bossKeys = {}; const mechs = {}; const fols = {};
@@ -442,8 +429,6 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
   });
 
   // ---------------------------------------------------------------- busca
-  let query = '';
-  let nameOnly = false;   // busca vinda da URL: só pelo nome do ponto (não pelos itens que ele dá)
   // tira da URL a busca que veio por link (q, item, creature) sem recarregar a página;
   // assim, ao apagar a busca, recarregar ou compartilhar o link não volta para o resultado antigo
   function cleanUrl() {
@@ -455,13 +440,6 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     const rest = p.toString();
     try { history.replaceState(history.state, '', `${location.pathname}${location.search}${route}${rest ? `?${rest}` : ''}`); } catch (e) { /* ignora */ }
   }
-  searchEl.addEventListener('input', () => {
-    query = normalize(searchEl.value.trim());
-    nameOnly = false;
-    cleanUrl();   // o texto mudou: a URL não representa mais esta busca
-    // sem texto: volta ao mapa normal, com os filtros de categoria do usuário (on[], que a busca não altera)
-    layer.redraw();
-  });
   const nameHay = (o) => normalize([
     o.label >= 0 ? m.labels[o.label]?.pt : '', o.label >= 0 ? m.labels[o.label]?.en : '',
     o.creature ? creatures.get(o.creature)?.name_pt : '', o.creature ? creatures.get(o.creature)?.name_en : '',
@@ -472,7 +450,6 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     // lugar sem nome próprio (ex.: ponto de renascimento): acha pelo nome da categoria
     CATS[o.k] && !(o.label >= 0) ? t(`map.game.${o.k}`) : ''
   ].filter(Boolean).join(' '));
-  const matches = (o) => (nameOnly ? nameHay(o).includes(query) : hay(o).includes(query));
 
   // ---------------------------------------------------------------- procurar loot (item -> onde se obtém)
   // itens que cada ponto pode dar: bolsa de drop do ponto, recompensas do chefe, inimigos e baús da masmorra
@@ -521,28 +498,100 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
   // foco: só os pontos dessas chaves (e, se houver itens, só os que dão algum deles)
   let focusKeys = null;
   let focusItems = null;
+  let focusPts = null;   // lugares com nome escolhidos na busca (só esses pontos)
   let focusAll = [];   // fontes encontradas: [{ k, n }]
   const hasAnyItem = (o) => { const s = pointItems(o); return !!s && [...focusItems].some((id) => s.has(id)); };
   const lootEl = root.querySelector('#map-loot');
   let lootFilter = '';
   let lootSel = null;   // item escolhido na lista
 
+  // ---------------------------------------------------------------- busca única (tudo do mapa)
+  // itens e loot, criaturas e inimigos, chefes e líderes, lugares e pontos e regiões, pelo nome em PT e EN,
+  // com a busca tolerante dos servidores (fuzzy.js: sem acento, palavras em qualquer ordem, erros pequenos)
+  const FIND_GROUPS = ['places', 'bosses', 'creatures', 'regions', 'items'];
+  const FIND_MAX = { items: 80 };
+  const both = (key) => `${tLang('pt', key)} ${tLang('en', key)}`;
+  let findIdx = null;
+  function buildFindIdx() {
+    if (findIdx) return findIdx;
+    findIdx = [];
+    const add = (grp, e, text) => findIdx.push({ ...e, grp, hay: fuzzyText(text) });
+    const firstOf = new Map();
+    points.forEach((o) => { if (!firstOf.has(o.k)) firstOf.set(o.k, o); });
+    // tipos do filtro (cada animal, inimigo, chefe, tipo de baú, recurso, categoria de lugar...)
+    GROUPS.forEach((g) => groupEntries(g).forEach((e) => {
+      if (e.k === 'regions') return;
+      const grp = g === 'bosses' ? 'bosses' : ['animals', 'babies', 'enemies', 'mechanical'].includes(g) ? 'creatures' : 'places';
+      const o = firstOf.get(e.k);
+      const inv = e.k.startsWith('i:') ? data.invasionTypes?.[e.k.slice(2)] : null;
+      const extra = CATS[e.k] ? both(`map.game.${e.k}`)
+        : `${o ? `${nameHay(o)} ${both(`map.game.${typeKey(o)}`)}` : ''} ${inv ? `${inv.name_pt || ''} ${inv.name_en || ''}` : ''}`;
+      add(grp, { type: 'key', k: e.k, name: e.name, icon: e.icon, n: e.n }, `${e.name} ${extra}`);
+    }));
+    // lugares com nome próprio (ruínas, masmorras, pirâmides, tribos...): um resultado por nome
+    const named = new Map();
+    points.forEach((o) => {
+      if (!CATS[o.k] || ORE.includes(o.k)) return;
+      const nm = o.label >= 0 ? lab(o.label) : o.dg ? pick(o.dg, 'title') : '';
+      if (!nm) return;
+      const key = `${o.k}|${nm}`;
+      if (!named.has(key)) named.set(key, { type: 'pts', name: nm, icon: o.icon, sub: t(`map.game.${o.k}`), pts: [], text: `${nameHay(o)} ${both(`map.game.${o.k}`)}` });
+      named.get(key).pts.push(o);
+    });
+    named.forEach((e) => add('places', { ...e, n: e.pts.length }, e.text));
+    regions.forEach((r) => add('regions', { type: 'region', r, name: Lbl(r.name), sub: [r.type ? Lbl(r.type) : '', r.lv ? t('map.regionLevel', { lv: r.lv }) : ''].filter(Boolean).join(' · ') },
+      `${r.name?.pt || ''} ${r.name?.en || ''} ${r.type?.pt || ''} ${r.type?.en || ''} ${both('map.game.regions')}`));
+    buildLootIndex().forEach((_, id) => {
+      const it = items.get(id);
+      add('items', { type: 'item', id, it, name: pick(it, 'name'), icon: it.icon }, `${it.name_pt} ${it.name_en}`);
+    });
+    return findIdx;
+  }
+  function runFind(text) {
+    const q = fuzzyQuery(text);
+    if (!q.length || normalize(text).replace(/\s/g, '').length < 2) return null;
+    const res = {};
+    buildFindIdx().forEach((e) => {
+      const s = fuzzyScore(q, e.hay);
+      if (s) (res[e.grp] = res[e.grp] || []).push({ e, s });
+    });
+    Object.values(res).forEach((l) => l.sort((a, b) => b.s - a.s || a.e.name.localeCompare(b.e.name)));
+    return res;
+  }
+  let findRows = [];   // resultados na lista (índice = data-find)
+  const itemRow = (id, it) => `<li><button type="button" class="map-loot-item" data-loot-item="${esc(id)}" aria-pressed="${id === lootSel}">
+        ${it.icon ? `<img src="${esc(it.icon)}" alt="" loading="lazy" />` : '<i></i>'}<span>${rarityOf(it)}${esc(pick(it, 'name'))}</span></button></li>`;
+  function findRow(e) {
+    if (e.type === 'item') return itemRow(e.id, e.it);
+    findRows.push(e);
+    const n = e.type === 'pts' ? e.pts.length : e.n;
+    return `<li><button type="button" class="map-loot-item" data-find="${findRows.length - 1}" aria-pressed="false">
+        ${e.icon ? `<img src="${esc(e.icon)}" alt="" loading="lazy" />` : `<i class="map-find-ico map-find-${e.type}"></i>`}<span>${esc(e.name)}${e.sub ? ` <small>${esc(e.sub)}</small>` : ''}${n > 1 ? ` <small>[${n}]</small>` : ''}</span></button></li>`;
+  }
+
   function renderLootItems() {
     if (!lootEl) return;
     const list = lootEl.querySelector('[data-loot-items]');
-    const q = normalize(lootFilter);
-    const ids = [...buildLootIndex().keys()]
-      .map((id) => ({ id, it: items.get(id) }))
-      .filter((e) => !q || normalize(`${e.it.name_pt} ${e.it.name_en}`).includes(q))
-      .sort((a, b) => pick(a.it, 'name').localeCompare(pick(b.it, 'name')));
-    list.innerHTML = ids.length ? ids.map(({ id, it }) => `<li><button type="button" class="map-loot-item" data-loot-item="${esc(id)}" aria-pressed="${id === lootSel}">
-        ${it.icon ? `<img src="${esc(it.icon)}" alt="" loading="lazy" />` : '<i></i>'}<span>${esc(pick(it, 'name'))}</span></button></li>`).join('')
-      : `<li class="map-hint">${esc(t('map.loot.noItems'))}</li>`;
+    findRows = [];
+    // enquanto digita, só a lista muda: o mapa filtra/destaca ao clicar num resultado
+    const res = runFind(lootFilter);
+    if (!res) {
+      // sem texto: todos os itens que o mapa dá, em ordem alfabética (como antes)
+      const ids = [...buildLootIndex().keys()].map((id) => ({ id, it: items.get(id) }))
+        .sort((a, b) => pick(a.it, 'name').localeCompare(pick(b.it, 'name')));
+      list.innerHTML = ids.length ? ids.map(({ id, it }) => itemRow(id, it)).join('') : `<li class="map-hint">${esc(t('map.loot.noItems'))}</li>`;
+      return;
+    }
+    const html = FIND_GROUPS.filter((g) => res[g]?.length).map((g) => {
+      const l = res[g]; const max = FIND_MAX[g] || 40;
+      return `<li class="map-find-head">${esc(t(`map.find.${g}`))} <small>${l.length}</small></li>${l.slice(0, max).map(({ e }) => findRow(e)).join('')}${l.length > max ? `<li class="map-hint map-find-more">${esc(t('map.find.more', { n: l.length - max }))}</li>` : ''}`;
+    }).join('');
+    list.innerHTML = html || `<li class="map-hint">${esc(t('map.find.none'))}</li>`;
   }
   function renderLootSources(note = '') {
     if (!lootEl) return;
     const box = lootEl.querySelector('[data-loot-srcs]');
-    if (!focusKeys) { box.innerHTML = `<p class="map-hint">${esc(t('map.loot.pick'))}</p>`; return; }
+    if (!focusKeys && !focusPts) { box.innerHTML = `<p class="map-hint">${esc(t('map.loot.pick'))}</p>`; return; }
     box.innerHTML = (note ? `<p class="map-loot-note">${note}</p>` : '') + (focusAll.length ? focusAll.map(({ k, n }) => {
       const e = entryOf(k);
       return `<label class="map-check">
@@ -559,6 +608,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
   const otherMapLink = (param) => `<a href="#mapa?map=${otherMap}&${param}">${esc(t(otherMap === 'dlc' ? 'map.mapDlc' : 'map.mapMain'))}</a>`;
   // mostra no mapa só os pontos que dão algum destes itens
   function focusOnItems(ids, { fit = true, note = '' } = {}) {
+    focusPts = null;
     focusItems = new Set(ids);
     const count = new Map();
     const hits = points.filter((o) => hasAnyItem(o));
@@ -573,7 +623,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
   }
   // mostra no mapa só os pontos destas chaves (ex.: uma criatura vinda da página Criaturas)
   function focusOnKeys(keys, otherParam) {
-    focusItems = null;
+    focusItems = null; focusPts = null;
     const hits = points.filter((o) => keys.includes(o.k));
     const count = new Map();
     hits.forEach((o) => count.set(o.k, (count.get(o.k) || 0) + 1));
@@ -583,15 +633,23 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     fitTo(hits);
     layer.redraw();
   }
+  // só estes pontos (um lugar com nome achado na busca); um só: já abre a janela dele
+  function focusOnPts(pts, name) {
+    focusKeys = null; focusItems = null; focusAll = [];
+    focusPts = new Set(pts);
+    renderLootSources(`${esc(t('map.loot.showing'))} <strong>${esc(name)}</strong>${pts.length > 1 ? ` [${pts.length}]` : ''}`);
+    fitTo(pts);
+    layer.redraw();
+    if (pts.length === 1) setTimeout(() => openSide(pts[0]), 0);
+  }
   function clearFocus() {
-    focusKeys = null; focusItems = null; focusAll = []; lootSel = null;
+    focusKeys = null; focusItems = null; focusPts = null; focusAll = []; lootSel = null;
     renderLootSources();
-    lootEl?.querySelectorAll('[data-loot-item][aria-pressed="true"]').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+    lootEl?.querySelectorAll('[aria-pressed="true"]').forEach((b) => b.setAttribute('aria-pressed', 'false'));
     layer.redraw();
   }
   if (lootEl) {
     lootEl.innerHTML = `
-      <p class="map-hint">${esc(t('map.loot.hint'))}</p>
       <input type="search" class="map-input" data-loot-filter placeholder="${esc(t('map.loot.filter'))}" aria-label="${esc(t('map.loot.filter'))}" />
       <div class="map-loot-cols">
         <ul class="map-loot-list" data-loot-items></ul>
@@ -600,28 +658,54 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       <button type="button" class="map-btn map-btn-sm" data-loot-clear>${esc(t('map.loot.clear'))}</button>`;
     renderLootItems();
     renderLootSources();
+    let findTimer;
     lootEl.querySelector('[data-loot-filter]').addEventListener('input', (e) => {
       lootFilter = e.target.value.trim();
-      // filtro apagado: sai do "procurar loot" e volta aos filtros de categoria do usuário
-      if (!lootFilter && focusKeys) { clearFocus(); cleanUrl(); }
-      renderLootItems();
+      clearTimeout(findTimer);
+      findTimer = setTimeout(() => {
+        // o texto mudou: sai do resultado escolhido e a URL perde a busca antiga;
+        // texto apagado: o mapa volta aos filtros de categoria do usuário (on[], que a busca não altera)
+        if (focusKeys || focusPts) clearFocus();
+        cleanUrl();
+        renderLootItems();
+        layer.redraw();
+      }, 150);
     });
+    const press = (b) => lootEl.querySelectorAll('[data-loot-item], [data-find]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
     lootEl.addEventListener('click', (e) => {
       const b = e.target.closest('[data-loot-item]');
       if (b) {
         lootSel = b.dataset.lootItem;
-        lootEl.querySelectorAll('[data-loot-item]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-        if (searchEl.value) { searchEl.value = ''; query = ''; }
+        press(b);
         cleanUrl();   // outro item escolhido: a busca que veio pelo link não vale mais
         focusOnItems([lootSel]);
         return;
       }
+      const f = e.target.closest('[data-find]');
+      if (f) {
+        const r = findRows[Number(f.dataset.find)];
+        if (!r) return;
+        press(f);
+        cleanUrl();
+        lootSel = null;
+        if (r.type === 'key') focusOnKeys([r.k], `q=${encodeURIComponent(r.name)}`);
+        else if (r.type === 'pts') focusOnPts(r.pts, r.name);
+        else if (r.type === 'region') {
+          // região: enquadra o nome dela no mapa, com os filtros do usuário
+          focusKeys = null; focusItems = null; focusPts = null; focusAll = [];
+          renderLootSources();
+          if (!on.regions) { on.regions = true; saveFilters(); renderPanel(); }
+          map.fitBounds([[SIZE - r.r.y - 45, r.r.x - 45], [SIZE - r.r.y + 45, r.r.x + 45]], { maxZoom: 1.5, animate: false });
+          layer.redraw();
+        }
+        return;
+      }
       if (e.target.closest('[data-loot-clear]')) {
-        // "Limpar busca": apaga as duas buscas e volta aos filtros de categoria do usuário
+        // "Limpar busca": apaga a busca e volta aos filtros de categoria do usuário
+        clearTimeout(findTimer);
         clearFocus();
         lootFilter = '';
         lootEl.querySelector('[data-loot-filter]').value = '';
-        searchEl.value = ''; query = ''; nameOnly = false;
         cleanUrl();
         renderLootItems();
         layer.redraw();
@@ -634,11 +718,9 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       layer.redraw();
     });
   }
-  // a busca por nome desliga o "procurar loot"
-  searchEl.addEventListener('input', () => { if (focusKeys) clearFocus(); });
-
-  const isVisible = (o) => (focusKeys ? focusKeys.has(o.k) && (!focusItems || hasAnyItem(o))
-    : query.length >= 2 ? matches(o) : on[o.k])
+  const isVisible = (o) => (focusPts ? focusPts.has(o)
+    : focusKeys ? focusKeys.has(o.k) && (!focusItems || hasAnyItem(o))
+      : on[o.k])
     && !(hideVisited && visited.has(o.id));
 
   // ---------------------------------------------------------------- camada de ícones (canvas)
@@ -683,7 +765,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const zoomScale = Math.max(0.7, Math.min(1.6, 1 + mp.getZoom() * 0.2));
       drawn = [];
-      const searching = query.length >= 2 || !!focusKeys;
+      const searching = !!(focusKeys || focusPts);
       points.forEach((o) => {
         if (!isVisible(o)) return;
         const pt = mp.latLngToContainerPoint([SIZE - o.y, o.x]);
@@ -698,7 +780,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
         drawn.push({ o, x: pt.x, y: pt.y, r: s / 2 + 3 });
       });
       // procurar loot com poucos resultados: anel em volta de cada lugar para achar fácil
-      if (focusKeys && drawn.length && drawn.length <= 20) {
+      if ((focusKeys || focusPts) && drawn.length && drawn.length <= 20) {
         ctx.globalAlpha = 1;
         ctx.shadowBlur = 6;
         ctx.shadowColor = 'rgba(0,0,0,0.9)';
@@ -754,17 +836,19 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
   const layer = new IconLayer();
   layer.addTo(map);
 
-  // aberto com #mapa?q=<nome> (ex.: vindo da Bancada de trabalho): busca e enquadra o que achou
-  if (startQuery) {
-    searchEl.value = startQuery;
-    query = normalize(startQuery.trim());
-    nameOnly = true;
-    const hits = points.filter((o) => query.length >= 2 && matches(o));
-    if (hits.length) {
-      const ys = hits.map((o) => SIZE - o.y); const xs = hits.map((o) => o.x);
-      map.fitBounds([[Math.min(...ys) - 8, Math.min(...xs) - 8], [Math.max(...ys) + 8, Math.max(...xs) + 8]], { maxZoom: 2, animate: false });
-    }
-    layer.redraw();
+  // aberto com #mapa?q=<nome> (ex.: vindo da Bancada de trabalho): o texto vai para a busca única e
+  // o melhor resultado já fica escolhido (como se a pessoa tivesse clicado nele)
+  if (startQuery && lootEl) {
+    lootFilter = startQuery.trim();
+    lootEl.querySelector('[data-loot-filter]').value = lootFilter;
+    renderLootItems();
+    const res = runFind(lootFilter);
+    let best = null;
+    if (res) FIND_GROUPS.forEach((g) => { const top = res[g]?.[0]; if (top && (!best || top.s > best.s)) best = top; });
+    const btn = !best ? null : best.e.type === 'item'
+      ? lootEl.querySelector(`[data-loot-item="${CSS.escape(best.e.id)}"]`)
+      : lootEl.querySelector(`[data-find="${findRows.indexOf(best.e)}"]`);
+    btn?.click();
   }
   // aberto com #mapa?creature=<id> (página Criaturas) ou #mapa?item=<id>[,<id>...] (Máscaras, itens)
   const startCreature = params?.get('creature');
@@ -785,31 +869,68 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     const hits = points.filter((o) => focusKeys?.has(o.k) && hasAnyItem(o));
     if (hits.length && hits.length <= 3) setTimeout(() => openSide(hits[0]), 0);
   }
+  // aberto com #mapa?at=<x>,<y> (página Chefes): enquadra o inimigo desse ponto e abre a janela dele
+  const startAt = (params?.get('at') || '').split(',').map(Number);
+  if (startAt.length === 2 && startAt.every(Number.isFinite)) {
+    let best = null;
+    points.forEach((o) => {
+      if (!o.k) return;
+      const d = (o.x - startAt[0]) ** 2 + (o.y - startAt[1]) ** 2 - (o.cat === 'npc' ? 0.01 : 0);
+      if (!best || d < best.d) best = { o, d };
+    });
+    if (best && best.d < 4) {
+      map.setView([SIZE - best.o.y, best.o.x], 2, { animate: false });
+      setTimeout(() => openSide(best.o), 0);
+    }
+  }
 
-  // coordenadas do jogo onde o mouse está (mesma escala do "X / Y" das janelas e do gm go)
+  // coordenadas do jogo onde o mouse está, na mesma unidade do comando de teleporte (gm Go X Y Z).
+  // A altura (Z) do chão não existe no desenho do mapa: aqui só X e Y. Clicar num lugar vazio fixa o
+  // valor no canto, com o botão de copiar.
   if (map._coordCtl) map.removeControl(map._coordCtl);
   const CoordCtl = L.Control.extend({
     onAdd() {
       const div = L.DomUtil.create('div', 'map-coords-hover');
-      div.setAttribute('aria-hidden', 'true');
       div.hidden = true;
+      L.DomEvent.disableClickPropagation(div);
       return div;
     }
   });
   map._coordCtl = new CoordCtl({ position: 'bottomleft' });
   map._coordCtl.addTo(map);
   const coordEl = map._coordCtl.getContainer();
+  let coordPin = null;
+  const worldXY = (latlng) => {
+    const x = latlng.lng; const y = SIZE - latlng.lat;
+    if (x < 0 || y < 0 || x > SIZE || y > SIZE) return null;
+    return [Math.round((x / SIZE) * WSIZE + QX), Math.round((y / SIZE) * WSIZE + QY)];
+  };
+  const coordText = ([wx, wy]) => `<span>X ${wx}</span><span>Y ${wy}</span>`;
+  function pinCoords(xy) {
+    coordPin = xy;
+    if (!xy) { coordEl.hidden = true; coordEl.classList.remove('is-pinned'); return; }
+    coordEl.classList.add('is-pinned');
+    coordEl.innerHTML = `${coordText(xy)}<button type="button" class="map-btn map-btn-sm" data-coord-copy="${xy.join(' ')}">${esc(t('map.copyXY'))}</button><button type="button" class="map-coords-x" data-coord-close aria-label="${esc(t('common.close'))}">&times;</button>`;
+    coordEl.hidden = false;
+  }
+  coordEl.addEventListener('click', async (e) => {
+    const cp = e.target.closest('[data-coord-copy]');
+    if (cp) {
+      try { await navigator.clipboard.writeText(cp.dataset.coordCopy); } catch (err) { /* ignora */ }
+      cp.textContent = t('map.copied');
+      setTimeout(() => { if (cp.isConnected) cp.textContent = t('map.copyXY'); }, 1500);
+    } else if (e.target.closest('[data-coord-close]')) pinCoords(null);
+  });
   if (map._coordMove) map.off('mousemove', map._coordMove);
   if (map._coordOut) map.off('mouseout', map._coordOut);
   map._coordMove = (e) => {
-    const x = e.latlng.lng; const y = SIZE - e.latlng.lat;
-    if (x < 0 || y < 0 || x > SIZE || y > SIZE) { coordEl.hidden = true; return; }
-    const wx = Math.round(((x / SIZE) * WSIZE + QX) / 100);
-    const wy = Math.round(((y / SIZE) * WSIZE + QY) / 100);
-    coordEl.textContent = `X ${wx}   Y ${wy}`;
+    if (coordPin) return;
+    const xy = worldXY(e.latlng);
+    if (!xy) { coordEl.hidden = true; return; }
+    coordEl.innerHTML = coordText(xy);
     coordEl.hidden = false;
   };
-  map._coordOut = () => { coordEl.hidden = true; };
+  map._coordOut = () => { if (!coordPin) coordEl.hidden = true; };
   map.on('mousemove', map._coordMove);
   map.on('mouseout', map._coordOut);
 
@@ -828,6 +949,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     if (root.querySelector('#map-add')?.getAttribute('aria-pressed') === 'true') return;
     const o = hitAt(e.containerPoint.x, e.containerPoint.y);
     if (o) openSide(o);
+    else pinCoords(worldXY(e.latlng));
   });
   // botão direito (ou toque longo) num marcador: marca / desmarca como visitado, sem o menu do navegador
   const toast = L.DomUtil.create('div', 'map-toast', map.getContainer());
@@ -896,7 +1018,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
       const name = it ? pick(it, 'name') : id;
       return `<a class="mp-slot" href="#itens?item=${encodeURIComponent(id)}" title="${esc(name)}">
         <span class="mp-slot-box">${it?.icon ? `<img src="${esc(it.icon)}" alt="" />` : ''}<b>×${esc(n)}</b></span>
-        <span class="mp-slot-name">${esc(name)}</span></a>`;
+        <span class="mp-slot-name">${rarityOf(it)}${esc(name)}</span></a>`;
     }).join('')}</div>`;
   }
   // recompensa: barra de chance + ícone + nome + quantidade
@@ -913,7 +1035,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     return `<li>
         <span class="mp-drop-icon">${it?.icon ? `<img src="${esc(it.icon)}" alt="" />` : ''}</span>
         <span class="mp-drop-main">
-          <a href="#itens?item=${encodeURIComponent(r.id)}">${esc(name)}</a>
+          <a href="#itens?item=${encodeURIComponent(r.id)}">${rarityOf(it)}${esc(name)}</a>
           <span class="mp-bar" title="${esc(t('map.chanceTitle', { p: fmtPct(total) }))}"><i style="width:${Math.max(3, Math.min(100, total))}%"></i></span>
         </span>
         <span class="mp-drop-side"><strong title="${esc(t('map.chanceTitle', { p: fmtPct(total) }))}">${esc(fmtPct(total))}</strong><small>×${esc(qty(scale(r.lo), scale(r.hi)))}</small>${r.detail ? `<em title="${esc(t('map.chanceDetail'))}">${esc(r.detail)}</em>` : ''}</span>
@@ -961,7 +1083,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
         ${i === 0 ? `<td class="mp-gt-g" rowspan="${list.length}">${esc(fmtPct(r[3]))}</td>` : ''}
         <td class="mp-gt-p" title="${esc(t('map.chanceTitle', { p: fmtPct(total) }))}">${esc(fmtPct(r[4]))}</td>
         <td class="mp-gt-q">${esc(qty(scale(r[1]), scale(r[2])))}</td>
-        <td class="mp-gt-i"><a href="#itens?item=${encodeURIComponent(r[0])}">${it?.icon ? `<img src="${esc(it.icon)}" alt="" />` : ''}<span>${esc(name)}</span></a></td>
+        <td class="mp-gt-i"><a href="#itens?item=${encodeURIComponent(r[0])}">${it?.icon ? `<img src="${esc(it.icon)}" alt="" />` : ''}<span>${rarityOf(it)}${esc(name)}</span></a></td>
       </tr>`;
       }).join('');
     }).join('');
@@ -994,10 +1116,15 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
   function locFooter(o) {
     const wx = Math.round((o.x / SIZE) * WSIZE + QX);
     const wy = Math.round((o.y / SIZE) * WSIZE + QY);
-    const cmd = `gm go ${wx} ${wy} ${o.z + 100}`;
+    // mesma unidade do teleporte (gm Go X Y Z); sem altura nos dados: só X e Y
+    const hasZ = Number.isFinite(o.z);
+    const xyz = hasZ ? `${wx} ${wy} ${Math.round(o.z)}` : `${wx} ${wy}`;
+    const cmd = hasZ ? `gm Go ${wx} ${wy} ${Math.round(o.z) + 100}` : '';
     return `<footer class="mp-foot">
-      <div class="mp-coords"><span>X ${Math.round(wx / 100)}</span><span>Y ${Math.round(wy / 100)}</span>
-        <button type="button" class="map-btn map-btn-sm" data-copy="${esc(cmd)}" title="${esc(cmd)}">${esc(t('map.copyGm'))}</button></div>
+      <div class="mp-coords"><span>X ${wx}</span><span>Y ${wy}</span>${hasZ ? `<span>Z ${Math.round(o.z)}</span>` : ''}</div>
+      <div class="mp-coords mp-coords-btns">
+        <button type="button" class="map-btn map-btn-sm" data-copy="${esc(xyz)}" data-copy-label="map.${hasZ ? 'copyXYZ' : 'copyXY'}" title="${esc(xyz)}">${esc(t(hasZ ? 'map.copyXYZ' : 'map.copyXY'))}</button>
+        ${cmd ? `<button type="button" class="map-btn map-btn-sm" data-copy="${esc(cmd)}" title="${esc(cmd)}">${esc(t('map.copyGm'))}</button>` : ''}</div>
       <label class="mp-switch"><input type="checkbox" data-visit-id="${esc(o.id)}" ${visited.has(o.id) ? 'checked' : ''} /><i></i><span>${esc(t('map.visited'))} · ${esc(visits.current)}</span></label>
     </footer>`;
   }
@@ -1104,7 +1231,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
         <td class="mp-gt-p">${p.chance != null ? esc(fmtPct(p.chance)) : '?'}</td>
         <td class="mp-gt-i">${p.ids.map((id) => {
     const it = itemOf(id);
-    return `<a href="#itens?item=${encodeURIComponent(id)}">${it?.icon ? `<img src="${esc(it.icon)}" alt="" />` : ''}<span>${esc(it ? pick(it, 'name') : id)}</span></a>`;
+    return `<a href="#itens?item=${encodeURIComponent(id)}">${it?.icon ? `<img src="${esc(it.icon)}" alt="" />` : ''}<span>${rarityOf(it)}${esc(it ? pick(it, 'name') : id)}</span></a>`;
   }).join('')}</td></tr>`).join('')}</tbody></table>
       <p class="mp-gt-hint">${esc(t('map.eq.hint'))}</p>`;
   }
@@ -1253,7 +1380,7 @@ export async function initGameLayers(L, map, root, mapId = 'main', startQuery = 
     if (cp) {
       try { await navigator.clipboard.writeText(cp.dataset.copy); } catch (err) { /* ignora */ }
       cp.textContent = t('map.copied');
-      setTimeout(() => { if (cp.isConnected) cp.textContent = t('map.copyGm'); }, 1500);
+      setTimeout(() => { if (cp.isConnected) cp.textContent = t(cp.dataset.copyLabel || 'map.copyGm'); }, 1500);
     }
   });
   side.addEventListener('change', (e) => {

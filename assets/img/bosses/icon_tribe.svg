@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#f3efe8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+  <!-- líder de tribo: máscara tribal com cocar de penas -->
+  <path d="M20 22 L16 6 L24 18 M28 18 L28 4 L32 17 M36 17 L40 4 L36 18 M44 22 L48 6 L40 18"/>
+  <path d="M16 24 Q32 16 48 24 L46 44 Q32 60 18 44 Z"/>
+  <path d="M22 32 L29 34 M42 32 L35 34"/>
+  <path d="M32 36 L32 42 M26 48 Q32 51 38 48"/>
+</svg>

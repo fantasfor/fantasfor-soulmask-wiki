@@ -273,6 +273,106 @@ def build_tameable(loc, items, creatures, markers, cdo_cache):
     return sorted(out, key=lambda a: by_id[a["id"]]["name_pt"])
 
 
+# porte do animal (BP_DongWu_*.DongWuLeiXing)
+_SIZE = {"DongWuLeiXing_Xiao": "small", "DongWuLeiXing_Zhong": "medium", "DongWuLeiXing_Da": "large"}
+# comidas de inseto (o jogo não marca inseto; só carne tem bRouShi)
+_INSECT_FOODS = {"daoju_item_locusts", "daoju_item_vermin", "daoju_item_beepupa"}   # comparado em minúsculas
+
+
+def _class_chain(path):
+    """Blueprint do animal e os pais dele (BP_DongWu_Base etc.), do mais específico para o mais genérico."""
+    out = []
+    while path and path.startswith("/Game/"):
+        pk = Package.open(path.split(".")[0])
+        if not pk:
+            break
+        out.append(pk)
+        parent = pk.parent_class_path
+        path = ((parent() if callable(parent) else parent) or "").split(".")[0]
+    return out
+
+
+def enrich_tameable(tameable):
+    """Acrescenta à ficha de cada animal (página Domesticáveis e montarias), tudo lido dos arquivos do jogo:
+      size ...... porte (DongWuLeiXing: small/medium/large)
+      diet ...... carnivore (alguma comida com bRouShi), insect (só insetos) ou herbivore
+      move ...... velocidades em cm/s = CharMoveComp.MaxWalkSpeed x taxas da tabela YiDongDataTable
+                  (WalkingRate = andar, FastWalkingRate = trote, RunningRate = corrida); só montarias
+      seats ..... passageiros além de quem conduz (len(ChengKeList)); seatsSaddle = passageiros precisam da sela
+      bag ....... espaços da bolsa do animal (BaoGuoRongLiang)
+      foodInfo .. por comida: v = saciedade (FoodValue), grow = [bônus de crescimento, segundos] (FaYuJiaCheng*),
+                  meat = é carne (bRouShi), rad/tox = reduz radiação/veneno
+    Atributos de vigor e carga já vêm de creatures.json -> stats.base (MaxTiLi, MaxFuZhong)."""
+    tj = Package.open("/Game/Data/DataTables/BT_DongWuTuJian").datatable_rows() or {}
+    for a in tameable:
+        cls = (tj.get(a["id"], {}).get("ObjectClassPath") or "").split(".")[0]
+        chain = _class_chain(cls)
+        walk = yd = seats = need = bag = size = table = None
+        for pk in chain:
+            for e in pk.exports:
+                if walk is None and e.get("name") == "CharMoveComp" and "Movement" in str(pk.export_class(e)):
+                    walk = (pk.read_export_props(e)[0] or {}).get("MaxWalkSpeed")
+            c = pk.cdo() or {}
+            yd = yd or c.get("YiDongDataTable")
+            if seats is None and "ChengKeList" in c:
+                seats, need = len(c["ChengKeList"] or []), bool(c.get("ChengKeIsNeedQiChengBuJian"))
+            bag = bag or c.get("BaoGuoRongLiang")
+            size = size or _SIZE.get(_tail(c.get("DongWuLeiXing")))
+            table = table or c.get("ShiWuXiaoGuoTable")
+        if size:
+            a["size"] = size
+        if bag:
+            a["bag"] = bag
+        # velocidades só para montarias (é o que importa ao montar)
+        if "mount" in a["cats"] and walk and yd:
+            pk = Package.open(yd.split(".")[0])
+            rows = (pk.datatable_rows() if pk else None) or {}
+            rate = {k: (rows.get(k) or {}).get("Value") for k in ("WalkingRate", "FastWalkingRate", "RunningRate", "CanWalkFast")}
+            mv = {"base": walk}
+            if rate["WalkingRate"]:
+                mv["walk"] = round(walk * rate["WalkingRate"])
+            if rate["FastWalkingRate"] and rate["CanWalkFast"]:
+                mv["trot"] = round(walk * rate["FastWalkingRate"])
+            if rate["RunningRate"]:
+                mv["run"] = round(walk * rate["RunningRate"])
+            a["move"] = mv
+        if "mount" in a["cats"]:
+            a["seats"] = seats or 0          # sem ChengKeList no Blueprint = só quem conduz
+            if seats and need:
+                a["seatsSaddle"] = True
+        # comida: saciedade, bônus de crescimento e efeitos (mesma tabela de onde saem as comidas aceitas)
+        if table:
+            pk = Package.open(table.split(".")[0])
+            rows = (pk.datatable_rows() if pk else None) or {}
+            want = {f.lower(): f for f in a.get("foods") or []}
+            info, meat, insect = {}, False, True
+            for r in rows.values():
+                d = r.get("Data") or {}
+                if not d.get("bUseOnFoodLack"):
+                    continue
+                base = re.sub(r"_C$", "", (d.get("FoodClass") or "").split(".")[-1])
+                fid = want.get(base.lower())
+                if not fid:
+                    continue
+                e = {"v": d.get("FoodValue") or 0}
+                if d.get("FaYuJiaChengValue"):
+                    e["grow"] = [round(d["FaYuJiaChengValue"], 3), d.get("FaYuJiaChengTime") or 0]
+                if d.get("bRouShi"):
+                    e["meat"] = True
+                    meat = True
+                if d.get("bCanUseReduceRadiation") or d.get("bCanUseReduceManyRadiation"):
+                    e["rad"] = True
+                if d.get("bCanUseReduceToxic") or d.get("bCanUseReduceManyToxic"):
+                    e["tox"] = True
+                if fid.lower() not in _INSECT_FOODS:
+                    insect = False
+                info[fid] = e
+            if info:
+                a["foodInfo"] = info
+                a["diet"] = "carnivore" if meat else ("insect" if insect else "herbivore")
+    return tameable
+
+
 def build_proficiency(loc, attrs, icons):
     root = os.path.join(CONTENT_DIR, "Blueprints", "DataTable", "Proficiency")
     talents_by_prof = _prof_talents(loc, icons)

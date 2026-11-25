@@ -1,0 +1,37 @@
+<section class="items-page db-page guide-page ach-page">
+  <div class="items-header">
+    <h1 data-i18n="ach.title">Conquistas</h1>
+    <p class="items-subtitle" data-i18n="ach.subtitle">Todos os marcos da jornada e todas as estelas do jogo: como conseguir cada um, a recompensa e onde fica no mapa.</p>
+  </div>
+
+  <section class="guide-explain">
+    <h2 data-i18n="ach.howTitle">Como funcionam</h2>
+    <ul class="rc-how">
+      <li data-i18n="ach.how1">Marcos da jornada: as conquistas da Steam. Cada um tem uma condição (subir a Força de Consciência, derrotar um chefe, fabricar algo...). Os dados do jogo não dão recompensa para eles.</li>
+      <li data-i18n="ach.how2">Estelas antigas e sagradas: ao ativar uma estela você ganha EXP, pontos de tecnologia e, em algumas, uma receita. Cada mapa tem as suas.</li>
+      <li data-i18n="ach.how3">Os marcos de coleção pedem um conjunto inteiro (ex.: decifrar todas as estelas antigas).</li>
+    </ul>
+    <div id="ach-summary" class="ach-summary"></div>
+  </section>
+
+  <section class="guide-tool" aria-labelledby="ach-list-title">
+    <header class="guide-tool-head">
+      <div>
+        <h2 id="ach-list-title" data-i18n="ach.listTitle">Todas as conquistas</h2>
+        <p data-i18n="ach.listHint">Filtre por categoria ou mapa e busque pelo nome, condição ou recompensa.</p>
+      </div>
+    </header>
+    <div class="items-filters">
+      <input type="search" id="ach-search" class="items-search-input" placeholder="Buscar conquista..." data-i18n-placeholder="ach.search" aria-label="Buscar conquista" data-i18n-aria="ach.search" />
+      <select id="ach-cat" class="items-search-input" aria-label="Categoria" data-i18n-aria="ach.catAria"></select>
+      <select id="ach-map" class="items-search-input" aria-label="Mapa" data-i18n-aria="tame.map">
+        <option value="" data-i18n="tame.mapAll">Todos os mapas</option>
+        <option value="main" data-i18n="map.mapMain">Floresta de Névoa Nuvem</option>
+        <option value="dlc" data-i18n="map.mapDlc">Areias Errantes</option>
+      </select>
+      <div class="items-stats"><span id="ach-count" data-i18n="site.loading">Carregando...</span></div>
+    </div>
+    <div id="ach-list" class="ach-grid" aria-live="polite"></div>
+    <div id="ach-more" class="ach-more"></div>
+  </section>
+</section>

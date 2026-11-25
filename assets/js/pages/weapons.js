@@ -1,5 +1,5 @@
 import { t, tCount, pick } from '../i18n.js';
-import { loadData, esc, normalize, fmtNum, statList, iconImg, qualityClass, L, renderChunked, openItemModal } from '../data.js';
+import { loadData, esc, normalize, fmtNum, statList, iconImg, qualityClass, L, renderChunked, openItemModal, rarityIcon } from '../data.js';
 
 export async function initWeaponsPage(root, params) {
   const search = root.querySelector('#db-search');
@@ -29,7 +29,7 @@ export async function initWeaponsPage(root, params) {
         <div class="item-card-header">
           ${iconImg(w, 'item-card-icon')}
           <div class="item-card-title-section">
-            <h3 class="item-card-title">${esc(pick(w, 'name'))}</h3>
+            <h3 class="item-card-title">${w.quality ? `${rarityIcon(meta, w.quality)} ` : ''}${esc(pick(w, 'name'))}</h3>
             <span class="item-card-category">${esc(type ? L(type) : '')}${w.dlc ? ' · DLC' : ''}</span>
           </div>
           ${damage(w) ? `<span class="db-card-big" title="${esc(t('weapons.damage'))}">${esc(fmtNum(damage(w), 0))}</span>` : ''}

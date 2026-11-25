@@ -37,21 +37,11 @@
 .tier-category {
   min-height: 42px;
   padding: 0 22px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.035);
   color: var(--muted);
   font: inherit;
   cursor: pointer;
-  transition: color var(--transition), border-color var(--transition), background var(--transition);
 }
-
-.tier-category:hover,
-.tier-category.is-active {
-  border-color: var(--accent);
-  background: rgba(144, 209, 238, 0.12);
-  color: var(--text);
-}
+/* borda, hover e selecionado: components/game-buttons.css */
 
 .tier-list-board {
   display: grid;
@@ -176,8 +166,6 @@
 .tier-tab {
   min-height: 42px;
   padding: 0 22px;
-  border: 1px solid #686e73;
-  background: #191a1a;
   color: var(--muted);
   font: inherit;
   font-weight: 700;
@@ -187,12 +175,7 @@
 .tier-tab + .tier-tab {
   border-left: 0;
 }
-
-.tier-tab[aria-selected="true"] {
-  color: var(--text);
-  background: rgba(144, 209, 238, 0.14);
-  box-shadow: inset 0 -3px 0 var(--accent);
-}
+/* borda, hover e selecionado: components/game-buttons.css */
 
 .tier-tab:focus-visible,
 .tier-category:focus-visible,

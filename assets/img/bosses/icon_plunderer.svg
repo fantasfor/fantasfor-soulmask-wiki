@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#f3efe8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+  <!-- líder saqueador: duas lâminas cruzadas -->
+  <path d="M12 8 L42 38 M14 14 L18 10"/>
+  <path d="M52 8 L22 38 M50 14 L46 10"/>
+  <path d="M38 34 L46 42 M26 34 L18 42"/>
+  <path d="M44 44 L52 52 L56 48 L48 40 M20 44 L12 52 L8 48 L16 40"/>
+</svg>

@@ -1,29 +1,151 @@
-/* Animais domesticáveis (#animais) */
-.tame-grid {
-  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+/* Domesticáveis e montarias (#animais): lista à esquerda, painel do animal à direita */
+
+/* linha de filtros: busca, categorias e (com espaço a mais) os dois mapas; quebra no celular */
+.tame-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
 }
 
-.tame-card {
+.tame-search {
+  flex: 1 1 220px;
+  max-width: 320px;
+}
+
+.tame-toolbar .bosses-groups {
+  margin: 0;
+}
+
+.tame-maps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-left: 18px;
+}
+
+.tame-maps .guide-chip {
+  padding: 7px 14px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.tame-maps .guide-chip[aria-pressed="true"] {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.tame-count {
+  margin-left: auto;
+}
+
+@media (max-width: 760px) {
+  .tame-search {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .tame-maps {
+    margin-left: 0;
+  }
+
+  .tame-count {
+    flex-basis: 100%;
+    margin-left: 0;
+  }
+}
+.tame-layout {
   display: grid;
-  align-content: start;
-  gap: 10px;
+  grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+  margin-top: 12px;
 }
 
-.tame-head {
+/* ---------------------------------------------------------------- lista */
+.tame-side {
+  position: sticky;
+  top: 12px;
+  min-width: 0;
+}
+
+.tame-pick {
+  display: none;
+  width: 100%;
+}
+
+.tame-list {
+  display: grid;
+  gap: 6px;
+  max-height: calc(100vh - 40px);
+  margin: 0;
+  padding: 0 4px 0 0;
+  overflow-y: auto;
+  list-style: none;
+  scrollbar-color: #686e73 #111212;
+}
+
+.tame-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #3a3d40;
+  border-left: 3px solid transparent;
+  background: #111212;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
 }
 
-.tame-photo {
-  width: 96px;
-  height: 96px;
+.tame-item:hover {
+  border-color: #686e73;
+  background: #191a1a;
+}
+
+.tame-item.is-on {
+  border-color: #90d1ee;
+  border-left-color: #90d1ee;
+  background: rgba(144, 209, 238, 0.08);
+  box-shadow: 0 0 14px rgba(144, 209, 238, 0.12);
+}
+
+.tame-item img,
+.tame-item-noimg {
+  width: 48px;
+  height: 48px;
   flex: none;
   object-fit: contain;
-  background: #111212;
+  background: #0d0d0d;
   border: 1px solid #3a3d40;
 }
 
+.tame-item-text {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.tame-item-name {
+  font-family: "Cinzel", serif;
+  font-size: 0.86rem;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tame-item .tame-cats {
+  margin: 0;
+}
+
+.tame-item .tame-cat {
+  padding: 0 5px;
+  font-size: 0.62rem;
+}
+
+/* ---------------------------------------------------------------- selos */
 .tame-cats {
   display: flex;
   flex-wrap: wrap;
@@ -42,7 +164,216 @@
 .tame-cat-mount { color: #90d1ee; }
 .tame-cat-farm { color: #39d98a; }
 .tame-cat-other { color: #d9d2c5; }
+.tame-diet-herbivore { color: #a8d672; }
+.tame-diet-carnivore { color: #e57a6a; }
+.tame-diet-insect { color: #ecb43c; }
 
+/* ---------------------------------------------------------------- painel */
+.tame-panel {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px 18px;
+  border: 1px solid #686e73;
+  background: #191a1a;
+  box-shadow: 0 0 18px rgba(144, 209, 238, 0.08);
+}
+
+.tame-panel-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.tame-panel-head h2 {
+  margin: 0;
+  color: var(--text);
+  font-family: "Cinzel", serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+}
+
+.tame-photo {
+  width: 120px;
+  height: 120px;
+  flex: none;
+  object-fit: contain;
+  background: #111212;
+  border: 1px solid #3a3d40;
+}
+
+.tame-desc {
+  margin: 8px 0 0;
+  color: #d9d2c5;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.tame-block {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid #3a3d40;
+  background: #111212;
+}
+
+.tame-block h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: #ecd760;
+  font-family: "Cinzel", serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tame-ico {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  fill: none;
+  stroke: #f2efe8;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tame-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* status da montaria: barras e caixas */
+.tame-bars {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+}
+
+.tame-bar {
+  display: grid;
+  gap: 4px;
+}
+
+.tame-bar-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+}
+
+.tame-bar-head span {
+  flex: 1;
+  color: #d9d2c5;
+}
+
+.tame-bar-head strong {
+  color: #90d1ee;
+  font-variant-numeric: tabular-nums;
+}
+
+.tame-bar-track {
+  height: 8px;
+  border: 1px solid #3a3d40;
+  background: #0d0d0d;
+}
+
+.tame-bar-track span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #4f8ea8, #90d1ee);
+}
+
+.tame-bar small,
+.tame-box small {
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.tame-boxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.tame-box {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 8px;
+  border: 1px solid #3a3d40;
+  background: #191a1a;
+  text-align: center;
+}
+
+.tame-box .tame-ico {
+  width: 24px;
+  height: 24px;
+}
+
+.tame-box span {
+  color: var(--muted);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tame-box strong {
+  color: #90d1ee;
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* alimentação */
+.tame-food-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 6px;
+}
+
+.tame-food {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid #3a3d40;
+  background: #191a1a;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.tame-food:hover {
+  border-color: #90d1ee;
+}
+
+.tame-food-icon {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  object-fit: contain;
+}
+
+.tame-food-text {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.tame-food-name {
+  font-size: 0.84rem;
+}
+
+.tame-food small {
+  color: #a8d672;
+  font-size: 0.72rem;
+}
+
+/* fatos (mapas, regiões, captura) */
 .tame-facts {
   display: grid;
   gap: 4px;
@@ -74,23 +405,8 @@
   text-align: right;
 }
 
-.tame-sec {
-  padding-top: 8px;
-  border-top: 1px solid #3a3d40;
-}
-
-.tame-sec h4 {
-  margin: 0 0 6px;
-  color: #ecd760;
-  font-size: 0.8rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.tame-sec h4 small {
-  color: var(--muted);
-  text-transform: none;
-  letter-spacing: 0;
+.tame-block .db-map-btn {
+  justify-self: start;
 }
 
 .tame-drops {
@@ -111,8 +427,7 @@
 .tame-drops small,
 .tame-note,
 .tame-none,
-.tame-sub,
-.tame-more {
+.tame-sub {
   color: var(--muted);
   font-size: 0.74rem;
 }
@@ -151,7 +466,6 @@
 .tame-gear {
   display: grid;
   gap: 6px;
-  margin-bottom: 8px;
 }
 
 .tame-gear > div {
@@ -167,21 +481,45 @@
   color: var(--muted);
 }
 
-.tame-foods {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  align-items: center;
-  margin-top: 4px;
-}
-
 .tame-unconfirmed {
   color: #ecb43c;
   font-style: italic;
 }
 
-@media (max-width: 600px) {
-  .tame-grid {
+/* ---------------------------------------------------------------- celular: a lista vira um seletor em cima */
+@media (max-width: 760px) {
+  .tame-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .tame-side {
+    position: static;
+  }
+
+  .tame-pick {
+    display: block;
+  }
+
+  .tame-list {
+    display: none;
+  }
+
+  .tame-panel {
+    padding: 12px;
+  }
+
+  .tame-panel-head {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .tame-panel-head .tame-cats {
+    justify-content: center;
+  }
+
+  .tame-bars,
+  .tame-cols {
     grid-template-columns: 1fr;
   }
 

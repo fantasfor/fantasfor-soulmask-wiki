@@ -813,6 +813,8 @@ def main():
     log("lendo marcadores do mapa (fases do jogo)...")
     markers = build_map_markers(loc, {c["id"] for c in creatures}, items)
     build_creature_db(creatures, markers)
+    leaders = build_leaders(markers, items, attrs.names, loc, creatures)
+    log("líderes e chefes de ruína:", Counter(e["group"] for e in leaders))
 
     # ------------------------------------------------------------------ guias: proficiência, maestria, eventos, modos
     import build_guides
@@ -831,7 +833,8 @@ def main():
     log("itens com fonte:", len(sources), "cristais vermelhos:", len(red_crystals["crystals"]))
     npc_quality = build_guides.build_npc_quality(attrs)            # página Atributos
     fertilizers = build_guides.build_fertilizers(items, cdo_cache, loc, crops)   # página Plantio
-    tameable = build_guides.build_tameable(loc, items, creatures, markers, cdo_cache)   # página Animais domesticáveis
+    tameable = build_guides.build_tameable(loc, items, creatures, markers, cdo_cache)   # página Domesticáveis e montarias
+    build_guides.enrich_tameable(tameable)   # porte, dieta, velocidades, passageiros, bolsa e efeito de cada comida
     log("fertilizantes:", len(fertilizers))
 
     # ------------------------------------------------------------------ máscaras
@@ -874,6 +877,7 @@ def main():
     dump("talents.json", talents)
     dump("recipes.json", recipes)
     dump("benches.json", benches)
+    add_boss_creatures(creatures, bosses, leaders)   # chefes, líderes e chefes de ruína também na página Criaturas
     dump("creatures.json", sorted(creatures, key=lambda x: x["name_pt"]))
     dump("masks.json", masks)
     dump("crops.json", crops)
@@ -882,6 +886,7 @@ def main():
     dump("tameable.json", tameable)
     dump("map-markers.json", markers)
     dump("bosses.json", bosses)
+    dump("leaders.json", leaders)
     dump("comfort.json", comfort)
     dump("proficiency.json", proficiency)
     dump("mastery.json", mastery)
@@ -1418,12 +1423,20 @@ def build_bosses(items, armor_pieces, loc):
             unlocks = [u for u in unlocks if u]
             if unlocks:
                 tier["unlocks"] = unlocks
+            tier["_cls"] = pkg_path(cls)   # só para os atributos base (sai antes de gravar)
             boss["tiers"].append(tier)
             if photo_pkg is None:
                 photo_pkg = bpkg
         if not boss["tiers"]:
             continue
         boss["tiers"].sort(key=lambda t: t.get("level", 0))
+        # atributos base da 1ª dificuldade (página Criaturas)
+        # (sem tabela na classe invocada, ex.: BP_EgyptDLC_JackalKing_1: DT_Attr_<chefe>_1 pelo nome, não confirmado)
+        st = creature_stats(boss["tiers"][0].get("_cls")) or creature_stats("/Game/_/X.BP_Monster_%s_1" % boss["id"])
+        if st:
+            boss["stats"] = st
+        for t in boss["tiers"]:
+            t.pop("_cls", None)
         first = boss["tiers"][0]
         boss["name_pt"], boss["name_en"] = first["name_pt"], first["name_en"]
         sets = []
@@ -1445,6 +1458,248 @@ def build_bosses(items, armor_pieces, loc):
         bosses.append(boss)
     bosses.sort(key=lambda b: (bool(b.get("dlc")), b["tiers"][0].get("level", 0)))
     return bosses
+
+
+def boss_harvest(cls_path, items):
+    """O que um chefe-criatura dá ao esquartejar (BP_ShengWuCollectData -> DT_ShengWuCaiJiBao) e o XP dele."""
+    pkg = Package.open(cls_path)
+    cdo = (pkg.cdo() if pkg else None) or {}
+    packs = {r.get("DaoJuBaoName"): r.get("DaoJuBaoContent") or []
+             for r in Package.open("/Game/Blueprints/DataTable/CaiJiBao/DT_ShengWuCaiJiBao").datatable_rows().values()}
+    conf = ((Package.open("/Game/Blueprints/ZiYuanGuanLi/BP_ShengWuCollectData").cdo() or {})
+            .get("ShengWuPropConfigSoftMap") or {})
+    m = next((v for k, v in conf.items() if pkg_path(k) == cls_path), None) or {}
+    first = next(iter((m.get("ShengWuCollectDaoJuMap") or {}).values()), {})
+    return {"exp": cdo.get("KilledExp"),
+            "harvest": _pack_drops(packs.get(first.get("CaiJiDaoJuBaoName")), items),
+            "final": _pack_drops(packs.get(first.get("CaiJiFinalDaoJuBaoName")), items)}
+
+
+def add_duels(entries, items, loc, drops):
+    """Postos de desafio (BP_JianZhu_Summon_TribeBoss/RobberBoss): cada receita invoca um líder num duelo.
+    Liga a receita ao líder pelo nome do NPC que o invocador cria; quem não está no mapa (os Deuses da Guerra)
+    vira um card novo, sem local."""
+    for altar, group in (("/Game/Blueprints/JianZhu/GameFunction/BP_JianZhu_Summon_TribeBoss", "tribe"),
+                         ("/Game/Blueprints/JianZhu/GameFunction/BP_JianZhu_Summon_RobberBoss", "plunderer")):
+        apkg = Package.open(altar)
+        acdo = (apkg.cdo() if apkg else None) or {}
+        altar_name = loc.get(acdo.get("JianZhuDisplayName"))
+        # modos de jogo onde o Posto de desafio existe: o item dele fica escondido nos outros (HiddenItemInGameMode)
+        ipkg = Package.open(pkg_path(acdo.get("JianZhuDaoJuClass"))) if acdo.get("JianZhuDaoJuClass") else None
+        hidden = {enum_tail(m) for m in ((ipkg.cdo() if ipkg else None) or {}).get("HiddenItemInGameMode") or []}
+        modes = [site for game, site in (("Survival", "survival"), ("Management", "tribe"), ("Action", "warrior"),
+                                         ("PVP", "pvp"), ("Creative", "casual")) if game not in hidden]
+        for rpath, ex in (acdo.get("GameFunctionExecutionMap") or {}).items():
+            rc = (Package.open(pkg_path(rpath)).cdo() if Package.open(pkg_path(rpath)) else None) or {}
+            ing = []
+            for d in rc.get("DemandDaoJu") or []:
+                alts = [asset_name(x) for x in d.get("DemandDaoJu") or [] if asset_name(x) in items]
+                if alts:
+                    ing.append({"ids": alts, "n": d.get("DemandCount", 1)})
+            title = loc.get(rc.get("PeiFangName"))
+            if not ing or not title:
+                continue
+            duel = {"title_pt": title["pt"], "title_en": title["en"], "ing": ing}
+            if len(modes) < 5:
+                duel["modes"] = modes
+            if altar_name:
+                duel["at_pt"], duel["at_en"] = altar_name["pt"], altar_name["en"]
+            for e in (ex or {}).get("ExecutionList") or []:
+                scg = pkg_path(e.get("ExecuteObjPara"))
+                spkg = Package.open(scg) if scg else None
+                scdo = (spkg.cdo() if spkg else None) or {}
+                for s in scdo.get("SCGInfoList") or []:
+                    for g in s.get("SGBList") or []:
+                        cls = g.get("GuaiWuClass")
+                        cpkg = Package.open(pkg_path(cls)) if cls else None
+                        nm = loc.get(((cpkg.cdo() if cpkg else None) or {}).get("MoRenMingZi"))
+                        if not nm:
+                            continue
+                        hit = [en for (mk, _k), en in entries.items() if mk == "main" and en["name_en"] == nm["en"]]
+                        if not hit:
+                            key = ("duel", nm["en"])
+                            if key not in entries:
+                                slug = re.sub(r"[^a-z0-9]+", "-", nm["en"].lower()).strip("-")
+                                entries[key] = {"id": "main-" + slug, "group": group, "map": "main",
+                                                "name_pt": nm["pt"], "name_en": nm["en"], "variants": {}}
+                            ent = entries[key]
+                            lo, hi, bag = g.get("SCGZuiXiaoDengJi"), g.get("SCGZuiDaDengJi"), g.get("DiaoLuoBaoID")
+                            v = ent["variants"].setdefault((lo, hi, bag, None), {"lo": lo, "hi": hi, "spots": []})
+                            dr = drops(bag)
+                            if dr:
+                                v["drops"] = dr
+                            if altar_name:
+                                v["where_pt"], v["where_en"] = altar_name["pt"], altar_name["en"]
+                            hit = [ent]
+                        for en in hit:
+                            if all(x["title_en"] != duel["title_en"] for x in en.setdefault("duel", [])):
+                                en["duel"].append(duel)
+
+
+def build_leaders(markers, items, names, loc=None, creatures=None):
+    """Líderes de tribo, líderes saqueadores, chefes de ruína e chefes do mundo, tirados dos pontos do mapa
+    (build_map_markers): nome oficial, nível, onde ficam, drops (bolsa do jogo), o equipamento que vestem e podem
+    soltar e, para os líderes, a receita de duelo no Posto de desafio."""
+    # chefe-criatura gigante sem item de invocação (vai para a aba Chefes, junto com os das pirâmides);
+    # o Núcleo Central e a Punição Divina ficam em Chefes de ruína
+    WORLD = {"Death Sandstorm"}
+    WORLD_CREATURES = {"BP_DongWu_LaoShu_Boss"}
+    cr_by_id = {c["id"]: c for c in creatures or []}
+    WORLD_HARVEST = {"Death Sandstorm": "/Game/AdditionMap01/BluePrints/Monster/Boss_Behemoth/BP_Boss_Behemoth"}
+    # Blueprint de cada chefe mecânico/do mundo (achado pelo MoRenMingZi), para a foto do modelo
+    M = "/Game/AdditionMap01/BluePrints/Monster/"
+    PHOTO_CLASS = {
+        ("main", "Central Core"): "/Game/Blueprints/DongWu/BP_JiXie_Boss",
+        ("dlc", "Central Core"): M + "CentralCore/BP_Boss_CentralCore",
+        ("*", "Death Sandstorm"): M + "Boss_Behemoth/BP_Boss_Behemoth",
+        ("*", "Destroyer"): M + "Machine/Destroyer/BP_Boss_Destroyer",
+        ("*", "Divine Punishment"): M + "Machine/Valkyrie/BP_Boss_Valkyrie",
+        ("*", "Huntsman"): M + "Machine/Ranger/BP_Boss_Ranger",
+        ("*", "Observer III"): M + "Machine/Recon02/BP_Machine_Recon02_Boss",
+        ("*", "Patroller III"): M + "Machine/Recon01/BP_Machine_Recon01_Boss",
+        ("*", "Trailblazer S"): M + "Machine/Excavator/BP_Machine_Excavator_Boss",
+        ("*", "Mechanical Core X"): "/Game/Blueprints/DongWu/BP_JiXie_HuiMie",
+        ("*", "Mechanical Core Y"): "/Game/Blueprints/DongWu/BP_JiXie_HuiMie_Dian",
+        ("*", "Slayer X"): "/Game/Blueprints/DongWu/BP_JiXie_ShouWei",
+        ("*", "Terminator"): "/Game/Blueprints/DongWu/BP_JiXie_BOSS02",
+    }
+    TRIBE_BAG = re.compile(r"^(DesertWolf|SavageHorn)\d+_Boss$")
+    CLAN_OF_BAG = {"DesertWolf": "Clan_6", "SavageHorn": "Clan_5"}
+    PLUNDERER = re.compile(r"^(Plunderer .*(Leader|King)|Sand Bandit (Leader|King|Shadow))", re.I)
+    RUIN_BAG = re.compile(r"^(DL_JiXie_Boss|Machine_Boss|CenterCore)")
+    bags = markers.get("bags") or {}
+    equip = markers.get("npcEquip") or []
+
+    def drops(bag):
+        out = {}
+        for r in bags.get(bag) or []:
+            if len(r) > 6 or r[0] not in items:   # grupos com condição (só em certos modos) ficam de fora
+                continue
+            ch = round(r[3] * r[4] / 100, 1)
+            if ch <= 0:
+                continue
+            d = {"id": r[0], "n": [r[1], r[2]], "chance": ch}
+            if r[0] not in out or ch > out[r[0]]["chance"]:
+                out[r[0]] = d
+        return sorted(out.values(), key=lambda d: (-d["chance"], d["id"]))
+
+    def gear(idx):
+        eq = equip[idx] if isinstance(idx, int) and 0 <= idx < len(equip) else None
+        if not eq:
+            return None
+        armor = []
+        for slot, ids in sorted((eq.get("slots") or {}).items(), key=lambda kv: int(kv[0])):
+            ids = [i for i in ids if i in items]
+            if ids:
+                armor.append({"slot": int(slot), "ids": ids, "chance": (eq.get("drop") or {}).get(slot)})
+        g = {"armor": armor} if armor else {}
+        w = [i for i in eq.get("weapons") or [] if i in items]
+        if w:
+            g["weapons"] = w
+            if eq.get("weaponDrop") is not None:
+                g["weaponChance"] = eq["weaponDrop"]
+        return g or None
+
+    def region(mk, x, y):
+        regs = markers["maps"][mk].get("regions") or []
+        best = min(regs, key=lambda r: (r["x"] - x) ** 2 + (r["y"] - y) ** 2, default=None)
+        return best["name"] if best else None
+
+    entries = {}
+
+    def add(group, mk, key, name, lo, hi, bag, eq, x, y, place=None):
+        e = entries.get((mk, key))
+        if e is None:
+            slug = re.sub(r"[^a-z0-9]+", "-", (name["en"] or key).lower()).strip("-")
+            e = entries[(mk, key)] = {"id": "%s-%s" % (mk, slug), "group": group, "map": mk,
+                                      "name_pt": name["pt"], "name_en": name["en"], "variants": {}}
+            if mk == "dlc":
+                e["dlc"] = True
+        vk = (lo, hi, bag, eq)
+        v = e["variants"].get(vk)
+        if v is None:
+            v = e["variants"][vk] = {"lo": lo, "hi": hi, "spots": []}
+            dr = drops(bag)
+            if dr:
+                v["drops"] = dr
+            g = gear(eq)
+            if g:
+                v["gear"] = g
+            where = place or region(mk, x, y)
+            if where:
+                v["where_pt"], v["where_en"] = where["pt"], where["en"]
+        if [x, y] not in v["spots"]:
+            v["spots"].append([x, y])
+
+    for mk, mp in (markers.get("maps") or {}).items():
+        labels = mp.get("labels") or []
+        for p in mp.get("points") or []:
+            if p[0] == "dungeon":
+                dg = (markers.get("dungeons") or {}).get(p[5]) if len(p) > 5 else None
+                for en in (dg or {}).get("enemies") or []:
+                    if en.get("role") == "boss":
+                        place = {"pt": dg.get("title_pt") or "", "en": dg.get("title_en") or ""} if dg.get("title_pt") else None
+                        # o mesmo chefe nas masmorras de nível 40/50/60: um card só, com uma aba por masmorra
+                        add("ruin", mk, "dg:" + en["name_en"], {"pt": en["name_pt"], "en": en["name_en"]},
+                            en["lo"], en["hi"], en.get("bag"), None, p[1], p[2], place)
+                continue
+            # criatura-chefe da enciclopédia sem invocação (ex.: Rei Rato Mutante): também vai para a aba Chefes
+            if p[0] == "creature" and p[4] in WORLD_CREATURES and p[4] in cr_by_id:
+                c = cr_by_id[p[4]]
+                add("world", mk, p[4], {"pt": c["name_pt"], "en": c["name_en"]}, p[5], p[6],
+                    p[7] or (markers.get("creatureBags") or {}).get(p[4]), None, p[1], p[2])
+                ent = entries[(mk, p[4])]
+                if c.get("photo"):
+                    ent["photo"] = c["photo"]
+                continue
+            if p[0] != "npc" or len(p) < 8:
+                continue
+            lab = labels[p[4]] if isinstance(p[4], int) and p[4] < len(labels) else None
+            if not lab:
+                continue
+            bag = p[7] or ""
+            eq = p[8] if len(p) > 8 else None
+            tb = TRIBE_BAG.match(bag)
+            if tb:
+                clan = names.get(CLAN_OF_BAG[tb.group(1)])
+                if not clan:
+                    continue
+                name = {"pt": "Líder da %s" % clan["pt"], "en": "%s Leader" % clan["en"]}
+                add("tribe", mk, "tribe:" + tb.group(1), name, p[5], p[6], bag, eq, p[1], p[2])
+            elif re.search(r"Tribe Leader", lab["en"]):
+                add("tribe", mk, lab["en"], lab, p[5], p[6], bag, eq, p[1], p[2])
+            elif PLUNDERER.search(lab["en"]):
+                add("plunderer", mk, lab["en"], lab, p[5], p[6], bag, eq, p[1], p[2])
+            elif lab["en"] in WORLD:
+                add("world", mk, lab["en"], lab, p[5], p[6], bag, eq, p[1], p[2])
+                # chefe sem bolsa de drop (criatura gigante): o que dá ao esquartejar
+                harvest = WORLD_HARVEST.get(lab["en"])
+                if harvest and not bag:
+                    v = entries[(mk, lab["en"])]["variants"][(p[5], p[6], bag, eq)]
+                    v.update({k: val for k, val in boss_harvest(harvest, items).items() if val})
+            elif RUIN_BAG.match(bag):
+                add("ruin", mk, lab["en"], lab, p[5], p[6], bag, eq, p[1], p[2])
+
+    # duelos nos Postos de desafio (líderes de tribo e saqueadores): receita de invocação e quem ela chama
+    if loc is not None:
+        add_duels(entries, items, loc, drops)
+
+    out = []
+    for e in entries.values():
+        e["variants"] = sorted(e["variants"].values(), key=lambda v: (v["lo"], v["hi"]))
+        # foto: miniatura 3D do modelo do chefe (os humanos não têm retrato no jogo: ficam com o ícone)
+        cls = PHOTO_CLASS.get((e["map"], e["name_en"])) or PHOTO_CLASS.get(("*", e["name_en"]))
+        photo = creature_photo(Package.open(cls), "boss_" + e["id"]) if cls else None
+        if photo and not e.get("photo"):
+            e["photo"] = photo
+        # atributos base (página Criaturas); os líderes humanos não têm tabela própria no jogo
+        st = creature_stats(cls) if cls else None
+        if st:
+            e["stats"] = st
+        out.append(e)
+    order = {"world": 0, "tribe": 1, "plunderer": 2, "ruin": 3}
+    out.sort(key=lambda e: (order[e["group"]], e["map"] != "main", e["variants"][0]["lo"], e["name_pt"]))
+    return out
 
 
 def build_comfort(items, cdo_cache, loc, icons, attrs):
@@ -2038,6 +2293,55 @@ CREATURE_STAT_KEYS = ["MaxHealth", "Attack", "Defense", "MaxTiLi", "TiLiRecover"
 
 
 _ATTR_TABLES = None
+
+
+def add_boss_creatures(creatures, bosses, leaders):
+    """Página Criaturas: junta os chefes (pirâmides e mundo), líderes de tribo e saqueadores e chefes de ruína
+    (mecânicos) às criaturas da enciclopédia. Campos extras: rank ("boss" | "leader" | "ruin"), group (aba da
+    página Chefes), kill (itens que pode soltar ao morrer, incluindo armadura e armas) e maps."""
+    def stats_ok(st, key):
+        # classes sem tabela própria herdam a do modelo base de chefe (Dente-de-sabre): não é a delas
+        return st if st and (st.get("table") != "DT_Attr_JianChiHu" or "jianchihu" in key.lower()) else None
+
+    for b in bosses:
+        kill = []
+        for tr in b.get("tiers") or []:
+            for d in (tr.get("drops") or []) + (tr.get("final") or []) + (tr.get("parts") or []):
+                if d["id"] not in kill:
+                    kill.append(d["id"])
+        c = {"id": "boss:" + b["id"], "name_pt": b["name_pt"], "name_en": b["name_en"], "rank": "boss",
+             "group": "pyramid", "maps": ["dlc" if b.get("dlc") else "main"], "variant": "normal"}
+        if b.get("dlc"):
+            c["dlc"] = True
+        if b.get("photo"):
+            c["photo"] = b["photo"]
+        st = stats_ok(b.get("stats"), b["id"])
+        if st:
+            c["stats"] = st
+        if kill:
+            c["kill"] = kill
+        creatures.append(c)
+    RANK = {"world": "boss", "tribe": "leader", "plunderer": "leader", "ruin": "ruin"}
+    for e in leaders:
+        kill = []
+        for v in e.get("variants") or []:
+            ids = [d["id"] for d in (v.get("drops") or []) + (v.get("harvest") or []) + (v.get("final") or [])]
+            ids += [i for s in (v.get("gear") or {}).get("armor") or [] for i in s["ids"]]
+            ids += (v.get("gear") or {}).get("weapons") or []
+            kill += [i for i in ids if i not in kill]
+        c = {"id": "leader:" + e["id"], "name_pt": e["name_pt"], "name_en": e["name_en"], "rank": RANK.get(e["group"], "leader"),
+             "group": "pyramid" if e["group"] == "world" else e["group"], "maps": [e["map"]], "variant": "normal",
+             "lv": [min(v["lo"] for v in e["variants"]), max(v["hi"] for v in e["variants"])]}
+        if e.get("dlc"):
+            c["dlc"] = True
+        if e.get("photo"):
+            c["photo"] = e["photo"]
+        st = stats_ok(e.get("stats"), e["id"])
+        if st:
+            c["stats"] = st
+        if kill:
+            c["kill"] = kill
+        creatures.append(c)
 
 
 def creature_stats(cls_path):
@@ -2922,6 +3226,11 @@ def build_talents(loc, icons, names):
     return out
 
 
+MASK_STAT_KEYS = {   # EMJJiChuShuXingType -> chave do site (nomes vêm da tela WBP_MianJuXiuFu)
+    "ChuShiNengLiang_Type": "energy", "NengLiangHuiFuSuDu_Type": "recovery",
+    "NengLiangXiaoHaoSuDu_Type": "consumption", "FuZaiZhi_Type": "crystal", "WeiShe_Type": "deterrence"}
+
+
 def build_masks(items, loc, icons):
     """Máscaras com o efeito passivo e as melhorias exclusivas (nós de reparo) de cada uma."""
     def mats(lst):
@@ -2963,6 +3272,21 @@ def build_masks(items, loc, icons):
                     m["outfit"] = outfits[nid.group(1)]
                     break
             bi(m, "lore", loc.get(node.get("MJGZNodeMiaoShu")))
+            # atributos básicos (tela de reparo da máscara): nível atual/máximo e valor, quando o jogo dá
+            stats = {}
+            for k, v in (node.get("CurShuXingMap") or {}).items():
+                key = MASK_STAT_KEYS.get(k.split("::")[-1])
+                if key and isinstance(v, dict):
+                    st = {"lv": v.get("CurMJShuXingDengJi") or 0, "max": v.get("MaxMJShuXingDengJi") or 5}
+                    if v.get("MJShuXingZhi"):
+                        st["val"] = round(v["MJShuXingZhi"], 3)
+                    stats[key] = st
+            if stats:
+                m["stats"] = stats
+            if node.get("FuZaiShangXianList"):
+                m["crystalLimit"] = [round(x) for x in node["FuZaiShangXianList"]]   # por nível da máscara
+            if node.get("ChaChaoShuLiang"):
+                m["slots"] = node["ChaChaoShuLiang"]
             buffs = []
             for ge in node.get("GE_MaskList", []) or []:
                 info = ge_info(ge, loc)
@@ -3004,6 +3328,11 @@ def build_masks(items, loc, icons):
                 ups.append(up)
             if ups:
                 m["upgrades"] = ups
+                # núcleo da máscara: o Módulo Restritivo que a melhoria de mimetismo pede
+                core = next((x for u in ups for lv in u["levels"] for mm in lv.get("mats", [])
+                             for x in mm["ids"] if x.startswith("DaoJu_Item_Mask_BianShen")), None)
+                if core:
+                    m["core"] = core
         else:
             STATS["máscara sem nó de melhoria"] += 1
         out.append(m)

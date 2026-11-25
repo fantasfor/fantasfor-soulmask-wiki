@@ -1,0 +1,547 @@
+/* Conquistas, Ranks de caçador e Humor dos NPCs */
+
+/* ------------------------------------------------------------ comum */
+.ach-label {
+  display: inline-block;
+  margin-right: 6px;
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ach-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  vertical-align: middle;
+}
+
+/* ------------------------------------------------------------ conquistas */
+.ach-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+}
+
+.ach-sum {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #111212;
+}
+
+.ach-sum strong {
+  color: #ecd760;
+  font-family: "Cinzel", serif;
+  font-size: 1.3rem;
+}
+
+.ach-sum span {
+  font-size: 0.82rem;
+}
+
+.ach-sum small {
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.ach-card {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #3a3d40;
+  background: #111212;
+}
+
+.ach-card.is-stele {
+  border-color: #4a4436;
+}
+
+.ach-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ach-icon {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.ach-icon-empty {
+  display: inline-block;
+  background: #1d1f1f;
+}
+
+.ach-title {
+  min-width: 0;
+}
+
+.ach-title h3 {
+  margin: 0 0 4px;
+  font-family: "Cinzel", serif;
+  font-size: 0.98rem;
+  overflow-wrap: anywhere;
+}
+
+.ach-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ach-tag {
+  padding: 1px 7px;
+  border: 1px solid #686e73;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.ach-how,
+.ach-extra {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.ach-extra {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.ach-reward {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.ach-none {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.ach-pill {
+  padding: 2px 8px;
+  background: rgba(236, 215, 96, 0.12);
+  color: #ecd760;
+  font-weight: 700;
+}
+
+.ach-unlocks {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.ach-unlock {
+  display: grid;
+  gap: 4px;
+}
+
+.ach-unlock strong {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.ach-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  font-size: 0.82rem;
+}
+
+.ach-link.ach-map::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border: 1.5px solid currentColor;
+  transform: rotate(45deg) translateY(-1px);
+}
+
+.ach-lore summary {
+  color: var(--muted);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.ach-lore p {
+  margin: 6px 0 0;
+  color: #d9d2c5;
+  font-size: 0.82rem;
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.ach-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------ caçador */
+.hunt-ranks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.hunt-rank {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid #3a3d40;
+  background: #111212;
+}
+
+.hunt-rank-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hunt-rank-icon {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.hunt-rank-n {
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hunt-rank h3 {
+  margin: 2px 0 0;
+  font-family: "Cinzel", serif;
+  font-size: 1.02rem;
+}
+
+.hunt-rank h4 {
+  margin: 6px 0 0;
+  color: var(--accent);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hunt-list {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.hunt-gives li::marker {
+  color: #8fd18b;
+}
+
+.hunt-calc-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.hunt-calc-inputs label {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.hunt-calc-inputs input {
+  width: 120px;
+}
+
+.hunt-calc-out {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.hunt-calc-out .ev-legend {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.hunt-stat {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #111212;
+}
+
+.hunt-stat strong {
+  color: #ecd760;
+  font-family: "Cinzel", serif;
+  font-size: 1.2rem;
+}
+
+.hunt-stat span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.hunt-table-wrap summary {
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.86rem;
+}
+
+.hunt-table-wrap .guide-table-wrap {
+  max-height: 420px;
+  margin: 8px 0 6px;
+  overflow: auto;
+}
+
+.hunt-table tr.is-rank td {
+  color: #ecd760;
+}
+
+.hunt-tips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.hunt-tip {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #3a3d40;
+  background: #111212;
+}
+
+.hunt-tip-wide {
+  grid-column: 1 / -1;
+}
+
+.hunt-tip h3 {
+  margin: 0;
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+}
+
+.hunt-tip p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.hunt-tip .guide-table-wrap {
+  margin: 0;
+}
+
+.hunt-top {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 6px 14px;
+  margin: 0;
+  padding-left: 22px;
+  font-size: 0.85rem;
+}
+
+.hunt-top li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.hunt-top a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.hunt-top img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+.hunt-top strong {
+  color: #ecd760;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------ humor */
+/* tabelas largas rolam dentro do quadro, sem alargar a página no celular */
+.ach-page .guide-tool > *,
+.hunt-page .guide-tool > *,
+.mood-page .guide-tool > * {
+  min-width: 0;
+}
+
+.mood-stages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.mood-stage {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 12px 10px;
+  border: 1px solid #3a3d40;
+  border-top: 3px solid var(--tone, #686e73);
+  background: #111212;
+  text-align: center;
+}
+
+.mood-stage img {
+  width: 56px;
+  height: 56px;
+}
+
+.mood-stage h3 {
+  margin: 0;
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+}
+
+.mood-stage p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.mood-range {
+  color: var(--tone, var(--muted));
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tone-bad2 { --tone: #e0645a; }
+.tone-bad { --tone: #e0a05a; }
+.tone-mid { --tone: #b6a993; }
+.tone-good { --tone: #8fd18b; }
+.tone-good2 { --tone: #5fd1b0; }
+
+.mood-table th img {
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.mood-table thead th small {
+  display: block;
+  color: var(--muted);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.mood-table td[class*="tone-"] {
+  color: var(--tone);
+  white-space: nowrap;
+}
+
+.mood-table .mood-none {
+  color: var(--muted);
+}
+
+.mood-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.mood-col {
+  padding: 12px 14px;
+  border: 1px solid #3a3d40;
+  border-top: 3px solid var(--tone);
+  background: #111212;
+}
+
+.mood-col-up { --tone: #8fd18b; }
+.mood-col-down { --tone: #e0645a; }
+
+.mood-col h3 {
+  margin: 0 0 8px;
+  color: var(--tone);
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+}
+
+.mood-col ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mood-col li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.85rem;
+}
+
+.mood-col li::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-top: 6px;
+  border: 1.5px solid var(--tone);
+  transform: rotate(45deg);
+}
+
+.mood-col li span {
+  flex: 1;
+}
+
+.mood-col li small {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.mood-food-row {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 640px) {
+  .ach-grid,
+  .hunt-ranks,
+  .hunt-tips {
+    grid-template-columns: 1fr;
+  }
+
+  .mood-table td[class*="tone-"] {
+    white-space: normal;
+  }
+}

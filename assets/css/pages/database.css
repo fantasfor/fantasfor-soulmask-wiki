@@ -7,6 +7,7 @@
   --q3: #50a0ff;
   --q4: #b974ff;
   --q5: #ecb43c;
+  --q6: #ff5a4f;
 }
 
 .quality-1 { --q-color: var(--q1); }
@@ -14,6 +15,40 @@
 .quality-3 { --q-color: var(--q3); }
 .quality-4 { --q-color: var(--q4); }
 .quality-5 { --q-color: var(--q5); }
+.quality-6 { --q-color: var(--q6); }
+
+/* ícone de raridade (losango do jogo), alinhado ao texto */
+.rarity-icon {
+  display: inline-block;
+  width: 1.05em;
+  height: 1.05em;
+  min-width: 14px;
+  min-height: 14px;
+  vertical-align: -0.18em;
+  object-fit: contain;
+  flex: none;
+}
+
+/* vence regras de "img" das listas (ex.: drops do mapa, cards), que deixariam o losango grande */
+img.rarity-icon.rarity-icon {
+  width: 1.05em;
+  height: 1.05em;
+  min-width: 14px;
+  min-height: 14px;
+  margin: 0 2px 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  position: static;
+  vertical-align: -0.18em;
+}
+
+.gear-quality-icon:not(:empty) {
+  display: inline-flex;
+  margin-right: 6px;
+  vertical-align: -0.15em;
+}
 
 [class*="quality-"] .item-card-icon,
 [class*="quality-"] .item-modal-icon,
@@ -177,63 +212,369 @@ button.item-card {
   color: #ecd760;
 }
 
-/* Máscaras: grade de máscaras + painel de melhorias aberto ao clicar */
-.masks-grid {
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  align-items: stretch;
+/* Máscaras: lista à esquerda + painel da máscara escolhida à direita (no celular: seletor em cima) */
+.masks-layout {
+  display: grid;
+  grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
 }
 
-.mask-tile {
+.mask-side {
+  position: sticky;
+  top: 12px;
+  min-width: 0;
+}
+
+.mask-select-wrap {
+  display: none;
+}
+
+.mask-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #686e73;
+  background: #191a1a;
+  color: var(--text);
+  font: inherit;
+}
+
+.mask-list {
   display: grid;
-  justify-items: center;
-  align-content: start;
-  gap: 6px;
-  padding: 12px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 4px;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+}
+
+.mask-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 10px 6px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 3px solid var(--q-color, #686e73);
   background: rgba(255, 255, 255, 0.03);
   color: var(--text);
   font: inherit;
-  text-align: center;
+  text-align: left;
   cursor: pointer;
   transition: border-color 160ms ease, background 160ms ease;
 }
 
-.mask-tile:hover,
-.mask-tile:focus-visible {
+.mask-row:hover,
+.mask-row:focus-visible {
   border-color: var(--accent);
+  border-left-color: var(--q-color, var(--accent));
   background: rgba(144, 209, 238, 0.08);
   outline: none;
 }
 
-.mask-tile.is-open {
+.mask-row.is-open {
   border-color: var(--accent);
+  border-left-color: var(--q-color, var(--accent));
   background: rgba(144, 209, 238, 0.14);
-  box-shadow: inset 0 -3px 0 var(--accent);
 }
 
-.mask-tile-icon {
-  width: 80px;
-  height: 80px;
+.mask-row-icon {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
   object-fit: contain;
+  background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.35));
 }
 
-.mask-tile-name {
-  font-size: 0.84rem;
+.mask-row-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mask-row-name {
+  font-size: 0.86rem;
   font-weight: 700;
   line-height: 1.25;
 }
 
-.mask-tile-count {
-  color: var(--muted);
+.mask-row-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  color: var(--q-color, var(--muted));
   font-size: 0.7rem;
 }
 
-.mask-detail {
-  grid-column: 1 / -1;
+.mask-row-meta .rarity-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.mask-panel {
+  min-width: 0;
+}
+
+.mask-rarity {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 0;
+  color: var(--q-color, var(--muted));
+  font-size: 0.8rem;
+}
+
+.mask-head-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.mask-detail .mask-card-icon-btn {
+  flex: 0 0 auto;
+}
+
+.mask-block {
   display: grid;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mask-block-title {
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.mask-block-title small {
+  margin-left: 6px;
+  color: var(--muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.mask-ico {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  color: #e8e8e8;
+}
+
+.mask-buffs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  gap: 8px;
+}
+
+.mask-buff-card {
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 3px solid var(--q-color, var(--accent));
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.mask-buff-card strong {
+  color: #ecd760;
+  font-size: 0.88rem;
+}
+
+.mask-buff-card p {
+  margin: 4px 0 0;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.mask-stats-wrap {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 12px;
+  align-items: start;
+}
+
+.mask-stats {
+  list-style: none;
+  margin: 0;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.mask-stat {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto 34px;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  font-size: 0.84rem;
+}
+
+.mask-stat-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.mask-stat-name {
+  color: var(--text);
+}
+
+.mask-stat-bar {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.mask-stat-bar i {
+  width: 18px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  transform: skewX(-20deg);
+}
+
+.mask-stat-bar i.on {
+  background: var(--accent);
+  box-shadow: 0 0 6px rgba(144, 209, 238, 0.45);
+}
+
+.mask-stat-lv {
+  color: var(--muted);
+  font-family: Consolas, monospace;
+  font-size: 0.76rem;
+  text-align: right;
+}
+
+.mask-info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(160px, 100%), 1fr));
+  align-content: start;
+  gap: 8px;
+}
+
+.mask-info-card {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 2px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.mask-info-card .mask-ico {
+  grid-row: span 2;
+}
+
+.mask-info-label {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.mask-info-card strong {
+  color: #ecd760;
+  font-family: "Cinzel", serif;
+  font-size: 1.05rem;
+}
+
+.mask-info-card small {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.mask-where-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  gap: 8px;
+}
+
+.mask-where-card {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.mask-where-card h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.86rem;
+}
+
+.mask-where-card .db-map-btn {
+  justify-self: start;
+}
+
+.mask-where-hint {
+  font-size: 0.74rem;
+}
+
+/* tela média (ex.: 1024 px com o menu do site): o painel precisa da largura toda, a lista vira seletor */
+@media (max-width: 1180px) {
+  .masks-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mask-side {
+    position: static;
+  }
+
+  .mask-select-wrap {
+    display: block;
+  }
+
+  .mask-list {
+    display: none;
+  }
+
+  .mask-stats-wrap {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .mask-stat {
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+  }
+
+  .mask-stat-lv {
+    display: none;
+  }
+
+  .mask-stat-bar i {
+    width: 14px;
+  }
+
+  .mask-detail {
+    padding: 14px;
+  }
+
+  .mask-detail .mask-card-icon {
+    width: 72px;
+    height: 72px;
+  }
+
+  .mask-buffs,
+  .mask-where-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.mask-detail {
+  display: grid;
+  gap: 14px;
   padding: 18px;
-  border: 1px solid var(--accent);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 3px solid var(--q-color, var(--accent));
   background: rgba(0, 0, 0, 0.35);
   animation: mask-detail-in 160ms ease;
 }
@@ -326,8 +667,37 @@ button.item-card {
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: 10px;
+}
+
+/* textos longos não passam da caixa (nomes de itens, descrições, materiais) */
+.mask-detail .mask-upgrade,
+.mask-detail .mask-upgrade-body,
+.mask-detail .mask-where-card,
+.mask-detail .mask-buff-card,
+.mask-detail .mask-info-card,
+.mask-detail .mask-stats {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* colunas de grade que encolhem com a caixa (sem isso o conteúdo mais largo empurra a borda) */
+.mask-detail,
+.mask-detail .mask-block,
+.mask-detail .mask-where-card {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.mask-detail .ing-chip {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.mask-detail .ing-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mask-upgrade {
@@ -443,8 +813,20 @@ button.item-card {
 /* Criaturas: recursos clicáveis; Criaturas e Máscaras: botão que abre o Mapa interativo */
 .creature-drops {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);   /* a lista encolhe com o card (nomes longos não vazam) */
   gap: 6px;
   margin-top: 12px;
+}
+
+.creature-drops .ing-chip {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.creature-drops .ing-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .creature-drops-title {
@@ -463,6 +845,52 @@ button.item-card {
 .creature-drops-list .ing-icon {
   width: 22px;
   height: 22px;
+}
+
+/* a foto ocupa a largura toda do card: corta os 3 px que passavam da borda */
+.creature-card {
+  overflow: hidden;
+}
+
+/* Criaturas: chefes, líderes e chefes de ruína */
+.creature-photo-icon {
+  display: grid;
+  place-items: center;
+}
+
+.creature-photo-icon img {
+  width: 72px;
+  height: 72px;
+  opacity: 0.85;
+}
+
+.creature-rank {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid currentColor;
+  font-family: inherit;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.creature-rank-boss { color: #e5534b; }
+.creature-rank-leader { color: #ecb43c; }
+.creature-rank-ruin { color: #90d1ee; }
+
+.creature-card-boss { border-top: 2px solid rgba(229, 83, 75, 0.7); }
+.creature-card-leader { border-top: 2px solid rgba(236, 180, 60, 0.7); }
+.creature-card-ruin { border-top: 2px solid rgba(144, 209, 238, 0.7); }
+
+.creature-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.creature-links:empty {
+  display: none;
 }
 
 .creature-unconfirmed {
@@ -522,8 +950,6 @@ button.item-card {
   min-height: 34px;
   margin-top: 12px;
   padding: 0 14px;
-  border: 1px solid var(--accent);
-  background: rgba(144, 209, 238, 0.1);
   color: var(--text);
   font-size: 0.8rem;
   font-weight: 700;
@@ -531,11 +957,7 @@ button.item-card {
   text-decoration: none;
   text-transform: uppercase;
 }
-
-.db-map-btn:hover,
-.db-map-btn:focus-visible {
-  background: rgba(144, 209, 238, 0.22);
-}
+/* borda e hover: components/game-buttons.css (destaque azul) */
 
 .mask-where {
   display: flex;
@@ -592,16 +1014,10 @@ button.item-card {
   align-items: center;
   gap: 6px;
   padding: 3px 8px 3px 3px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(0, 0, 0, 0.25);
   color: var(--text);
   text-decoration: none;
   font-size: 0.8rem;
   max-width: 100%;
-}
-
-.ing-chip:hover {
-  border-color: var(--accent);
 }
 
 .ing-icon {
@@ -1092,6 +1508,127 @@ button.item-card {
   margin-top: 4px;
 }
 
+/* Chefes: abas de categoria, seções e cards de líderes/chefes de ruína */
+.bosses-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.bosses-groups button {
+  padding: 7px 14px;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.bosses-groups button.is-active {
+  font-weight: 700;
+}
+/* borda, hover e selecionado: components/game-buttons.css */
+
+.bosses-section + .bosses-section {
+  margin-top: 28px;
+}
+
+.bosses-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 6px;
+  font-family: "Cinzel", serif;
+  font-size: 1.2rem;
+}
+
+.bosses-section-title img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.bosses-section-title small {
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.8rem;
+}
+
+
+.leader-card {
+  gap: 10px;
+}
+
+.leader-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.leader-icon {
+  flex: 0 0 56px;
+  width: 56px;
+  height: 56px;
+  padding: 6px;
+  border: 1px solid #686e73;
+  background: radial-gradient(circle at 50% 40%, #2a2c2e, #121313);
+}
+
+/* foto do modelo 3D (chefes mecânicos e do mundo), no lugar do ícone */
+.leader-icon.leader-photo {
+  flex-basis: 72px;
+  width: 72px;
+  height: 72px;
+  padding: 2px;
+  object-fit: contain;
+  background: radial-gradient(circle at 50% 45%, #4a4f54, #16181a);
+}
+
+.boss-duel-title {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.boss-duel-title small {
+  color: var(--muted);
+}
+
+.leader-card .item-card-title {
+  font-family: "Cinzel", serif;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.leader-group {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.boss-tabs.boss-tabs-lv {
+  grid-template-columns: repeat(var(--n, 3), 1fr);
+}
+
+.boss-map-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.boss-map-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.boss-map-link::before {
+  content: "⌖ ";
+}
+
+.boss-map-link:hover {
+  text-decoration: underline;
+}
+
 .boss-sets {
   display: flex;
   flex-wrap: wrap;
@@ -1123,37 +1660,21 @@ button.item-card {
 .boss-tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  gap: 4px;
 }
 
 .boss-tab {
   padding: 7px 4px;
-  border: 0;
-  border-right: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.03);
   color: var(--muted);
   font: inherit;
   font-size: 0.8rem;
   cursor: pointer;
 }
 
-.boss-tab:last-child {
-  border-right: 0;
-}
-
-.boss-tab:hover,
-.boss-tab:focus-visible {
-  color: var(--text);
-  outline: none;
-  background: rgba(255, 255, 255, 0.07);
-}
-
 .boss-tab.is-active {
-  color: var(--text);
   font-weight: 700;
-  box-shadow: inset 0 -3px 0 var(--tab-color, var(--accent));
-  background: rgba(255, 255, 255, 0.08);
 }
+/* borda, hover e selecionado (barra na cor da dificuldade): components/game-buttons.css */
 
 .boss-tab-fierce { --tab-color: #39d98a; }
 .boss-tab-berserk { --tab-color: #f0a541; }
@@ -1291,9 +1812,7 @@ button.item-card {
   display: flex;
   justify-content: center;
   padding: 7px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--accent);
+  color: var(--text);
   font-size: 0.82rem;
   cursor: pointer;
   list-style: none;
@@ -1301,10 +1820,6 @@ button.item-card {
 
 .boss-more summary::-webkit-details-marker {
   display: none;
-}
-
-.boss-more summary:hover {
-  background: rgba(144, 209, 238, 0.08);
 }
 
 .boss-more summary::after {
@@ -1654,8 +2169,6 @@ a.comfort-item-name:hover {
 .report-tab {
   flex: 1;
   min-height: 44px;
-  border: 1px solid #686e73;
-  background: #191a1a;
   color: var(--muted);
   font: inherit;
   font-weight: 700;
@@ -1665,12 +2178,7 @@ a.comfort-item-name:hover {
 .report-tab + .report-tab {
   border-left: 0;
 }
-
-.report-tab[aria-selected="true"] {
-  color: var(--text);
-  background: rgba(144, 209, 238, 0.14);
-  box-shadow: inset 0 -3px 0 var(--accent);
-}
+/* borda, hover e selecionado: components/game-buttons.css */
 
 .report-frame-wrap {
   border: 1px solid #686e73;
@@ -1785,10 +2293,9 @@ a.comfort-item-name:hover {
 }
 
 .support-page .gb-btn.buy {
-  border-color: #ecd760;
-  background: linear-gradient(180deg, rgba(236, 215, 96, 0.25), rgba(236, 215, 96, 0.08));
   color: #ecd760;
 }
+/* borda dupla dourada: components/game-buttons.css */
 
 .support-page .gb-btn:disabled {
   opacity: 0.6;

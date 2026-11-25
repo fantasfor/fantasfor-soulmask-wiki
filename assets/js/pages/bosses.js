@@ -1,4 +1,5 @@
 // Chefes: guardiões das pirâmides (assets/data/bosses.json, gerado dos altares BP_JianZhu_Summon_* e de DT_ShengWuCaiJiBao)
+// + líderes de tribo, líderes saqueadores e chefes de ruína (assets/data/leaders.json, dos pontos do mapa do jogo)
 import { t, tCount, pick } from '../i18n.js';
 import { loadData, loadIndex, esc, normalize, fmtNum, ingredientChip, openItemModal } from '../data.js';
 
@@ -15,11 +16,14 @@ export async function initBossesPage(root, params) {
   const filter = root.querySelector('#bosses-filter');
   const count = root.querySelector('#db-count');
   const container = root.querySelector('#db-container');
+  const groupBar = root.querySelector('#bosses-groups');
   let bosses = [];
+  let leaders = [];
   let items;
   let sets;
   try {
-    [bosses, items, sets] = await Promise.all([loadData('bosses'), loadIndex('items'), loadIndex('armor-sets')]);
+    [bosses, items, sets, leaders] = await Promise.all([loadData('bosses'), loadIndex('items'), loadIndex('armor-sets'),
+      loadData('leaders').catch(() => [])]);
   } catch (e) {
     container.innerHTML = `<div class="items-error">${esc(t('common.errorLoading', { msg: e.message }))}</div>`;
     return;
@@ -94,22 +98,143 @@ export async function initBossesPage(root, params) {
   }
   const hay = new Map(bosses.map((b) => [b.id, haystack(b)]));
 
+  // ---------------------------------------------------------------- líderes e chefes de ruína (assets/data/leaders.json)
+  const chosenV = {}; // nível aberto em cada card de líder
+  const pct = (v) => `${fmtNum(v, v < 10 ? 1 : 0)}%`;
+  const chip = (id, n, chance) => `<span class="farming-drop">${ingredientChip(items, id, n)}${chance != null && chance < 100 ? `<small>${esc(pct(chance))}</small>` : ''}</span>`;
+  const mapLink = (e, s, i, total) => `<a class="boss-map-link" href="#mapa?map=${esc(e.map)}&at=${esc(s[0])},${esc(s[1])}">${esc(total > 1 ? t('bosses.mapN', { n: i + 1 }) : t('bosses.viewMap'))}</a>`;
+
+  function leaderBody(e, v) {
+    const lv = v.lo === v.hi ? v.lo : `${v.lo}–${v.hi}`;
+    const where = pick(v, 'where');
+    const facts = [
+      `<div><dt>${esc(t('common.level'))}</dt><dd>${esc(lv)}</dd></div>`,
+      where ? `<div><dt>${esc(t('bosses.where'))}</dt><dd>${esc(where)}</dd></div>` : '',
+      v.spots.length > 1 ? `<div><dt>${esc(t('bosses.spots'))}</dt><dd>${esc(v.spots.length)}</dd></div>` : '',
+      v.exp ? `<div><dt>${esc(t('bosses.exp'))}</dt><dd>${esc(fmtNum(v.exp, 0))}</dd></div>` : ''
+    ].join('');
+    const g = v.gear || {};
+    const dropRow = (list) => `<div class="farming-harvest">${list.map((d) => chip(d.id, d.n[0] === d.n[1] ? d.n[0] : `${d.n[0]}–${d.n[1]}`, d.chance)).join('')}</div>`;
+    // duelo no Posto de desafio: itens para invocar (mesmo visual de espaços de inventário dos chefes das pirâmides)
+    const duel = (e.duel || []).map((d) => `
+      <h4 class="boss-block-title" title="${esc(pick(d, 'at'))}">${esc(t('bosses.duel'))}</h4>
+      <p class="boss-duel-title">${esc(pick(d, 'title'))}${pick(d, 'at') ? ` <small>· ${esc(pick(d, 'at'))}</small>` : ''}</p>
+      <div class="boss-slots">${d.ing.flatMap((gr) => gr.ids.map((id) => {
+        const it = items.get(id);
+        const name = it ? pick(it, 'name') : id;
+        return `<a class="boss-slot" href="#itens?item=${encodeURIComponent(id)}" data-item-id="${esc(id)}" title="${esc(name)}">
+          <span class="boss-slot-box">${it?.icon ? `<img src="${esc(it.icon)}" alt="" loading="lazy" />` : ''}<b>×${esc(gr.n)}</b></span>
+          <span class="boss-slot-name">${esc(name)}</span></a>`;
+      })).join('')}</div>`).join('');
+    const extra = [
+      v.harvest?.length ? `<h4 class="farming-subtitle">${esc(t('bosses.drops'))}</h4>${dropRow(v.harvest)}` : '',
+      v.final?.length ? `<h4 class="farming-subtitle" title="${esc(t('bosses.finalHint'))}">${esc(t('bosses.final'))}</h4>${dropRow(v.final)}` : '',
+      v.drops?.length ? `<h4 class="farming-subtitle">${esc(t('bosses.lootDrops'))}</h4>
+        <div class="farming-harvest">${v.drops.map((d) => chip(d.id, d.n[0] === d.n[1] ? d.n[0] : `${d.n[0]}–${d.n[1]}`, d.chance)).join('')}</div>` : '',
+      g.armor?.length ? `<h4 class="farming-subtitle" title="${esc(t('bosses.gearHint'))}">${esc(t('bosses.gearArmor'))}</h4>
+        <div class="farming-harvest">${g.armor.flatMap((s) => s.ids.map((id) => chip(id, 0, s.chance))).join('')}</div>` : '',
+      g.weapons?.length ? `<h4 class="farming-subtitle" title="${esc(t('bosses.gearHint'))}">${esc(t('bosses.gearWeapons'))}</h4>
+        <div class="farming-harvest">${g.weapons.map((id) => chip(id, 0, g.weaponChance)).join('')}</div>` : ''
+    ].join('');
+    return `
+      <dl class="farming-facts">${facts}</dl>
+      ${v.spots.length ? `<p class="boss-map-links">${v.spots.map((s, i) => mapLink(e, s, i, v.spots.length)).join('')}</p>` : ''}
+      ${duel}
+      ${extra ? `<details class="boss-more"${moreOpen.has(e.id) ? ' open' : ''}>
+        <summary><span class="boss-more-on">${esc(t('bosses.more'))}</span><span class="boss-more-off">${esc(t('bosses.less'))}</span></summary>
+        <div class="boss-more-body">${extra}</div>
+      </details>` : ''}`;
+  }
+
+  function leaderCard(e) {
+    const idx = Math.min(chosenV[e.id] ?? 0, e.variants.length - 1);
+    const tabs = e.variants.length > 1
+      ? `<div class="boss-tabs boss-tabs-lv" role="tablist" aria-label="${esc(t('common.level'))}" style="--n:${e.variants.length}">
+          ${e.variants.map((v, i) => `<button type="button" role="tab" class="boss-tab${i === idx ? ' is-active' : ''}" aria-selected="${i === idx}" data-variant="${i}">${esc(t('bosses.lvTab', { n: v.lo }))}</button>`).join('')}
+        </div>` : '';
+    return `
+      <article class="item-card leader-card" data-leader="${esc(e.id)}">
+        <header class="leader-head">
+          ${e.photo
+    ? `<img class="leader-icon leader-photo" src="${esc(e.photo)}" alt="${esc(pick(e, 'name'))}" loading="lazy" width="72" height="72" />`
+    : `<img class="leader-icon" src="assets/img/bosses/icon_${esc(e.group)}.svg" alt="" width="56" height="56" />`}
+          <div>
+            <h3 class="item-card-title">${esc(pick(e, 'name'))}${e.dlc ? ' <span class="dlc-badge">DLC</span>' : ''}</h3>
+            <span class="leader-group">${esc(t(e.map === 'dlc' ? 'map.mapDlc' : 'map.mapMain'))}</span>
+          </div>
+        </header>
+        ${tabs}
+        <div class="boss-tier" role="tabpanel">${leaderBody(e, e.variants[idx])}</div>
+      </article>`;
+  }
+
+  function leaderHay(e) {
+    const ids = new Set();
+    e.variants.forEach((v) => {
+      [...(v.drops || []), ...(v.harvest || []), ...(v.final || [])].forEach((d) => ids.add(d.id));
+      (v.gear?.armor || []).forEach((s) => s.ids.forEach((id) => ids.add(id)));
+      (v.gear?.weapons || []).forEach((id) => ids.add(id));
+    });
+    const names = [...ids].map((id) => { const it = items.get(id); return it ? `${it.name_pt} ${it.name_en}` : ''; });
+    return normalize(`${e.name_pt} ${e.name_en} ${e.variants.map((v) => `${v.where_pt || ''} ${v.where_en || ''}`).join(' ')} ${names.join(' ')}`);
+  }
+  leaders.forEach((e) => hay.set(e.id, leaderHay(e)));
+
+  // ---------------------------------------------------------------- grupos (abas no topo) e "Mostrar mais"
+  const GROUP_LABEL = { pyramid: 'bosses.gPyramid', world: 'bosses.gWorld', tribe: 'bosses.gTribe', plunderer: 'bosses.gPlunderer', ruin: 'bosses.gRuin' };
+  const GROUP_NOTE = { pyramid: 'bosses.note', world: 'bosses.noteWorld', tribe: 'bosses.noteTribe', plunderer: 'bosses.notePlunderer', ruin: 'bosses.noteRuin' };
+  // a aba "Chefes" mostra os das pirâmides e os chefes do mundo
+  const TAB_OF = { world: 'pyramid' };
+  let group = GROUP_LABEL[params.get('g')] ? params.get('g') : '';
+
   function render() {
     const q = normalize(search.value);
     const f = filter.value;
-    const list = bosses.filter((b) => (!q || hay.get(b.id).includes(q)) && (!f || (f === 'dlc') === Boolean(b.dlc)));
-    count.textContent = tCount('bosses.count', list.length);
-    container.innerHTML = list.length ? list.map(card).join('') : `<div class="items-no-results">${esc(t('bosses.none'))}</div>`;
+    const keep = (x) => (!q || hay.get(x.id).includes(q)) && (!f || (f === 'dlc') === Boolean(x.dlc));
+    const sections = [
+      { key: 'pyramid', list: bosses.filter(keep), card },
+      ...['world', 'tribe', 'plunderer', 'ruin'].map((k) => ({ key: k, list: leaders.filter((e) => e.group === k && keep(e)), card: leaderCard }))
+    ].filter((s) => (!group || (TAB_OF[s.key] || s.key) === group) && s.list.length);
+    groupBar.querySelectorAll('[data-group]').forEach((b) => {
+      const on = b.dataset.group === group;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-selected', String(on));
+    });
+    count.textContent = tCount('bosses.count', sections.reduce((n, s) => n + s.list.length, 0));
+    // todos os cards de cada grupo aparecem de uma vez (sem "Mostrar mais" escondendo chefes)
+    container.innerHTML = sections.length ? sections.map((s) => `
+        <section class="bosses-section" data-section="${s.key}">
+          <h2 class="bosses-section-title"><img src="${s.key === 'pyramid' ? 'assets/img/map/icons/shanggujinzita.webp' : `assets/img/bosses/icon_${s.key}.svg`}" alt="" width="28" height="28" />${esc(t(GROUP_LABEL[s.key]))} <small>${esc(s.list.length)}</small></h2>
+          <p class="bosses-note">${esc(t(GROUP_NOTE[s.key]))}</p>
+          <div class="items-grid bosses-grid">${s.list.map(s.card).join('')}</div>
+        </section>`).join('') : `<div class="items-no-results">${esc(t('bosses.none'))}</div>`;
   }
   search.addEventListener('input', render);
   filter.addEventListener('change', render);
+  groupBar.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-group]');
+    if (!b) return;
+    group = b.dataset.group;
+    render();
+  });
   container.addEventListener('toggle', (e) => {
     const d = e.target;
     if (!d.classList?.contains('boss-more')) return;
-    const id = d.closest('.boss-card')?.dataset.boss;
+    const card = d.closest('.boss-card, .leader-card');
+    const id = card?.dataset.boss || card?.dataset.leader;
     if (d.open) moreOpen.add(id); else moreOpen.delete(id);
   }, true);
   container.addEventListener('click', (e) => {
+    const vtab = e.target.closest('[data-variant]');
+    if (vtab) {
+      const el = vtab.closest('.leader-card');
+      const ld = leaders.find((x) => x.id === el.dataset.leader);
+      chosenV[ld.id] = Number(vtab.dataset.variant);
+      el.outerHTML = leaderCard(ld);
+      container.querySelector(`.leader-card[data-leader="${CSS.escape(ld.id)}"] .boss-tab.is-active`)?.focus();
+      return;
+    }
+    if (e.target.closest('.boss-map-link')) return;   // link normal para o mapa
     const tab = e.target.closest('.boss-tab');
     if (tab) {
       const el = tab.closest('.boss-card');

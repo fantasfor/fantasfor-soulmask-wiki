@@ -1,7 +1,12 @@
 // Bancada de trabalho: árvore de fabricação de um item, do produto final até os materiais básicos
 // (recipes.json) e de onde vem cada material básico (sources.json: animal, inimigo, baú, coleta, chefe).
 import { t, pick } from '../i18n.js';
-import { loadData, loadIndex, esc, normalize, iconImg, fmtNum, sourceList, sourceName } from '../data.js';
+import { loadData, loadIndex, esc, normalize, iconImg, fmtNum, sourceList, sourceName, rarityIcon } from '../data.js';
+
+// ícone de raridade ao lado do nome (tooltip com o nome oficial da qualidade)
+let qualityMeta = null;
+loadData('meta').then((m) => { qualityMeta = m; }).catch(() => {});
+const rarityOf = (it) => (it?.quality ? `${rarityIcon(qualityMeta, it.quality)} ` : '');
 
 const MAX_DEPTH = 9;
 
@@ -9,11 +14,21 @@ export async function initWorkbenchPage(root, params) {
   const search = root.querySelector('#wb-search');
   const suggest = root.querySelector('#wb-suggest');
   const qtyEl = root.querySelector('#wb-qty');
-  const out = root.querySelector('#wb-result');          // resumo dos materiais básicos
-  const treeArea = root.querySelector('#wb-tree-area');  // árvore, dentro da mesma caixa da busca
-  const main = root.querySelector('#wb-main');           // caixa da árvore + resumo (eventos)
-  const titleEl = root.querySelector('#wb-pick-title');
+  const out = root.querySelector('#wb-result');          // materiais totais (coluna da esquerda)
+  const treeArea = root.querySelector('#wb-tree-area');  // árvore (coluna da direita)
+  const main = root.querySelector('#wb-main');           // as duas colunas (eventos)
+  const titleEl = root.querySelector('#wb-tree-title');
   const hintEl = root.querySelector('#wb-hint');
+  const DEFAULT_ITEM = 'DaoJu_Item_PiGe_4';               // Couro Delicado: aberto quando a URL não traz item
+
+  // no PC, as duas colunas ocupam a altura que sobra na tela (sem rolar a página); no celular, empilham
+  function fitHeight() {
+    if (!main.isConnected) { window.removeEventListener('resize', fitHeight); return; }
+    const top = main.getBoundingClientRect().top + window.scrollY;
+    main.style.setProperty('--wb-h', `${Math.max(460, window.innerHeight - top - 16)}px`);
+  }
+  window.addEventListener('resize', fitHeight);
+  fitHeight();
   let items; let recipes; let benches; let sources; let creatures; let bosses;
   try {
     [items, recipes, benches, sources, creatures, bosses] = await Promise.all([
@@ -37,11 +52,14 @@ export async function initWorkbenchPage(root, params) {
     const b = benches[(r.benches || [])[0]];
     return b ? pick(b, 'name') : t('wb.byHand');
   };
-  // nome da bancada com o ícone dela (fabricar à mão fica sem ícone)
-  const benchHtml = (r) => {
+  // bancada como ícone grande ao lado do item, com moldura própria e o selo de bancada (à mão não tem ícone)
+  const benchFrame = (r) => {
     const b = benches[(r.benches || [])[0]];
-    const icon = b?.icon ? `<img src="${esc(b.icon)}" alt="" loading="lazy" width="64" height="64" />` : '';
-    return `${icon}<span>${esc(benchName(r))}</span>`;
+    if (!b?.icon) return '';
+    return `<span class="wb-bench-frame" title="${esc(benchName(r))}" aria-label="${esc(benchName(r))}">
+        <img src="${esc(b.icon)}" alt="" loading="lazy" width="64" height="64" />
+        <svg class="wb-bench-seal" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M6 21v-4h12v4M9 17v-3h6v3"/><path d="M14 3l4 4-6 6-4-4z"/></svg>
+      </span>`;
   };
   const recipeOf = (id) => {
     const rs = recipesOf.get(id) || [];
@@ -76,10 +94,13 @@ export async function initWorkbenchPage(root, params) {
   function itemNode(id, qty, depth, path) {
     const { rs, ri, r } = recipeOf(id);
     return `<div class="wb-card">
-        <button type="button" class="wb-frame${r ? '' : ' wb-frame-leaf'}" data-item-link="${esc(id)}" title="${esc(name(id))}">${iconImg(items.get(id), 'wb-icon')}</button>
-        <span class="wb-name">${esc(name(id))}</span>
+        <span class="wb-frames">
+          <button type="button" class="wb-frame${r ? '' : ' wb-frame-leaf'}" data-item-link="${esc(id)}" title="${esc(name(id))}">${iconImg(items.get(id), 'wb-icon')}</button>
+          ${r ? benchFrame(r) : ''}
+        </span>
+        <span class="wb-name">${rarityOf(items.get(id))}${esc(name(id))}</span>
         <span class="wb-n">×${esc(fmtNum(qty, 0))}</span>
-        ${r ? `<span class="wb-bench">${benchHtml(r)}</span>` : ''}
+        ${r ? `<span class="wb-bench"><span>${esc(benchName(r))}</span></span>` : ''}
         ${rs.length > 1 ? `<select class="wb-alt" data-alt="${esc(id)}" aria-label="${esc(t('wb.otherRecipe'))}">${rs.map((x, i) => `<option value="${i}" ${i === ri ? 'selected' : ''}>${esc(t('wb.recipeN', { n: i + 1 }))}</option>`).join('')}</select>` : ''}
       </div>${expand(id, qty, depth, path)}`;
   }
@@ -90,23 +111,21 @@ export async function initWorkbenchPage(root, params) {
     const qty = Math.max(1, Math.min(999, Number(qtyEl.value) || 1));
     const tree = `<ul class="wb-branch wb-root"><li class="wb-node">${itemNode(current, qty, 0, new Set())}</li></ul>`;
     const base = [...totals.entries()].sort((a, b) => name(a[0]).localeCompare(name(b[0])));
-    // a barra do topo passa a mostrar o item escolhido e a dica de leitura da árvore
-    titleEl.removeAttribute('data-i18n');
-    hintEl.removeAttribute('data-i18n');
+    // o topo da árvore mostra o item escolhido e a dica de leitura
     titleEl.textContent = name(current);
     hintEl.textContent = t('wb.treeHint');
     treeArea.innerHTML = `<div class="wb-tree-scroll"><div class="wb-tree">${tree}</div></div>`;
     out.innerHTML = `
-      <section class="guide-tool">
-        <header class="guide-tool-head"><div><h2>${esc(t('wb.baseTitle'))}</h2><p>${esc(t('wb.baseHint'))}</p></div></header>
-        <div class="wb-base">${base.map(([id, n]) => {
-          const src = (sources[id] || [])[0];
-          return `<div class="wb-base-row">
-            <button type="button" class="wb-item" data-item-link="${esc(id)}">${iconImg(items.get(id), 'wb-icon')}<span class="wb-name">${esc(name(id))}</span><span class="wb-n">×${esc(fmtNum(n, 0))}</span></button>
-            <span class="wb-base-src">${src ? `${esc(t(`src.${src.t}`))}: ${esc(sourceName(src, creatures, bosses))}` : esc(t('wb.noSource'))}</span>
-          </div>`;
-        }).join('')}</div>
-      </section>`;
+      <h3 class="wb-base-title">${esc(t('wb.baseTitle'))}</h3>
+      <p class="wb-side-hint">${esc(t('wb.baseHint'))}</p>
+      <div class="wb-base">${base.map(([id, n]) => {
+        const src = (sources[id] || [])[0];
+        return `<div class="wb-base-row">
+          <button type="button" class="wb-item" data-item-link="${esc(id)}">${iconImg(items.get(id), 'wb-icon')}<span class="wb-name">${esc(name(id))}</span><span class="wb-n">×${esc(fmtNum(n, 0))}</span></button>
+          <span class="wb-base-src">${src ? `${esc(t(`src.${src.t}`))}: ${esc(sourceName(src, creatures, bosses))}` : esc(t('wb.noSource'))}</span>
+        </div>`;
+      }).join('')}</div>`;
+    fitHeight();
     const sc = treeArea.querySelector('.wb-tree-scroll');
     if (sc) sc.scrollLeft = (sc.scrollWidth - sc.clientWidth) / 2;   // árvore larga começa centrada no produto
   }
@@ -126,7 +145,7 @@ export async function initWorkbenchPage(root, params) {
     const list = craftable.filter((x) => x.hay.includes(q))
       .sort((a, b) => (a.hay.startsWith(q) ? 0 : 1) - (b.hay.startsWith(q) ? 0 : 1) || pick(a.it, 'name').localeCompare(pick(b.it, 'name')))
       .slice(0, 12);
-    suggest.innerHTML = list.length ? list.map(({ it }) => `<li><button type="button" data-pick="${esc(it.id)}">${iconImg(it, 'wb-icon')}<span>${esc(pick(it, 'name'))}</span></button></li>`).join('')
+    suggest.innerHTML = list.length ? list.map(({ it }) => `<li><button type="button" data-pick="${esc(it.id)}">${iconImg(it, 'wb-icon')}<span>${rarityOf(it)}${esc(pick(it, 'name'))}</span></button></li>`).join('')
       : `<li class="wb-suggest-none">${esc(t('wb.noMatch'))}</li>`;
     suggest.hidden = false;
   });
@@ -188,5 +207,6 @@ export async function initWorkbenchPage(root, params) {
     if (link && window.openItemModal) { e.preventDefault(); window.openItemModal(link.dataset.itemLink); }
   });
 
-  if (params.get('item')) pickItem(params.get('item'));
+  // sem item na URL (ou item que não se fabrica), abre o Couro Delicado
+  pickItem(params.get('item') && recipesOf.has(params.get('item')) ? params.get('item') : DEFAULT_ITEM);
 }

@@ -2,7 +2,8 @@
 // usando os dados oficiais do jogo. Salva no navegador, gera link e exporta para o GDMbot.
 import { t, pick } from '../i18n.js';
 import {
-  loadData, loadIndex, esc, escLines, normalize, statList, statParts, fmtNum, fmtDuration, iconImg, qualityClass, L
+  loadData, loadIndex, esc, escLines, normalize, statList, statParts, fmtNum, fmtDuration, iconImg, qualityClass, L,
+  rarityIcon, rarityName
 } from '../data.js';
 import { bonusHtml, SLOTS } from './armors.js';
 import { TALENT_COLORS } from './talents.js';
@@ -42,6 +43,7 @@ function emptyBuild() {
     foods: Array(FOOD_SLOTS.length).fill(null),
     weapons: [null, null],
     mask: null,
+    mastery: {},   // habilidades de maestria escolhidas por tipo de arma: { gong: [301, 302], ... }
     talentExportLevel: 'max'
   };
 }
@@ -73,6 +75,7 @@ export function compact(b) {
     f: b.foods,
     w: b.weapons,
     m: b.mask || undefined,
+    z: b.mastery && Object.keys(b.mastery).length ? b.mastery : undefined,
     l: b.talentExportLevel !== 'max' ? b.talentExportLevel : undefined
   };
 }
@@ -89,6 +92,7 @@ function expand(c) {
   b.foods = Array.isArray(c.f) ? c.f : b.foods;
   b.weapons = Array.isArray(c.w) ? c.w : b.weapons;
   b.mask = c.m || null;
+  b.mastery = c.z && typeof c.z === 'object' ? c.z : {};
   b.talentExportLevel = c.l || 'max';
   return b;
 }
@@ -126,21 +130,33 @@ export async function initBuilderPage(root, params) {
     expLevel: $('#talentExportLevel'),
     expCode: $('#talentExportCode'),
     expStatus: $('#talentExportStatus'),
-    expPreview: $('#talentExportPreview')
+    expPreview: $('#talentExportPreview'),
+    mastery: $('#masterySelector')
   };
 
-  let talents; let pieces; let sets; let foodsIdx; let weaponsIdx; let masksIdx; let meta; let legacy;
+  let talents; let pieces; let sets; let foodsIdx; let weaponsIdx; let masksIdx; let meta; let legacy; let masteryData;
   try {
-    [talents, pieces, sets, foodsIdx, weaponsIdx, masksIdx, meta, legacy] = await Promise.all([
+    [talents, pieces, sets, foodsIdx, weaponsIdx, masksIdx, meta, legacy, masteryData] = await Promise.all([
       loadData('talents'), loadIndex('armor-pieces'), loadIndex('armor-sets'), loadIndex('foods'),
-      loadIndex('weapons'), loadIndex('masks'), loadData('meta'), loadData('legacy-ids').catch(() => ({}))
+      loadIndex('weapons'), loadIndex('masks'), loadData('meta'), loadData('legacy-ids').catch(() => ({})),
+      loadData('mastery').catch(() => ({ weapons: [], skills: [] }))   // mesma fonte da página Maestria de armas
     ]);
   } catch (e) {
     el.grid.innerHTML = `<div class="empty-state">${esc(t('common.errorLoading', { msg: e.message }))}</div>`;
     return;
   }
   const talentIdx = new Map(talents.map((x) => [x.id, x]));
-  const qualityName = (q) => L(meta.qualities?.[q]) || t('builder.qualityN', { n: q });
+  // maestria de armas: habilidades por tipo de arma (dao, gong...) e por número (idx)
+  const masterySkill = new Map((masteryData.skills || []).map((s) => [s.idx, s]));
+  const masteryByType = {};
+  (masteryData.skills || []).forEach((s) => { (masteryByType[s.w] ||= []).push(s); });
+  const masteryTypeName = Object.fromEntries((masteryData.weapons || []).map((w) => [w.w, w]));
+  // q = 0..5 (índice do multiplicador qmul) = nível de qualidade q+1 do jogo (branco..vermelho)
+  const qualityName = (q) => (meta.qualities?.[q + 1] ? rarityName(meta, q + 1) : t('builder.qualityN', { n: q }));
+  const syncQualityIcon = () => {
+    const box = document.querySelector('#gearQualityIcon');
+    if (box) box.innerHTML = rarityIcon(meta, (state.quality || 0) + 1, { decorative: true });
+  };
   const typeLabel = {};
   talents.forEach((x) => { if (!typeLabel[x.type]) typeLabel[x.type] = x; });
   // armaduras do Builder: só os conjuntos avançados (2xxx) e de Dungeon/ruínas (3xxx), uma peça de cada por slot
@@ -544,7 +560,7 @@ export async function initBuilderPage(root, params) {
       return `<li class="stat-line"><span class="stat-label">${esc(label)}</span><span class="stat-value">${esc(value)}${extra}</span></li>`;
     }).join('');
     const left = [];
-    if (gearLines) left.push(`<div><h3>${esc(t('builder.totalArmor'))}${quality() ? ` · ${esc(qualityName(quality()))}` : ''}</h3><ul class="stat-list">${gearLines}</ul></div>`);
+    if (gearLines) left.push(`<div><h3>${esc(t('builder.totalArmor'))}${quality() ? ` · ${rarityIcon(meta, quality() + 1, { decorative: true })} ${esc(qualityName(quality()))}` : ''}</h3><ul class="stat-list">${gearLines}</ul></div>`);
     const bonus = setBonusHtml();
     if (bonus) left.push(bonus);
     if (weaponLines) left.push(`<div><h3>${esc(t('builder.weapons'))}</h3><ul class="stat-list">${weaponLines}</ul></div>`);
@@ -558,8 +574,15 @@ export async function initBuilderPage(root, params) {
     const foodTotal = chosen.length > 1 && food.size
       ? `<div class="bt-food-total"><h4>${esc(t('builder.foodTotal'))}${maxDur ? ` · ${esc(fmtDuration(maxDur))}` : ''}</h4>${statList(meta, sortStats(food))}</div>` : '';
     const right = `<div><h3>${esc(t('builder.totalFood'))}</h3>${foodCards ? `<div class="bt-food-list">${foodCards}</div>${foodTotal}` : `<p class="set-bonus-empty">${esc(t('builder.foodEmpty'))}</p>`}</div>`;
-    el.totals.innerHTML = left.length || chosen.length
-      ? `<div class="bt-col">${left.join('') || `<p class="set-bonus-empty">${esc(t('builder.totalsEmpty'))}</p>`}</div><div class="bt-col bt-col-food">${right}</div>`
+    // habilidades de maestria escolhidas, com o efeito de cada uma (mastery.json, o mesmo da página Maestria de armas)
+    const skills = chosenMastery();
+    const masteryBlock = skills.length ? `<div class="bt-mastery"><h3>${esc(t('builder.masteryTitle'))}</h3>
+        ${skills.map((s) => `<div class="bt-skill">
+          <div class="bt-skill-head">${s.icon ? `<img src="${esc(s.icon)}" alt="" loading="lazy" />` : ''}<strong>${esc(pick(s, 'name'))}</strong><small>${esc(pick(masteryTypeName[s.w], 'name') || s.w)}</small></div>
+          ${pick(s, 'desc') ? `<p>${esc(pick(s, 'desc'))}</p>` : ''}
+        </div>`).join('')}</div>` : '';
+    el.totals.innerHTML = left.length || chosen.length || skills.length
+      ? `<div class="bt-col">${left.join('') || `<p class="set-bonus-empty">${esc(t('builder.totalsEmpty'))}</p>`}</div><div class="bt-col bt-col-food">${right}</div>${masteryBlock}`
       : `<p class="set-bonus-empty">${esc(t('builder.totalsEmpty'))}</p>`;
   }
 
@@ -632,6 +655,13 @@ export async function initBuilderPage(root, params) {
     const savedWeapons = Array.isArray(state.weapons) ? state.weapons.slice(0, MAX_WEAPONS) : [];
     state.weapons = Array.from({ length: Math.max(2, savedWeapons.length) }, (_, i) => (weaponsIdx.has(savedWeapons[i]) ? savedWeapons[i] : null));
     state.mask = masksIdx.has(state.mask) ? state.mask : null;
+    // maestria: só números de habilidade que existem e batem com o tipo de arma (builds antigas não têm)
+    const mastery = {};
+    Object.entries(state.mastery && typeof state.mastery === 'object' ? state.mastery : {}).forEach(([w, ids]) => {
+      const ok = (Array.isArray(ids) ? ids : []).map(Number).filter((i) => masterySkill.get(i)?.w === w);
+      if (ok.length) mastery[w] = [...new Set(ok)];
+    });
+    state.mastery = mastery;
     const armor = {};
     SLOTS.forEach((s) => { if (pieces.has(state.armor?.[s])) armor[s] = state.armor[s]; });
     state.armor = armor;
@@ -639,6 +669,7 @@ export async function initBuilderPage(root, params) {
     el.desc.value = state.description || '';
     el.tribe.value = state.tribe || '';
     el.quality.value = String(state.quality || 0);
+    syncQualityIcon();
     el.expLevel.value = state.talentExportLevel || 'max';
     el.modal.hidden = true;
     pickerSlot = null;
@@ -670,8 +701,33 @@ export async function initBuilderPage(root, params) {
     renderClassWeapons();
     renderTotals();
     renderTalentGrid();
+    renderMastery();
     renderSaved();
     renderExport();
+  }
+
+  // ---------------------------------------------------------------- maestria de armas
+  // tipos de arma equipados (sem repetir), na ordem dos espaços de arma
+  const equippedTypes = () => [...new Set(state.weapons.map((id) => weaponsIdx.get(id)?.wtype).filter((w) => masteryByType[w]))];
+  // habilidades escolhidas que ainda valem (a arma daquele tipo continua equipada)
+  const chosenMastery = () => equippedTypes().flatMap((w) => (state.mastery[w] || []).map((i) => masterySkill.get(i)).filter(Boolean));
+
+  function renderMastery() {
+    const types = equippedTypes();
+    if (!types.length) {
+      el.mastery.innerHTML = `<p class="mastery-pick-empty">${esc(t('builder.masteryEmpty'))}</p>`;
+      return;
+    }
+    el.mastery.innerHTML = types.map((w) => {
+      const picked = new Set(state.mastery[w] || []);
+      return `<div class="mastery-pick-group">
+        <div class="mastery-pick-head">${typeIcon[w] ? `<img src="${esc(typeIcon[w].icon)}" alt="" />` : ''}<span>${esc(pick(masteryTypeName[w], 'name') || w)}</span><small>${esc(t('builder.masteryCount', { n: picked.size }))}</small></div>
+        <div class="mastery-pick-list">${masteryByType[w].map((s) => `
+          <button type="button" class="mastery-pick${picked.has(s.idx) ? ' is-on' : ''}" data-mastery-w="${esc(w)}" data-mastery="${s.idx}" aria-pressed="${picked.has(s.idx)}" title="${esc(pick(s, 'desc') || pick(s, 'name'))}">
+            ${s.icon ? `<img src="${esc(s.icon)}" alt="" loading="lazy" />` : ''}<span>${esc(pick(s, 'name'))}</span>
+          </button>`).join('')}</div>
+      </div>`;
+    }).join('');
   }
 
   // ---------------------------------------------------------------- eventos
@@ -697,6 +753,19 @@ export async function initBuilderPage(root, params) {
     }
     const tile = e.target.closest('[data-slot]');
     if (tile) openTalentPicker(Number(tile.dataset.slot));
+  });
+  // maestria: liga/desliga cada habilidade (pode escolher várias por arma)
+  el.mastery.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-mastery]');
+    if (!b) return;
+    const w = b.dataset.masteryW;
+    const idx = Number(b.dataset.mastery);
+    const cur = new Set(state.mastery[w] || []);
+    if (cur.has(idx)) cur.delete(idx); else cur.add(idx);
+    if (cur.size) state.mastery[w] = [...cur]; else delete state.mastery[w];
+    renderMastery();
+    renderTotals();
+    saveDraft();
   });
   el.pickSearch.addEventListener('input', () => { talentSearch = el.pickSearch.value; renderTalentOptions(); });
   el.pickList.addEventListener('mouseover', (e) => {
@@ -808,7 +877,7 @@ export async function initBuilderPage(root, params) {
   el.name.addEventListener('input', () => { syncHeader(); renderExport(); saveDraft(); });
   el.desc.addEventListener('input', saveDraft);
   el.tribe.addEventListener('change', () => { state.tribe = el.tribe.value; syncHeader(); renderClassWeapons(); saveDraft(); });
-  el.quality.addEventListener('change', () => { state.quality = Number(el.quality.value) || 0; renderTotals(); saveDraft(); });
+  el.quality.addEventListener('change', () => { state.quality = Number(el.quality.value) || 0; syncQualityIcon(); renderTotals(); saveDraft(); });
   el.expLevel.addEventListener('change', () => { renderExport(); saveDraft(); });
 
   root.querySelector('#actionSaveBuild').addEventListener('click', () => {

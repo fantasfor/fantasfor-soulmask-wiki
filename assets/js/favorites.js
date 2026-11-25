@@ -14,9 +14,17 @@ const ICONS = {
   eventos: 'eventos', servidores: 'servidores', gdmbot: 'gdmbot', plantio: 'plantio', alimentos: 'alimentos',
   armaduras: 'armaduras', armas: 'armas', atributos: 'atributos', chefes: 'chefes', conforto: 'conforto',
   criaturas: 'animas', cristais: 'cristais', itens: 'itens', mascaras: 'mascaras', maestria: 'maestria',
-  proficiencia: 'proficiencia', talentos: 'talentos', apoie: 'apoie', reportar: 'reportar', comunidade: 'comunidade'
+  proficiencia: 'proficiencia', talentos: 'talentos', apoie: 'apoie', reportar: 'reportar', comunidade: 'comunidade',
+  animais: 'animais', conquistas: 'conquistas', cacador: 'cacador', humor: 'humor'
 };
-export const pageIcon = (page) => `assets/img/home-icons/${ICONS[page] || 'itens'}.webp`;
+// página nova sem entrada aqui: usa o ícone da grade da página inicial (mesmo nome) ou o genérico
+export const pageIcon = (page) => {
+  if (ICONS[page]) return `assets/img/home-icons/${ICONS[page]}.webp`;
+  const img = document.querySelector(`.home-nav-square[href="#${CSS.escape(page)}"] img`);
+  return img?.getAttribute('src') || 'assets/img/home-icons/itens.webp';
+};
+// toda página da barra lateral aceita favorito, menos a inicial
+const favable = (page) => !!page && page !== 'home' && !page.includes(':');
 
 export function getFavs() {
   try {
@@ -47,7 +55,11 @@ export const pageLabel = (page) => {
   return a?.dataset.i18n ? t(a.dataset.i18n) : (a?.textContent.trim() || page);
 };
 // só páginas que existem no menu (descarta favoritos de páginas removidas)
-export const favPages = () => getFavs().filter((x) => !x.includes(':') && ICONS[x]);
+// (antes de a barra lateral carregar, mantém todas para não sumir nada)
+export const favPages = () => {
+  const ready = !!document.querySelector('#site-sidebar nav a.nav-link[data-page]');
+  return getFavs().filter((x) => favable(x) && (!ready || navLink(x)));
+};
 export const favPosts = () => getFavs().filter((x) => x.startsWith('post:'));
 
 // botão de estrela para publicações (data-fav="id")
@@ -91,7 +103,7 @@ function starHtml(page) {
 function addStars() {
   document.querySelectorAll('#site-sidebar a.nav-link[data-page]').forEach((a) => {
     const page = a.dataset.page;
-    if (!ICONS[page]) return; // página inicial não é favoritável
+    if (!favable(page)) return; // página inicial não é favoritável
     a.querySelector('.nav-fav')?.remove();
     a.insertAdjacentHTML('beforeend', starHtml(page));
   });
@@ -119,6 +131,23 @@ function renderSidebar() {
   addStars();
 }
 
+// ------------------------------------------------------------------ grade da página inicial
+// páginas favoritas primeiro (na ordem em que foram marcadas), com borda dourada; o resto mantém a ordem original
+function orderHomeGrid() {
+  const grid = document.querySelector('.home-quick-nav');
+  if (!grid) return;
+  const squares = [...grid.querySelectorAll('.home-nav-square')];
+  squares.forEach((a, i) => { if (!a.dataset.homeOrder) a.dataset.homeOrder = String(i); });
+  const favs = favPages();
+  const pageOf = (a) => (a.getAttribute('href') || '').replace('#', '').split('?')[0];
+  const rank = (a) => { const i = favs.indexOf(pageOf(a)); return i >= 0 ? i : favs.length + Number(a.dataset.homeOrder); };
+  squares.sort((x, y) => rank(x) - rank(y)).forEach((a) => {
+    a.classList.toggle('is-fav', favs.includes(pageOf(a)));
+    grid.appendChild(a);
+  });
+}
+export const initHomeFavGrid = () => orderHomeGrid();
+
 export function initFavorites() {
   const sidebar = document.querySelector('#site-sidebar');
   if (sidebar && !sidebar.dataset.favReady) {
@@ -137,7 +166,7 @@ export function initFavorites() {
     sidebar.addEventListener('click', toggle, true);
     sidebar.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-nav-fav]')) toggle(e); }, true);
   }
-  const update = () => { renderSidebar(); refreshButtons(); };
+  const update = () => { renderSidebar(); refreshButtons(); orderHomeGrid(); };
   window.addEventListener('favs-changed', update);
   // o idioma reescreve o texto dos links (e apaga as estrelas): redesenha depois
   window.addEventListener('langchange', () => setTimeout(update, 0));

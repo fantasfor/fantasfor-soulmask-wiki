@@ -48,6 +48,17 @@
 	border-color: #1aecec;
 }
 
+/* abas favoritas (favorites.js): vêm primeiro na grade, com borda dourada sutil */
+.home-quick-nav .home-nav-square.is-fav .home-nav-box {
+	border-color: rgba(236, 215, 96, 0.6);
+	box-shadow: 0 0 10px rgba(236, 215, 96, 0.12);
+}
+
+.home-quick-nav .home-nav-square.is-fav:hover .home-nav-box,
+.home-quick-nav .home-nav-square.is-fav:focus-visible .home-nav-box {
+	border-color: #ecd760;
+}
+
 /* 3 servidores em destaque (home-servers.js), logo abaixo do "Bem-vindo" */
 .home-servers {
 	max-width: 900px;

@@ -20,7 +20,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SITE_URL = 'https://fantasfor.github.io/fantasfor-soulmask-wiki/'
 SITE_NAME = 'Soulmask Fantasfor Wiki'
-OG_IMAGE = SITE_URL + 'assets/img/Icon.png'
+OG_IMAGE = SITE_URL + 'assets/img/og-banner.jpg'   # 1200x630, gerado por tools/build_og_banner.py
+OG_IMAGE_SIZE = (1200, 630)
 
 # Código de verificação do Google Search Console (só o valor de content="...").
 # Search Console > Adicionar propriedade > Prefixo do URL > Tag HTML.
@@ -86,9 +87,18 @@ PAGES: dict[str, tuple[str, str, str]] = {
     'criaturas': ('Criaturas', 'Soulmask criaturas e animais: drops e mapa',
                   'Enciclopédia de criaturas e animais de Soulmask: atributos, o que dão ao esquartejar e onde '
                   'nascem no mapa.'),
-    'animais': ('Animais domesticáveis', 'Soulmask montarias e animais de criação',
-                'Montarias e animais de criação de Soulmask: arapuca, sela, cercado, onde encontrar, o que produzem '
-                'e o que dão no abate.'),
+    'animais': ('Domesticáveis e montarias', 'Soulmask montarias e domesticáveis: status',
+                'Montarias e animais de criação de Soulmask: velocidade, vigor, passageiros, carga, arapuca, sela, '
+                'cercado, comida e onde encontrar.'),
+    'conquistas': ('Conquistas', 'Soulmask conquistas e estelas: como fazer',
+                   'Todas as conquistas e estelas de Soulmask: como conseguir cada uma, a recompensa em EXP e '
+                   'pontos de tecnologia e onde fica no mapa.'),
+    'cacador': ('Ranks de caçador', 'Soulmask ranks de caçador: títulos e níveis',
+                'Títulos de caça de Soulmask: o que cada um pede e dá, EXP de caça dos 60 níveis, bônus de '
+                'esquartejar e dicas.'),
+    'humor': ('Humor dos NPCs', 'Soulmask humor dos tribais por profissão',
+              'Humor dos tribais em Soulmask: as 5 faixas, o efeito em cada profissão e o que faz o humor '
+              'subir ou descer.'),
     'maestria': ('Maestria de armas', 'Soulmask maestria de armas: habilidades',
                  'Todas as habilidades de maestria de cada arma de Soulmask, como conseguir e a chance de cada uma.'),
     'proficiencia': ('Proficiência', 'Soulmask proficiência: calculadora e bônus',
@@ -101,6 +111,77 @@ PAGES: dict[str, tuple[str, str, str]] = {
               'Apoie a Soulmask Fantasfor Wiki e ajude a manter o site atualizado.'),
     'reportar': ('Reportar', 'Reportar erro ou sugestão (Soulmask)',
                  'Encontrou um erro ou tem uma sugestão para a wiki de Soulmask? Envie por aqui.'),
+}
+
+# Card das redes sociais (og:* e twitter:*: Discord, WhatsApp, X, Reddit): em inglês, curto e chamativo,
+# para o público internacional. O <title> e a meta description (Google) continuam em português, em PAGES.
+OG_EN: dict[str, tuple[str, str]] = {
+    'home': ('Soulmask Wiki — Interactive Map, Build Planner & Crafting Calculator',
+             'Free Soulmask wiki in English & Portuguese: every boss, chest and resource on an interactive map, '
+             'build planner, crafting tree, talents, armor sets and admin commands — straight from game data.'),
+    'mapa': ('Soulmask Interactive Map — Chests, Bosses, Ores & Spawns',
+             'Find every chest, boss, ore, tribe and creature spawn in Soulmask. Search any item and see exactly '
+             'where it drops, on both maps.'),
+    'itens': ('Soulmask Items & Recipes — Full Crafting Database',
+              'Every Soulmask item and recipe: materials, workbench, where to get it and its stats.'),
+    'builder-maker': ('Soulmask Build Planner — Talents, Armor, Weapons & Masks',
+                      'Plan and share your Soulmask build: talents, armor, weapons, mask and food, with total stats '
+                      'calculated for you.'),
+    'comandos': ('Soulmask Admin Commands (GM) — Explained & Searchable',
+                 'Every Soulmask GM/admin command explained. Type what you want to do and find the right command.'),
+    'servidores': ('Soulmask Servers — Live Status, Players & Reviews',
+                   'Find a Soulmask server to play on, with live online status and player count, or list your own.'),
+    'comunidade': ('Soulmask Community — Builds & Tier Lists',
+                   'Builds, tier lists and servers shared by Soulmask players. Rate them, comment and save favorites.'),
+    'bancada': ('Soulmask Crafting Tree Calculator',
+                'See the full crafting tree of any Soulmask item down to raw materials, with total resources needed.'),
+    'tier-list': ('Soulmask Tier List Maker — Weapons, Armor & Talents',
+                  'Create and share Soulmask tier lists for weapons, armor, masks and talents.'),
+    'gdmbot': ('GDMbot — Soulmask Macro & Command Tool',
+               'GDMbot types Soulmask console commands and builds for you automatically.'),
+    'eventos': ('Soulmask Invasion Events — Schedule in Your Time Zone',
+                'When every Soulmask invasion event starts in your server region and time zone, and what each one brings.'),
+    'plantio': ('Soulmask Farming Guide — Crops, Temperature & Fertilizer',
+                'Soulmask farming: growth time, ideal temperature, fertilizer and harvest of every crop, with a simulator.'),
+    'alimentos': ('Soulmask Food Guide — Buffs, Duration & Recipes',
+                  'Every Soulmask food and drink with its buffs, duration, where to get it and its recipe.'),
+    'armaduras': ('Soulmask Armor Sets — Stats, Set Bonuses & Compare',
+                  'All Soulmask armor sets with piece stats, random stats and set bonuses. Compare two sets side by side.'),
+    'armas': ('Soulmask Weapons — Damage & Stats',
+              'Every Soulmask weapon with damage, durability and stats, by weapon type.'),
+    'atributos': ('Soulmask Attributes & NPC Quality Explained',
+                  'What every Soulmask attribute does and how much NPC quality (10 to 15) raises each one.'),
+    'cristais': ('Soulmask Red Crystals — Mask Modules Guide',
+                 'Every Soulmask red crystal: mask module effects, how they scale with quality and where to get them.'),
+    'chefes': ('Soulmask Bosses — Summoning, Drops & Armor Unlocks',
+               'How to summon every Soulmask pyramid boss at each difficulty, their drops and the armor they unlock.'),
+    'conforto': ('Soulmask Comfort Calculator — Furniture & Levels',
+                 'How much comfort each Soulmask furniture gives, the 10 comfort levels and a comfort calculator.'),
+    'criaturas': ('Soulmask Creatures — Stats, Butchering Drops & Spawns',
+                  'Soulmask creature encyclopedia: base stats, butchering drops and where each one spawns on the map.'),
+    'animais': ('Soulmask Tameables & Mounts — Stats & Taming',
+                'Every Soulmask mount and farm animal: speed, stamina, passengers, carry weight, trap, saddle, pen, '
+                'food and where to find them.'),
+    'conquistas': ('Soulmask Achievements & Steles — How to Get Them',
+                   'Every Soulmask achievement and stele: how to get each one, EXP and tech point rewards and '
+                   'where it is on the map.'),
+    'cacador': ('Soulmask Hunter Ranks — Titles, Levels & Tips',
+                'Soulmask hunting titles: requirements and bonuses, hunting EXP for all 60 levels, butchering '
+                'bonuses and tips.'),
+    'humor': ('Soulmask NPC Mood — Effects by Profession',
+              'Soulmask tribesman mood: the 5 stages, the effect on each profession and what raises or lowers mood.'),
+    'maestria': ('Soulmask Weapon Mastery — All Skills & Chances',
+                 'Every Soulmask weapon mastery skill, how to get it and the chance of each one.'),
+    'proficiencia': ('Soulmask Proficiency Calculator — EXP & Bonuses',
+                     'Soulmask proficiency: EXP per level, milestones and every weapon, gathering and crafting bonus.'),
+    'mascaras': ('Soulmask Masks — Effects & Where to Find Them',
+                 'Every Soulmask mask: passive effect, upgrades and where to find it on the map.'),
+    'talentos': ('Soulmask Talents — All Effects, Levels 1 to 3',
+                 'Every Soulmask talent with level 1, 2 and 3 effects. Filter by type, tribe and profession.'),
+    'apoie': ('Support the Soulmask Fantasfor Wiki',
+              'Help keep the free Soulmask Fantasfor Wiki updated.'),
+    'reportar': ('Report a Bug or Suggest an Idea — Soulmask Wiki',
+                 'Found a mistake or have an idea for the Soulmask wiki? Send it here.'),
 }
 
 # importância relativa para o sitemap
@@ -142,6 +223,7 @@ def structured_data(page: str) -> dict:
 def head_block(page: str) -> str:
     _name, _title, desc = PAGES[page]
     title = full_title(page)
+    og_title, og_desc = OG_EN.get(page, (title, desc))
     url = page_url(page)
     e = lambda s: html.escape(s, quote=True)  # noqa: E731
     ld = json.dumps(structured_data(page), ensure_ascii=False).replace('</', '<\\/')
@@ -155,18 +237,22 @@ def head_block(page: str) -> str:
         lines.append(f'<meta name="google-site-verification" content="{e(GOOGLE_SITE_VERIFICATION)}">')
     lines += [
         f'<meta property="og:site_name" content="{e(SITE_NAME)}">',
-        f'<meta property="og:title" content="{e(title)}">',
-        f'<meta property="og:description" content="{e(desc)}">',
+        f'<meta property="og:title" content="{e(og_title)}">',
+        f'<meta property="og:description" content="{e(og_desc)}">',
         '<meta property="og:type" content="website">',
         f'<meta property="og:url" content="{e(url)}">',
         f'<meta property="og:image" content="{e(OG_IMAGE)}">',
-        f'<meta property="og:image:alt" content="{e(SITE_NAME)}">',
+        '<meta property="og:image:type" content="image/jpeg">',
+        f'<meta property="og:image:width" content="{OG_IMAGE_SIZE[0]}">',
+        f'<meta property="og:image:height" content="{OG_IMAGE_SIZE[1]}">',
+        f'<meta property="og:image:alt" content="{e("Soulmask Wiki — Interactive Map • Builds • Crafting")}">',
         '<meta property="og:locale" content="pt_BR">',
         '<meta property="og:locale:alternate" content="en_US">',
-        '<meta name="twitter:card" content="summary">',
-        f'<meta name="twitter:title" content="{e(title)}">',
-        f'<meta name="twitter:description" content="{e(desc)}">',
+        '<meta name="twitter:card" content="summary_large_image">',
+        f'<meta name="twitter:title" content="{e(og_title)}">',
+        f'<meta name="twitter:description" content="{e(og_desc)}">',
         f'<meta name="twitter:image" content="{e(OG_IMAGE)}">',
+        f'<meta name="twitter:image:alt" content="{e("Soulmask Wiki — Interactive Map • Builds • Crafting")}">',
         f'<script type="application/ld+json">{ld}</script>',
     ]
     return '\n'.join('  ' + ln for ln in lines)
@@ -223,6 +309,11 @@ def main() -> None:
         t, d = full_title(p), PAGES[p][2]
         if len(t) > MAX_TITLE or len(d) > MAX_DESC:
             print(f'Aviso: {p}: título {len(t)}/{MAX_TITLE}, descrição {len(d)}/{MAX_DESC}')
+    for p in PAGES:
+        if p not in OG_EN:
+            print(f'Aviso: {p} sem card em inglês em OG_EN (usa o título em português)')
+    if not (ROOT / 'assets' / 'img' / 'og-banner.jpg').exists():
+        raise SystemExit('Falta assets/img/og-banner.jpg: rode python tools/build_og_banner.py')
     if len({full_title(p) for p in PAGES}) != len(PAGES):
         raise SystemExit('Há títulos repetidos em PAGES')
     missing = [p for p in PAGES if not (ROOT / 'pages' / f'{p}.html').exists()]

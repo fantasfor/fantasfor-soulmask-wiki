@@ -1,7 +1,7 @@
 // Cristais Vermelhos (HongJingShi): efeito principal, multiplicador por qualidade, carga, atributos extras
 // sorteados e onde conseguir. Dados: assets/data/red-crystals.json e sources.json (tools/build_guides.py).
 import { t, pick } from '../i18n.js';
-import { loadData, loadIndex, esc, normalize, fmtNum, statParts, sourceList, L } from '../data.js';
+import { loadData, loadIndex, esc, normalize, fmtNum, statParts, sourceList, L, rarityIcon } from '../data.js';
 
 const Q = [
   { name: { pt: 'Branco', en: 'White' }, color: '#d9d9d9' },
@@ -35,9 +35,10 @@ export async function initRedCrystalsPage(root) {
   const open = new Set();
 
   // valor do efeito na qualidade escolhida: "mín – máx"
+  // o "–" entre os valores vai num <span> próprio, mais apagado que os números
   const range = (stat, mult) => {
     const lo = statParts(meta, stat, mult[0]).value; const hi = statParts(meta, stat, mult[1]).value;
-    return lo === hi ? lo : `${lo} – ${hi}`;
+    return lo === hi ? esc(lo) : `${esc(lo)} <span class="rc-range-sep">–</span> ${esc(hi)}`;
   };
   const specialText = (s, mult) => {
     const lo = fmtNum(s.v * mult[0] * 100, 1); const hi = fmtNum(s.v * mult[1] * 100, 1);
@@ -49,14 +50,14 @@ export async function initRedCrystalsPage(root) {
 
   function render() {
     try { localStorage.setItem(LS_KEY, String(q)); } catch (e) { /* ignora */ }
-    qEl.innerHTML = Q.map((x, i) => `<button type="button" class="guide-chip${i === q ? ' is-active' : ''}" data-q="${i}" role="tab" aria-selected="${i === q}"><i class="attr-dot" style="--c:${x.color}"></i> ${esc(L(x.name))}</button>`).join('');
+    qEl.innerHTML = Q.map((x, i) => `<button type="button" class="guide-chip${i === q ? ' is-active' : ''}" data-q="${i}" role="tab" aria-selected="${i === q}">${rarityIcon(meta, i + 1, { decorative: true, title: L(x.name) })} ${esc(L(x.name))}</button>`).join('');
     const s = normalize(searchEl.value.trim());
     const list = data.crystals.filter((c) => !s || hay.get(c.id).includes(s));
     const col = Q[q].color;
     listEl.innerHTML = list.map((c) => {
       const mult = c.mult[q] || [1, 1];
       const effects = [
-        ...c.main.map((st) => `<li><span>${esc(statParts(meta, st).label)}</span><strong style="color:${col}">${esc(range(st, mult))}</strong></li>`),
+        ...c.main.map((st) => `<li><span>${esc(statParts(meta, st).label)}</span><strong style="color:${col}">${range(st, mult)}</strong></li>`),
         ...c.special.map((st) => `<li class="rc-special"><span>${esc(specialText(st, mult))}</span></li>`)
       ].join('');
       const extras = c.extra ? data.extraCount[q] : 0;
@@ -77,9 +78,14 @@ export async function initRedCrystalsPage(root) {
     const total = data.extraPool.reduce((a, x) => a + (x.w || 0), 0) || 1;
     const mult = (data.extraMult || data.crystals.find((c) => c.extra)?.mult || [])[q] || [1, 1];
     extraHint.textContent = t('rc.extraHint', { n: data.extraCount[q], q: L(Q[q].name) });
+    // o jogo tem 2 versões de alguns atributos (ATQ, PV Máximo, DEF): valor fixo e porcentagem;
+    // o nome ganha "(fixo)" / "(%)" para não parecer linha repetida
+    const twoKinds = new Set(data.extraPool.map((st) => st.a).filter((a, i, all) => all.indexOf(a) !== i));
+    const kind = (st) => (twoKinds.has(st.a) ? ` ${t(st.op === 'mul' ? 'rc.kindPct' : 'rc.kindFlat')}` : '');
     extraEl.innerHTML = `<table class="guide-table"><thead><tr><th>${esc(t('attr.colStat'))}</th><th>${esc(t('rc.value'))}</th><th>${esc(t('rc.chance'))}</th></tr></thead><tbody>
-      ${data.extraPool.map((st) => `<tr><td>${esc(statParts(meta, st).label)}</td><td style="color:${col}">${esc(range(st, mult))}</td><td>${esc(fmtNum((st.w / total) * 100, 0))}%</td></tr>`).join('')}
-    </tbody></table>`;
+      ${data.extraPool.map((st) => `<tr><td>${esc(statParts(meta, st).label)}${twoKinds.has(st.a) ? ` <small class="rc-kind">${esc(kind(st).trim())}</small>` : ''}</td><td style="color:${col}">${range(st, mult)}</td><td>${esc(fmtNum((st.w / total) * 100, 0))}%</td></tr>`).join('')}
+    </tbody></table>
+    ${twoKinds.size ? `<p class="comfort-howto">${esc(t('rc.kindNote'))}</p>` : ''}`;
   }
   qEl.addEventListener('click', (e) => { const b = e.target.closest('[data-q]'); if (b) { q = Number(b.dataset.q); render(); } });
   searchEl.addEventListener('input', render);

@@ -11,6 +11,9 @@ import { initRecipesPage } from './pages/recipes.js';
 import { initMasksPage } from './pages/masks.js';
 import { initCreaturesPage } from './pages/creatures.js';
 import { initTameablePage } from './pages/tameable.js';
+import { initAchievementsPage } from './pages/achievements.js';
+import { initHunterPage } from './pages/hunter.js';
+import { initMoodsPage } from './pages/moods.js';
 import { initTierListPage } from './pages/tierlist.js';
 import { initBuilderPage } from './pages/builder.js';
 import { initCloud, mountAccountWidget } from './cloud.js';
@@ -31,7 +34,7 @@ import { initAttributesPage } from './pages/attributes.js';
 import { initRedCrystalsPage } from './pages/red-crystals.js';
 import { initCommunityPage } from './pages/community.js';
 import { initBuilderCommunity } from './pages/builder-community.js';
-import { initFavorites } from './favorites.js';
+import { initFavorites, initHomeFavGrid } from './favorites.js';
 import { initHomeServers } from './pages/home-servers.js';
 
 // página -> função de inicialização (recebe o elemento raiz e os parâmetros da URL)
@@ -45,11 +48,14 @@ const PAGE_INIT = {
   mascaras: initMasksPage,
   criaturas: initCreaturesPage,
   animais: initTameablePage,
+  conquistas: initAchievementsPage,
+  cacador: initHunterPage,
+  humor: initMoodsPage,
   'tier-list': initTierListPage,
   // editor (builder.js) + aba Comunidade (builder-community.js)
   'builder-maker': async (root, params) => { await initBuilderPage(root, params); await initBuilderCommunity(root, params); },
   comunidade: initCommunityPage,
-  home: initHomeServers, // 3 servidores em destaque (carrega em segundo plano)
+  home: (root) => { initHomeFavGrid(); return initHomeServers(root); }, // favoritas primeiro + 3 servidores em destaque
   mapa: initMapPage,
   plantio: initFarmingPage,
   reportar: initReportPage,

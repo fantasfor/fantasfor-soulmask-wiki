@@ -1,22 +1,30 @@
 <section class="items-page db-page tame-page">
   <div class="items-header">
-    <h1 data-i18n="tame.title">Animais domesticáveis</h1>
-    <p class="items-subtitle" data-i18n="tame.subtitle">Montarias e animais de criação: onde encontrar, como capturar, o que produzem e o que dão no abate.</p>
+    <h1 data-i18n="tame.title">Domesticáveis e montarias</h1>
+    <p class="items-subtitle" data-i18n="tame.subtitle">Montarias e animais de criação: status de cada montaria, como capturar, o que comem, onde encontrar, o que produzem e o que dão no abate.</p>
   </div>
-  <div class="items-filters">
-    <input type="search" id="db-search" class="items-search-input" placeholder="Buscar animal..." data-i18n-placeholder="tame.search" aria-label="Buscar animal" data-i18n-aria="tame.search" />
-    <select id="tame-cat" class="items-search-input" aria-label="Categoria" data-i18n-aria="tame.cat">
-      <option value="" data-i18n="tame.catAll">Todas as categorias</option>
-      <option value="mount" data-i18n="tame.cat.mount">Montarias</option>
-      <option value="farm" data-i18n="tame.cat.farm">Animais de criação</option>
-      <option value="other" data-i18n="tame.cat.other">Outros capturáveis</option>
-    </select>
-    <select id="tame-map" class="items-search-input" aria-label="Mapa" data-i18n-aria="tame.map">
-      <option value="" data-i18n="tame.mapAll">Todos os mapas</option>
-      <option value="main" data-i18n="map.mapMain">Floresta de Névoa Nuvem</option>
-      <option value="dlc" data-i18n="map.mapDlc">Areias Errantes</option>
-    </select>
-    <div class="items-stats"><span id="db-count" data-i18n="site.loading">Carregando...</span></div>
+  <!-- uma linha só: busca, categorias (mesmo estilo dos filtros da página Chefes) e, com um espaço a mais, os dois mapas -->
+  <div class="tame-toolbar">
+    <input type="search" id="db-search" class="items-search-input tame-search" placeholder="Buscar animal..." data-i18n-placeholder="tame.search" aria-label="Buscar animal" data-i18n-aria="tame.search" />
+    <div class="bosses-groups" id="tame-cat" role="tablist" aria-label="Categoria" data-i18n-aria="tame.cat">
+      <button type="button" role="tab" data-cat="" data-i18n="tame.tabAll">Todos</button>
+      <button type="button" role="tab" data-cat="mount" data-i18n="tame.tabMount">Montaria</button>
+      <button type="button" role="tab" data-cat="farm" data-i18n="tame.tabFarm">Criação</button>
+      <button type="button" role="tab" data-cat="other" data-i18n="tame.tabOther">Outros</button>
+    </div>
+    <div class="tame-maps" id="tame-map" role="group" aria-label="Mapa" data-i18n-aria="tame.map">
+      <button type="button" class="guide-chip" data-map="main" aria-pressed="false" data-i18n="map.mapMain">Floresta de Névoa Nuvem</button>
+      <button type="button" class="guide-chip" data-map="dlc" aria-pressed="false" data-i18n="map.mapDlc">Areias Errantes</button>
+    </div>
+    <div class="items-stats tame-count"><span id="db-count" data-i18n="site.loading">Carregando...</span></div>
   </div>
-  <div id="db-container" class="items-grid tame-grid"></div>
+
+  <!-- lista de animais à esquerda (no celular vira o seletor de cima) e painel do animal escolhido à direita -->
+  <div class="tame-layout">
+    <aside class="tame-side">
+      <select id="tame-pick" class="items-search-input tame-pick" aria-label="Escolha o animal" data-i18n-aria="tame.pickAnimal"></select>
+      <ul id="tame-list" class="tame-list" role="listbox" aria-label="Animais" data-i18n-aria="tame.listAria"></ul>
+    </aside>
+    <div id="db-container" class="tame-panel" aria-live="polite"></div>
+  </div>
 </section>

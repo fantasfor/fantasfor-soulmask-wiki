@@ -7,5 +7,13 @@
     <input type="search" id="db-search" class="items-search-input" placeholder="Buscar máscaras..." data-i18n-placeholder="masks.search" aria-label="Buscar máscaras" data-i18n-aria="masks.search" />
     <div class="items-stats"><span id="db-count" data-i18n="site.loading">Carregando...</span></div>
   </div>
-  <div id="db-container" class="items-grid masks-grid"></div>
+  <div class="masks-layout">
+    <aside class="mask-side">
+      <label class="mask-select-wrap"><span class="sr-only" data-i18n="masks.pick">Escolher máscara</span>
+        <select id="mask-select" class="mask-select" aria-label="Escolher máscara" data-i18n-aria="masks.pick"></select>
+      </label>
+      <div id="db-container" class="mask-list" role="list"></div>
+    </aside>
+    <div id="mask-panel" class="mask-panel" aria-live="polite"></div>
+  </div>
 </section>

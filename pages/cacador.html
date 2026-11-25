@@ -1,0 +1,31 @@
+<section class="items-page db-page guide-page hunt-page">
+  <div class="items-header">
+    <h1 data-i18n="hunt.title">Ranks de caçador</h1>
+    <p class="items-subtitle" data-i18n="hunt.subtitle">Os títulos de caça, o que cada um pede e dá, quanto de EXP de caça cada nível precisa e dicas tiradas dos dados do jogo.</p>
+  </div>
+
+  <section class="guide-explain">
+    <h2 data-i18n="hunt.howTitle">Como funciona</h2>
+    <ul class="rc-how">
+      <li data-i18n="hunt.how1">Caçar dá EXP de caça. Ela sobe o nível de caça (até 60) e cada nível melhora um pouco o esquartejamento: velocidade, produção, gasto da ferramenta e gasto de vigor.</li>
+      <li data-i18n="hunt.how2">Os títulos (ranks) pedem três coisas ao mesmo tempo: nível de caça, animais registrados na enciclopédia e algumas conquistas de caça ou de chefes.</li>
+      <li data-i18n="hunt.how3">Quanto de EXP de caça cada animal dá não está nos arquivos de dados do jogo (é calculado no código), por isso a página não mostra esse número.</li>
+    </ul>
+  </section>
+
+  <section class="guide-tool" aria-labelledby="hunt-ranks-title">
+    <header class="guide-tool-head"><div><h2 id="hunt-ranks-title" data-i18n="hunt.ranksTitle">Títulos de caça</h2></div></header>
+    <div id="hunt-ranks" class="hunt-ranks" aria-live="polite"></div>
+  </section>
+
+  <section class="guide-tool" aria-labelledby="hunt-calc-title">
+    <header class="guide-tool-head"><div><h2 id="hunt-calc-title" data-i18n="hunt.calcTitle">Calculadora de nível de caça</h2><p data-i18n="hunt.calcHint">Escolha o nível atual e o desejado para ver a EXP de caça que falta e os bônus de esquartejamento no nível escolhido.</p></div></header>
+    <div id="hunt-calc" class="hunt-calc"></div>
+    <div id="hunt-levels"></div>
+  </section>
+
+  <section class="guide-tool" aria-labelledby="hunt-tips-title">
+    <header class="guide-tool-head"><div><h2 id="hunt-tips-title" data-i18n="hunt.tipsTitle">Dicas</h2></div></header>
+    <div id="hunt-tips" class="hunt-tips"></div>
+  </section>
+</section>

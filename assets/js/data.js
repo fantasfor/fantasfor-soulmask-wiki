@@ -92,6 +92,21 @@ export function qualityClass(q) {
   return q ? ` quality-${q}` : '';
 }
 
+// Ícone de raridade/qualidade (losangos do jogo, tools/build_rarity_icons.py). level = 1..6 (branco..vermelho),
+// o mesmo número de it.quality (EDJPZ_Level<n>) e da qualidade dos NPCs. O nome vem do jogo (meta.qualities);
+// a cor vai junto no tooltip porque o português oficial repete "Excelente" para o verde e o azul.
+const RARITY_FILES = ['', '1_branco', '2_verde', '3_azul', '4_roxo', '5_dourado', '6_vermelho'];
+export function rarityName(meta, level) {
+  const name = L(meta?.qualities?.[level]);
+  const color = t(`rarity.c${level}`);
+  return name ? `${name} (${color})` : color;
+}
+export function rarityIcon(meta, level, { decorative = false, cls = '', title = '' } = {}) {
+  if (!RARITY_FILES[level]) return '';
+  const label = esc(title || rarityName(meta, level));
+  return `<img class="rarity-icon${cls ? ` ${cls}` : ''}" src="assets/img/rarity/${RARITY_FILES[level]}.webp" width="16" height="16" alt="${decorative ? '' : label}" title="${label}" loading="lazy" />`;
+}
+
 export function iconImg(item, cls = 'game-icon', alt = '') {
   if (!item?.icon) return `<span class="${cls} game-icon-empty" aria-hidden="true"></span>`;
   return `<img class="${cls}" src="${esc(item.icon)}" alt="${esc(alt)}" loading="lazy" width="64" height="64" />`;
@@ -281,7 +296,7 @@ export async function openItemModal(id) {
   const usedShown = usedIn.length > USED_FOLD + 1 ? USED_FOLD : usedIn.length;
   const set = it.set ? sets.get(String(it.set)) : null;
   const facts = [
-    it.quality != null && meta.qualities?.[it.quality] ? `<span>${esc(t('common.quality'))} <strong>${esc(L(meta.qualities[it.quality]))}</strong></span>` : '',
+    it.quality != null && meta.qualities?.[it.quality] ? `<span>${esc(t('common.quality'))} ${rarityIcon(meta, it.quality, { decorative: true })} <strong>${esc(rarityName(meta, it.quality))}</strong></span>` : '',
     it.stack ?`<span>${esc(t('common.stack'))} <strong>${esc(it.stack)}</strong></span>` : '',
     it.weight != null ? `<span>${esc(t('common.weight'))} <strong>${esc(fmtNum(it.weight))}</strong></span>` : '',
     it.durability ? `<span>${esc(t('common.durability'))} <strong>${esc(it.durability)}</strong></span>` : '',

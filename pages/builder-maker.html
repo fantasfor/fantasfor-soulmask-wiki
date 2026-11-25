@@ -1465,6 +1465,126 @@
       text-align: right;
     }
 
+    /* maestria de armas: seletor embaixo dos talentos e bloco no resumo */
+    .mastery-selector {
+      display: grid;
+      gap: 10px;
+      padding: 0 16px 14px;
+    }
+
+    .mastery-pick-empty {
+      margin: 0;
+      color: var(--builder-muted);
+      font-size: 0.82rem;
+    }
+
+    .mastery-pick-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      color: var(--builder-cyan);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .mastery-pick-head img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+    }
+
+    .mastery-pick-head small {
+      margin-left: auto;
+      color: var(--builder-muted);
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .mastery-pick-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 6px;
+    }
+
+    .mastery-pick {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      padding: 5px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(0, 0, 0, 0.25);
+      color: var(--builder-text);
+      font-size: 0.8rem;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .mastery-pick:hover {
+      border-color: #686e73;
+    }
+
+    .mastery-pick.is-on {
+      border-color: var(--builder-cyan);
+      background: rgba(144, 209, 238, 0.1);
+      box-shadow: inset 3px 0 0 var(--builder-cyan);
+    }
+
+    .mastery-pick img {
+      width: 28px;
+      height: 28px;
+      flex: none;
+      object-fit: contain;
+    }
+
+    .mastery-pick span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bt-mastery {
+      display: grid;
+      grid-column: 1 / -1;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .bt-skill {
+      padding: 6px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.22);
+    }
+
+    .bt-skill-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.84rem;
+    }
+
+    .bt-skill-head img {
+      width: 26px;
+      height: 26px;
+      flex: none;
+      object-fit: contain;
+    }
+
+    .bt-skill-head small {
+      margin-left: auto;
+      color: var(--builder-muted);
+      font-size: 0.72rem;
+    }
+
+    .bt-skill p {
+      margin: 4px 0 0;
+      color: var(--builder-muted);
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+
     .stat-food {
       display: block;
       color: #8fd18f;
@@ -1708,6 +1828,12 @@
         <div class="talent-selector-list">
           <div class="selector-grid" id="talentSelectorGrid"></div>
         </div>
+
+        <!-- maestria de armas: habilidades de cada arma equipada (dá para escolher várias) -->
+        <div class="talents-header">
+          <h2 class="panel-section-title" data-i18n="builder.masteryTitle">Maestria de armas</h2>
+        </div>
+        <div class="mastery-selector" id="masterySelector"></div>
       </section>
 
       <section class="builder-panel">
@@ -1727,7 +1853,7 @@
             <option value="hunter" data-i18n="builder.class.hunter">Caçador</option>
             <option value="guard" data-i18n="builder.class.guard">Guarda</option>
           </select>
-          <label class="export-level-label" for="gearQuality" data-i18n="builder.gearQuality">Qualidade do equipamento</label>
+          <label class="export-level-label" for="gearQuality"><span id="gearQualityIcon" class="gear-quality-icon" aria-hidden="true"></span><span data-i18n="builder.gearQuality">Qualidade do equipamento</span></label>
           <select id="gearQuality" class="builder-field export-level-select"></select>
           <div class="build-actions-row">
             <button type="button" class="build-action-btn primary" id="actionSaveBuild" data-i18n="builder.save">Salvar build</button>

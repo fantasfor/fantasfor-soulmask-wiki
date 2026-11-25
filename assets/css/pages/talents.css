@@ -306,10 +306,7 @@
 
 .talents-filter-btn {
   padding: 10px 16px;
-  background: var(--panel);
   color: var(--text);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
   font-family: inherit;
   font-size: 0.95rem;
   cursor: pointer;
@@ -319,17 +316,7 @@
   letter-spacing: 0.5px;
 }
 
-.talents-filter-btn:hover {
-  border-color: var(--accent);
-  background: linear-gradient(180deg, rgba(144, 209, 238, 0.1), transparent);
-}
-
-.talents-filter-btn.active {
-  background: linear-gradient(135deg, var(--accent), rgba(144, 209, 238, 0.8));
-  color: var(--bg);
-  border-color: var(--accent);
-  box-shadow: 0 0 12px rgba(144, 209, 238, 0.4);
-}
+/* borda, hover e selecionado: components/game-buttons.css */
 
 .talent-card-favorite {
   position: absolute;

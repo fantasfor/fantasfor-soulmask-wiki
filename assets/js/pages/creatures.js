@@ -10,6 +10,7 @@ const FIELDS = ['temper', 'habitat', 'active', 'social', 'senses', 'weak', 'drop
 
 export async function initCreaturesPage(root, params) {
   const search = root.querySelector('#db-search');
+  const rankEl = root.querySelector('#creature-rank');
   const count = root.querySelector('#db-count');
   const container = root.querySelector('#db-container');
   let creatures = [];
@@ -24,9 +25,23 @@ export async function initCreaturesPage(root, params) {
   }
   if (params.get('q')) search.value = params.get('q');
 
-  // "Ver no mapa": abre o Mapa interativo mostrando só onde a criatura nasce (Floresta primeiro, se estiver nos dois)
-  const mapLink = (c) => (c.maps?.length
-    ? `<a class="db-map-btn" href="#mapa?map=${c.maps.includes('main') ? 'main' : c.maps[0]}&creature=${encodeURIComponent(c.id)}">${esc(t('creatures.seeOnMap'))}</a>` : '');
+  // "Ver no mapa": abre o Mapa interativo mostrando só onde a criatura nasce (Floresta primeiro, se estiver nos dois);
+  // chefes e líderes (rank) vão pela busca do mapa, que já escolhe o resultado com o nome dele
+  const mapLink = (c) => {
+    if (!c.maps?.length) return '';
+    const mk = c.maps.includes('main') ? 'main' : c.maps[0];
+    const param = c.rank ? `q=${encodeURIComponent(pick(c, 'name'))}` : `creature=${encodeURIComponent(c.id)}`;
+    return `<a class="db-map-btn" href="#mapa?map=${mk}&${param}">${esc(t('creatures.seeOnMap'))}</a>`;
+  };
+  // chefes, líderes e chefes de ruína: selo, link para o card na página Chefes e o que podem soltar
+  const RANKS = ['boss', 'leader', 'ruin'];
+  const rankBadge = (c) => (c.rank ? `<span class="creature-rank creature-rank-${c.rank}">${esc(t(`creatures.rank.${c.rank}`))}</span>` : '');
+  const bossLink = (c) => (c.rank ? `<a class="db-map-btn creature-boss-link" href="#chefes?g=${encodeURIComponent(c.group || '')}&q=${encodeURIComponent(pick(c, 'name'))}">${esc(t('creatures.seeBoss'))}</a>` : '');
+  const killIds = (c) => (c.kill || []).filter((id) => items.has(id));
+  const rankFacts = (c) => (c.rank ? `<dl class="creature-facts">
+      <div><dt>${esc(t('creatures.rankType'))}</dt><dd>${esc(t(`bosses.g${{ pyramid: 'Pyramid', tribe: 'Tribe', plunderer: 'Plunderer', ruin: 'Ruin' }[c.group] || 'Pyramid'}`))}</dd></div>
+      ${c.lv ? `<div><dt>${esc(t('common.level'))}</dt><dd>${esc(c.lv[0] === c.lv[1] ? c.lv[0] : `${c.lv[0]}–${c.lv[1]}`)}</dd></div>` : ''}</dl>` : '');
+  const rankIcon = (c) => `assets/img/bosses/icon_${c.group === 'pyramid' ? 'world' : c.group}.svg`;
   // recursos que a criatura dá (itens clicáveis, abrem a janela do item)
   // vêm do banco único (creatures.json "loot", o mesmo que o Mapa interativo usa)
   const lootIds = (part) => [...new Set((part?.rows || []).map((r) => r[0]).filter((id) => items.has(id)))];
@@ -64,27 +79,37 @@ export async function initCreaturesPage(root, params) {
 
   function card(c) {
     return `
-      <article class="item-card creature-card">
-        ${c.photo ? `<img class="creature-photo" src="${esc(c.photo)}" alt="${esc(pick(c, 'name'))}" loading="lazy" width="256" height="256" />` : ''}
-        <h3 class="item-card-title">${esc(pick(c, 'name'))}${c.dlc ? ' <span class="dlc-badge">DLC</span>' : ''}</h3>
+      <article class="item-card creature-card${c.rank ? ` creature-card-rank creature-card-${c.rank}` : ''}">
+        ${c.photo ? `<img class="creature-photo" src="${esc(c.photo)}" alt="${esc(pick(c, 'name'))}" loading="lazy" width="256" height="256" />`
+    : c.rank ? `<div class="creature-photo creature-photo-icon"><img src="${esc(rankIcon(c))}" alt="" width="72" height="72" loading="lazy" /></div>` : ''}
+        <h3 class="item-card-title">${esc(pick(c, 'name'))}${c.dlc ? ' <span class="dlc-badge">DLC</span>' : ''} ${rankBadge(c)}</h3>
         ${pick(c, 'desc') ? `<p class="item-card-description">${escLines(pick(c, 'desc'))}</p>` : ''}
+        ${rankFacts(c)}
         <dl class="creature-facts">
           ${FIELDS.filter((f) => pick(c, f) && !(f === 'drops' && dropIdsOf(c).length)).map((f) => `<div><dt>${esc(t(`creatures.${f}`))}</dt><dd>${esc(pick(c, f))}</dd></div>`).join('')}
         </dl>
         ${statsHtml(c)}
         ${dropChips(c)}
-        ${mapLink(c)}
+        ${chipList(t('creatures.killDrops'), killIds(c))}
+        <div class="creature-links">${mapLink(c)}${bossLink(c)}</div>
       </article>`;
   }
-  const dropText = (c) => dropIdsOf(c).map((id) => { const it = items.get(id); return it ? `${it.name_pt} ${it.name_en}` : ''; }).join(' ');
+  const dropText = (c) => [...dropIdsOf(c), ...killIds(c)].map((id) => { const it = items.get(id); return it ? `${it.name_pt} ${it.name_en}` : ''; }).join(' ');
+  const rankText = (c) => (c.rank ? `${t(`creatures.rank.${c.rank}`)} ${t('creatures.rankType')}` : '');
+  // filtro: todas, só animais e criaturas da enciclopédia, ou cada tipo de chefe
+  rankEl.innerHTML = ['', 'animal', ...RANKS].map((r) => `<option value="${r}">${esc(t(r ? `creatures.rankOpt.${r}` : 'creatures.rankOpt.all'))}</option>`).join('');
+  if (RANKS.includes(params.get('rank')) || params.get('rank') === 'animal') rankEl.value = params.get('rank');
   function render() {
     const q = normalize(search.value);
-    const list = creatures.filter((c) => !q || normalize(`${FIELDS.concat(['name', 'desc']).map((f) => `${c[`${f}_pt`] || ''} ${c[`${f}_en`] || ''}`).join(' ')} ${dropText(c)}`).includes(q))
+    const r = rankEl.value;
+    const list = creatures.filter((c) => (!r || (r === 'animal' ? !c.rank : c.rank === r))
+      && (!q || normalize(`${FIELDS.concat(['name', 'desc']).map((f) => `${c[`${f}_pt`] || ''} ${c[`${f}_en`] || ''}`).join(' ')} ${dropText(c)} ${rankText(c)}`).includes(q)))
       .sort((a, b) => pick(a, 'name').localeCompare(pick(b, 'name')));
     count.textContent = tCount('creatures.count', list.length);
     renderChunked(container, list, card, { empty: `<div class="items-no-results">${esc(t('creatures.none'))}</div>` });
   }
   search.addEventListener('input', render);
+  rankEl.addEventListener('change', render);
   container.addEventListener('click', (e) => {
     const link = e.target.closest('[data-item-link]');
     if (!link) return;
