@@ -248,38 +248,69 @@
 }
 
 /* status da montaria: barras e caixas */
+/* uma barra por linha, em 3 colunas fixas: rótulo (largura fixa) | barra | valor (à direita).
+   Assim todas as barras começam e terminam no mesmo lugar, com rótulos longos em PT ou EN */
 .tame-bars {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px 16px;
+  grid-template-columns: 11.5rem minmax(0, 1fr) 6.5rem;
+  align-items: start;   /* pelo topo: rótulo, barra e valor na mesma linha, mesmo se o rótulo quebrar */
+  gap: 6px 12px;
 }
 
 .tame-bar {
-  display: grid;
-  gap: 4px;
+  display: contents;
+}
+
+.tame-bars > .tame-none {
+  grid-column: 1 / -1;
 }
 
 .tame-bar-head {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
   font-size: 0.84rem;
 }
 
 .tame-bar-head span {
-  flex: 1;
+  min-width: 0;
   color: #d9d2c5;
+  line-height: 1.2;
 }
 
-.tame-bar-head strong {
+.tame-bar-value {
   color: #90d1ee;
+  font-size: 0.9rem;
   font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* texto extra (andar e trote) embaixo da barra, alinhado com ela */
+.tame-bar small {
+  grid-column: 2 / 4;
+  margin: -4px 0 4px;
 }
 
 .tame-bar-track {
   height: 8px;
+  margin-top: 6px;   /* centro da barra na altura da 1ª linha do rótulo (ícone de 20px) */
   border: 1px solid #3a3d40;
   background: #0d0d0d;
+}
+
+.tame-bar-head .tame-ico {
+  align-self: flex-start;
+}
+
+.tame-bar-head {
+  align-items: flex-start;
+}
+
+.tame-bar-head span,
+.tame-bar-value {
+  padding-top: 1px;
 }
 
 .tame-bar-track span {
@@ -300,10 +331,15 @@
   gap: 8px;
 }
 
+/* caixas alinhadas pelo topo: ícone, rótulo (área de 2 linhas) e número na mesma altura nas 3 caixas;
+   o texto extra (ex.: "precisam da sela") fica embaixo do número sem empurrar nada */
 .tame-box {
   display: grid;
+  grid-template-rows: 24px 2.3em auto auto;
+  align-content: start;
+  align-items: center;
   justify-items: center;
-  gap: 2px;
+  gap: 4px;
   padding: 8px;
   border: 1px solid #3a3d40;
   background: #191a1a;
@@ -318,6 +354,7 @@
 .tame-box span {
   color: var(--muted);
   font-size: 0.74rem;
+  line-height: 1.15;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -326,6 +363,16 @@
   color: #90d1ee;
   font-size: 1.05rem;
   font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+}
+
+/* valor em texto (ex.: "Só quem conduz"): menor e sem quebrar, para ficar na mesma altura dos números */
+.tame-box strong .tame-box-text {
+  color: #90d1ee;
+  font-size: 0.86rem;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
 }
 
 /* alimentação */
@@ -518,9 +565,13 @@
     justify-content: center;
   }
 
-  .tame-bars,
   .tame-cols {
     grid-template-columns: 1fr;
+  }
+
+  .tame-bars {
+    grid-template-columns: 6.5rem minmax(0, 1fr) 4.6rem;
+    gap: 6px 8px;
   }
 
   .tame-facts div {

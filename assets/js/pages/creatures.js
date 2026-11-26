@@ -26,11 +26,11 @@ export async function initCreaturesPage(root, params) {
   if (params.get('q')) search.value = params.get('q');
 
   // "Ver no mapa": abre o Mapa interativo mostrando só onde a criatura nasce (Floresta primeiro, se estiver nos dois);
-  // chefes e líderes (rank) vão pela busca do mapa, que já escolhe o resultado com o nome dele
+  // chefes e líderes (rank) vão direto ao ponto deles (at=x,y: enquadra e abre a janela)
   const mapLink = (c) => {
-    if (!c.maps?.length) return '';
+    if (!c.maps?.length || (c.rank && !c.at)) return '';   // ex.: Deus da Guerra (só no duelo): sem ponto no mapa
     const mk = c.maps.includes('main') ? 'main' : c.maps[0];
-    const param = c.rank ? `q=${encodeURIComponent(pick(c, 'name'))}` : `creature=${encodeURIComponent(c.id)}`;
+    const param = c.at ? `at=${c.at.join(',')}` : `creature=${encodeURIComponent(c.id)}`;
     return `<a class="db-map-btn" href="#mapa?map=${mk}&${param}">${esc(t('creatures.seeOnMap'))}</a>`;
   };
   // chefes, líderes e chefes de ruína: selo, link para o card na página Chefes e o que podem soltar

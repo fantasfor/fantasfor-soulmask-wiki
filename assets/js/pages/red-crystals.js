@@ -50,7 +50,7 @@ export async function initRedCrystalsPage(root) {
 
   function render() {
     try { localStorage.setItem(LS_KEY, String(q)); } catch (e) { /* ignora */ }
-    qEl.innerHTML = Q.map((x, i) => `<button type="button" class="guide-chip${i === q ? ' is-active' : ''}" data-q="${i}" role="tab" aria-selected="${i === q}">${rarityIcon(meta, i + 1, { decorative: true, title: L(x.name) })} ${esc(L(x.name))}</button>`).join('');
+    qEl.innerHTML = Q.map((x, i) => `<button type="button" class="guide-chip${i === q ? ' is-active' : ''}" style="--tone:${x.color}" data-q="${i}" role="tab" aria-selected="${i === q}">${rarityIcon(meta, i + 1, { decorative: true, title: L(x.name) })} ${esc(L(x.name))}</button>`).join('');
     const s = normalize(searchEl.value.trim());
     const list = data.crystals.filter((c) => !s || hay.get(c.id).includes(s));
     const col = Q[q].color;

@@ -877,7 +877,7 @@ def main():
     dump("talents.json", talents)
     dump("recipes.json", recipes)
     dump("benches.json", benches)
-    add_boss_creatures(creatures, bosses, leaders)   # chefes, líderes e chefes de ruína também na página Criaturas
+    add_boss_creatures(creatures, bosses, leaders, markers)   # chefes, líderes e chefes de ruína também na página Criaturas
     dump("creatures.json", sorted(creatures, key=lambda x: x["name_pt"]))
     dump("masks.json", masks)
     dump("crops.json", crops)
@@ -1543,7 +1543,8 @@ def build_leaders(markers, items, names, loc=None, creatures=None):
     # chefe-criatura gigante sem item de invocação (vai para a aba Chefes, junto com os das pirâmides);
     # o Núcleo Central e a Punição Divina ficam em Chefes de ruína
     WORLD = {"Death Sandstorm"}
-    WORLD_CREATURES = {"BP_DongWu_LaoShu_Boss"}
+    # criaturas da enciclopédia que também são chefes (nenhuma no momento: o Rei Rato Mutante é só um rato elite)
+    WORLD_CREATURES = set()
     cr_by_id = {c["id"]: c for c in creatures or []}
     WORLD_HARVEST = {"Death Sandstorm": "/Game/AdditionMap01/BluePrints/Monster/Boss_Behemoth/BP_Boss_Behemoth"}
     # Blueprint de cada chefe mecânico/do mundo (achado pelo MoRenMingZi), para a foto do modelo
@@ -1628,7 +1629,8 @@ def build_leaders(markers, items, names, loc=None, creatures=None):
             where = place or region(mk, x, y)
             if where:
                 v["where_pt"], v["where_en"] = where["pt"], where["en"]
-        if [x, y] not in v["spots"]:
+        # pontos quase no mesmo lugar (ex.: dois andares do mesmo covil) contam como um só local
+        if all((x - s[0]) ** 2 + (y - s[1]) ** 2 > 1 for s in v["spots"]):
             v["spots"].append([x, y])
 
     for mk, mp in (markers.get("maps") or {}).items():
@@ -2295,10 +2297,17 @@ CREATURE_STAT_KEYS = ["MaxHealth", "Attack", "Defense", "MaxTiLi", "TiLiRecover"
 _ATTR_TABLES = None
 
 
-def add_boss_creatures(creatures, bosses, leaders):
+def add_boss_creatures(creatures, bosses, leaders, markers=None):
     """Página Criaturas: junta os chefes (pirâmides e mundo), líderes de tribo e saqueadores e chefes de ruína
     (mecânicos) às criaturas da enciclopédia. Campos extras: rank ("boss" | "leader" | "ruin"), group (aba da
-    página Chefes), kill (itens que pode soltar ao morrer, incluindo armadura e armas) e maps."""
+    página Chefes), kill (itens que pode soltar ao morrer, incluindo armadura e armas), maps e at ([x, y] de um
+    ponto no mapa, para o "Ver no mapa" abrir a janela dele: #mapa?map=..&at=x,y)."""
+    boss_at = {}   # chefe -> ponto do altar de invocação (DLC) ou da pirâmide dele (Floresta)
+    for mk, mp in ((markers or {}).get("maps") or {}).items():
+        for p in mp.get("points") or []:
+            bid = p[4] if p[0] == "summon" else p[5] if p[0] == "pyramid" and len(p) > 5 else None
+            if bid and (bid not in boss_at or p[0] == "summon"):
+                boss_at[bid] = (mk, [p[1], p[2]])
     def stats_ok(st, key):
         # classes sem tabela própria herdam a do modelo base de chefe (Dente-de-sabre): não é a delas
         return st if st and (st.get("table") != "DT_Attr_JianChiHu" or "jianchihu" in key.lower()) else None
@@ -2313,6 +2322,8 @@ def add_boss_creatures(creatures, bosses, leaders):
              "group": "pyramid", "maps": ["dlc" if b.get("dlc") else "main"], "variant": "normal"}
         if b.get("dlc"):
             c["dlc"] = True
+        if b["id"] in boss_at:
+            c["maps"], c["at"] = [boss_at[b["id"]][0]], boss_at[b["id"]][1]
         if b.get("photo"):
             c["photo"] = b["photo"]
         st = stats_ok(b.get("stats"), b["id"])
@@ -2322,7 +2333,12 @@ def add_boss_creatures(creatures, bosses, leaders):
             c["kill"] = kill
         creatures.append(c)
     RANK = {"world": "boss", "tribe": "leader", "plunderer": "leader", "ruin": "ruin"}
+    # animal da enciclopédia que também apareça como "chefe" (ex.: Rei Rato Mutante, um rato elite): fica só
+    # como criatura, sem card de chefe duplicado
+    animal_names = {(c.get("name_en") or "").strip().lower() for c in creatures if not c.get("rank")}
     for e in leaders:
+        if (e.get("name_en") or "").strip().lower() in animal_names:
+            continue
         kill = []
         for v in e.get("variants") or []:
             ids = [d["id"] for d in (v.get("drops") or []) + (v.get("harvest") or []) + (v.get("final") or [])]
@@ -2332,6 +2348,9 @@ def add_boss_creatures(creatures, bosses, leaders):
         c = {"id": "leader:" + e["id"], "name_pt": e["name_pt"], "name_en": e["name_en"], "rank": RANK.get(e["group"], "leader"),
              "group": "pyramid" if e["group"] == "world" else e["group"], "maps": [e["map"]], "variant": "normal",
              "lv": [min(v["lo"] for v in e["variants"]), max(v["hi"] for v in e["variants"])]}
+        spot = next((v["spots"][0] for v in e["variants"] if v.get("spots")), None)
+        if spot:
+            c["at"] = spot
         if e.get("dlc"):
             c["dlc"] = True
         if e.get("photo"):
@@ -2409,7 +2428,8 @@ def build_creature_db(creatures, markers):
     for c in creatures:
         cid = c["id"]
         mm = CREATURE_VARIANT_RE.search(cid)
-        c["variant"] = ("boss" if mm.group(1) == "Boss" else "elite") if mm else "normal"
+        # "_Boss" de animal (ex.: Rei Rato Mutante) é só uma versão elite mais forte, não um chefe
+        c["variant"] = "elite" if mm else "normal"
         if mm and CREATURE_VARIANT_RE.sub("", cid) in ids:
             c["base"] = CREATURE_VARIANT_RE.sub("", cid)
         if cid in loot:

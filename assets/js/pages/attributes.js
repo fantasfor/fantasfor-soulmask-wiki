@@ -91,7 +91,7 @@ export async function initAttributesPage(root) {
           <output class="attr-q-out" style="--c:${tier.color}">${dot(tier)} ${esc(fmtNum(q, 1))} · ${esc(L(tier.name))}</output></label>
         <input type="range" id="attr-q-range" min="10" max="15" step="0.1" value="${q}" />
       </div>
-      <div class="guide-chips">${TIERS.map((x) => `<button type="button" class="guide-chip${x.id === tier.id ? ' is-active' : ''}" data-tier="${x.id}" aria-pressed="${x.id === tier.id}">${dot(x)} ${esc(L(x.name))} <small>${esc(x.range)}</small></button>`).join('')}</div>`;
+      <div class="guide-chips">${TIERS.map((x) => `<button type="button" class="guide-chip${x.id === tier.id ? ' is-active' : ''}" style="--tone:${x.color}" data-tier="${x.id}" aria-pressed="${x.id === tier.id}">${dot(x)} ${esc(L(x.name))} <small>${esc(x.range)}</small></button>`).join('')}</div>`;
   }
   function renderTable() {
     try { localStorage.setItem(LS_KEY, String(q)); } catch (e) { /* ignora */ }

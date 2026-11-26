@@ -1,91 +1,90 @@
-/* Padrão de botões do site: o mesmo quadrado da grade da página inicial (.home-nav-box), sem a rotação.
-   Borda dupla: borda externa + uma moldura fina por dentro, com um pequeno espaço entre as duas; cantos retos.
-   - normal: fundo #191a1a, as duas bordas cinza #686e73;
-   - hover / foco / selecionado: fundo #232425, as duas bordas ciano #1aecec;
-   - pequeno (chips, fechar, "Mostrar mais"): borda externa de 1px e espaço menor, mesma borda dupla;
-   - destaque: .primary azul claro, comprar/Apoie dourado, .danger vermelho (as duas bordas na cor).
-   Abas com cor própria (--tab-color, ex.: dificuldade dos chefes) ganham uma barra embaixo quando selecionadas.
+/* Padrão de botões do site: o mesmo card de comida de Domesticáveis e montarias (.tame-food, bloco Alimentação).
+   - normal: fundo #191a1a, borda fina de 1px #3a3d40, cantos retos;
+   - hover / foco: só a borda acende, em azul claro #90d1ee;
+   - selecionado: borda ciano #1aecec e fundo um pouco mais claro (#202222); sem barra embaixo;
+   - destaque: .primary azul claro, comprar/Apoie dourado, .danger vermelho (borda na cor).
+   O quadrado girado da grade da página inicial é o ícone da home e tem o estilo próprio (layout/main.css).
+   Botões que identificam algo (dificuldade, raridade, categoria, mapa) usam a própria cor (--tone) no lugar do ciano.
    Para um botão novo, use uma classe que já está nas listas abaixo (ex.: tier-btn, guide-chip). */
 
-/* ------------------------------------------------------------ normal */
+/* ------------------------------------------------------------ todos os botões (estilo do card de comida) */
 body :is(
   .build-action-btn, .tier-btn, .tier-tab, .tier-category, .arm-seg-btn, .arm-compare-btn, .arm-small-btn,
-  .map-btn:not(.map-btn-sm), .report-tab, .support-amount, .gb-btn, .talents-filter-btn,
-  .talent-tab, .account-login, .home-support-btn, .add-optional-slot, .boss-tab, .comfort-tab, .action-card,
-  .guide-chip, .bosses-groups > button, .foods-view-button, .foods-columns-button, .map-pick-btn,
-  .home-feed-item-button, .db-map-btn
-) {
-  --gb-line: #686e73;
-  --gb-bg: #191a1a;
-  --gb-gap: 3px;
-  border: 2px solid var(--gb-line);
-}
-
-/* ------------------------------------------------------------ pequeno */
-body :is(
-  .saved-build-btn, .map-btn-sm, .map-filter, .farming-sim-btn, .complete-armor-set-button, .account-logout,
-  .lang-switch-btn, .talent-picker-close, .mask-detail-close, .tier-viewer-close, .item-modal-close,
-  .tier-entry-submit, .tier-entry-remove, .map-marker-del, .slot-remove, .remove-optional-slot,
-  .boss-more > summary, .food-where-more, .ing-chip
-) {
-  --gb-line: #686e73;
-  --gb-bg: #191a1a;
-  --gb-gap: 2px;
-  border: 1px solid var(--gb-line);
-}
-
-/* ------------------------------------------------------------ desenho comum (borda dupla) */
-body :is(
-  .build-action-btn, .tier-btn, .tier-tab, .tier-category, .arm-seg-btn, .arm-compare-btn, .arm-small-btn,
-  .map-btn:not(.map-btn-sm), .report-tab, .support-amount, .gb-btn, .talents-filter-btn,
+  .map-btn:not(.gb-off), .report-tab, .support-amount, .gb-btn, .talents-filter-btn,
   .talent-tab, .account-login, .home-support-btn, .add-optional-slot, .boss-tab, .comfort-tab, .action-card,
   .guide-chip, .bosses-groups > button, .foods-view-button, .foods-columns-button, .map-pick-btn,
   .home-feed-item-button, .db-map-btn,
-  .saved-build-btn, .map-btn-sm, .map-filter, .farming-sim-btn, .complete-armor-set-button, .account-logout,
+  .saved-build-btn, .map-filter, .farming-sim-btn, .complete-armor-set-button, .account-logout,
   .lang-switch-btn, .talent-picker-close, .mask-detail-close, .tier-viewer-close, .item-modal-close,
   .tier-entry-submit, .tier-entry-remove, .map-marker-del, .slot-remove, .remove-optional-slot,
   .boss-more > summary, .food-where-more, .ing-chip
 ) {
-  border-color: var(--gb-line);
+  --gb-line: color-mix(in srgb, var(--tone, #3a3d40) 35%, #3a3d40);
+  --gb-bg: #191a1a;
+  border: 1px solid var(--gb-line);
   border-radius: 0;
   background-color: var(--gb-bg);
   background-image: none;
-  box-shadow: inset 0 0 0 var(--gb-gap) var(--gb-bg), inset 0 0 0 calc(var(--gb-gap) + 1px) var(--gb-line);
-  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
+  box-shadow: none;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
 }
 
-/* hover / foco: as duas bordas ciano */
+/* hover / foco: só a borda acende (azul claro, ou a cor de identificação) */
 body :is(
   .build-action-btn, .tier-btn, .tier-tab, .tier-category, .arm-seg-btn, .arm-compare-btn, .arm-small-btn,
-  .map-btn:not(.map-btn-sm), .report-tab, .support-amount, .gb-btn, .talents-filter-btn,
+  .map-btn:not(.gb-off), .report-tab, .support-amount, .gb-btn, .talents-filter-btn,
   .talent-tab, .account-login, .home-support-btn, .add-optional-slot, .boss-tab, .comfort-tab, .action-card,
   .guide-chip, .bosses-groups > button, .foods-view-button, .foods-columns-button, .map-pick-btn,
   .home-feed-item-button, .db-map-btn,
-  .saved-build-btn, .map-btn-sm, .map-filter, .farming-sim-btn, .complete-armor-set-button, .account-logout,
+  .saved-build-btn, .map-filter, .farming-sim-btn, .complete-armor-set-button, .account-logout,
   .lang-switch-btn, .talent-picker-close, .mask-detail-close, .tier-viewer-close, .item-modal-close,
   .tier-entry-submit, .tier-entry-remove, .map-marker-del, .slot-remove, .remove-optional-slot,
   .boss-more > summary, .food-where-more, .ing-chip
 ):is(:hover, :focus-visible):not(:disabled) {
-  --gb-line: #1aecec;
-  --gb-bg: #232425;
+  --gb-line: var(--tone, #90d1ee);
   color: var(--text);
   outline: none;
 }
 
-/* selecionado / ativo: igual ao hover; abas com cor própria ganham a barra embaixo */
+/* selecionado / ativo: igual ao hover (as duas bordas ciano, ou na cor de identificação; sem barra embaixo) */
 body :is(.tier-tab, .report-tab, .talent-tab, .boss-tab, .comfort-tab, .guide-chip, .bosses-groups > button)[aria-selected="true"],
 body :is(.arm-seg-btn, .guide-chip, .lang-switch-btn, .map-filter, .map-btn)[aria-pressed="true"],
 body :is(.support-amount)[aria-checked="true"],
 body :is(.tier-category, .arm-compare-btn, .talents-filter-btn, .guide-chip, .boss-tab, .bosses-groups > button, .foods-view-button).is-active,
 body .talents-filter-btn.active,
 body .foods-columns-button[aria-expanded="true"] {
-  --gb-line: #1aecec;
-  --gb-bg: #232425;
+  --gb-line: var(--tone, #1aecec);
+  --gb-bg: var(--tone-bg, #202222);
   color: var(--text);
 }
 
-body :is(.talent-tab, .boss-tab):is([aria-selected="true"], .is-active) {
-  box-shadow: inset 0 -3px 0 var(--tab-color, #1aecec), inset 0 0 0 var(--gb-gap) var(--gb-bg), inset 0 0 0 calc(var(--gb-gap) + 1px) var(--gb-line);
+/* ------------------------------------------------------------ cor de identificação (--tone)
+   Mesma borda dupla, sem barra embaixo: parada, a borda puxa de leve para a cor;
+   ao passar o mouse ou selecionado, as duas bordas ficam na cor (no lugar do ciano).
+   Poucas cores: dificuldade/raridade usam a cor do jogo; categorias usam uma cor discreta. */
+body .boss-tab[class*="boss-tab-"],
+body .talent-tab { --tone: var(--tab-color); }
+
+/* Chefes: categorias */
+body .bosses-groups > button[data-group="pyramid"] { --tone: #ecb43c; }
+body .bosses-groups > button[data-group="tribe"] { --tone: #39d98a; }
+body .bosses-groups > button[data-group="plunderer"] { --tone: #e63946; }
+body .bosses-groups > button[data-group="ruin"] { --tone: #b07cff; }
+/* Domesticáveis e montarias: categorias */
+body .bosses-groups > button[data-cat="mount"] { --tone: #f0a541; }
+body .bosses-groups > button[data-cat="farm"] { --tone: #39d98a; }
+body .bosses-groups > button[data-cat="other"] { --tone: #90d1ee; }
+/* Mapa: Floresta (verde) e Areias Errantes (areia) */
+body .map-btn[data-map-switch="main"] { --tone: #39d98a; }
+body .map-btn[data-map-switch="dlc"] { --tone: #e0b866; }
+
+/* fundo do hover/selecionado com um toque da cor (raridades passam a cor por style="--tone:...") */
+body :is(
+  .boss-tab[class*="boss-tab-"], .talent-tab, .guide-chip[style*="--tone"],
+  .bosses-groups > button[data-group]:not([data-group=""]), .bosses-groups > button[data-cat]:not([data-cat=""]),
+  .map-btn[data-map-switch]
+) {
+  --tone-bg: color-mix(in srgb, var(--tone) 10%, #191a1a);
 }
 
 /* ------------------------------------------------------------ destaque */

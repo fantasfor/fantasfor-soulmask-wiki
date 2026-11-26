@@ -127,8 +127,9 @@ export async function initTameablePage(root, params) {
     const base = a.c.stats?.base || {};
     const bar = (key, label, value, shown, max, sub) => `
       <div class="tame-bar">
-        <div class="tame-bar-head">${icon(key)}<span>${esc(label)}</span><strong>${shown}</strong></div>
+        <div class="tame-bar-head">${icon(key)}<span>${esc(label)}</span></div>
         <div class="tame-bar-track"><span style="width:${Math.max(4, Math.round((value / max) * 100))}%"></span></div>
+        <strong class="tame-bar-value">${shown}</strong>
         ${sub ? `<small>${sub}</small>` : ''}
       </div>`;
     const box = (key, label, value, sub) => `
@@ -140,7 +141,7 @@ export async function initTameablePage(root, params) {
       base.MaxTiLi ? bar('stamina', t('tame.stamina'), base.MaxTiLi, esc(fmtNum(base.MaxTiLi, 0)), maxStamina, '') : ''
     ].join('');
     const boxes = [
-      box('seats', t('tame.seats'), a.seats ? esc(a.seats) : esc(t('tame.seatsNone')), a.seats && a.seatsSaddle ? esc(t('tame.seatsSaddle')) : ''),
+      box('seats', t('tame.seats'), a.seats ? esc(a.seats) : `<span class="tame-box-text">${esc(t('tame.seatsNone'))}</span>`, a.seats && a.seatsSaddle ? esc(t('tame.seatsSaddle')) : ''),
       base.MaxFuZhong ? box('carry', t('tame.carry'), esc(fmtNum(base.MaxFuZhong, 0)), '') : '',
       a.bag ? box('bag', t('tame.bag'), esc(a.bag), '') : ''
     ].join('');

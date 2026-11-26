@@ -119,6 +119,7 @@ export async function initBossesPage(root, params) {
     const duel = (e.duel || []).map((d) => `
       <h4 class="boss-block-title" title="${esc(pick(d, 'at'))}">${esc(t('bosses.duel'))}</h4>
       <p class="boss-duel-title">${esc(pick(d, 'title'))}${pick(d, 'at') ? ` <small>· ${esc(pick(d, 'at'))}</small>` : ''}</p>
+      ${d.modes?.length ? `<p class="boss-duel-mode">${esc(t(d.modes.length > 1 ? 'bosses.duelOnlyN' : 'bosses.duelOnly', { modes: d.modes.map((m) => t(`map.mode.${m}`)).join(t('bosses.and')) }))}</p>` : ''}
       <div class="boss-slots">${d.ing.flatMap((gr) => gr.ids.map((id) => {
         const it = items.get(id);
         const name = it ? pick(it, 'name') : id;
@@ -140,6 +141,7 @@ export async function initBossesPage(root, params) {
       <dl class="farming-facts">${facts}</dl>
       ${v.spots.length ? `<p class="boss-map-links">${v.spots.map((s, i) => mapLink(e, s, i, v.spots.length)).join('')}</p>` : ''}
       ${duel}
+      ${e.group === 'world' ? `<p class="boss-no-unlock">${esc(t('bosses.noSummon'))}</p>` : ''}
       ${extra ? `<details class="boss-more"${moreOpen.has(e.id) ? ' open' : ''}>
         <summary><span class="boss-more-on">${esc(t('bosses.more'))}</span><span class="boss-more-off">${esc(t('bosses.less'))}</span></summary>
         <div class="boss-more-body">${extra}</div>
@@ -181,10 +183,8 @@ export async function initBossesPage(root, params) {
   leaders.forEach((e) => hay.set(e.id, leaderHay(e)));
 
   // ---------------------------------------------------------------- grupos (abas no topo) e "Mostrar mais"
-  const GROUP_LABEL = { pyramid: 'bosses.gPyramid', world: 'bosses.gWorld', tribe: 'bosses.gTribe', plunderer: 'bosses.gPlunderer', ruin: 'bosses.gRuin' };
-  const GROUP_NOTE = { pyramid: 'bosses.note', world: 'bosses.noteWorld', tribe: 'bosses.noteTribe', plunderer: 'bosses.notePlunderer', ruin: 'bosses.noteRuin' };
-  // a aba "Chefes" mostra os das pirâmides e os chefes do mundo
-  const TAB_OF = { world: 'pyramid' };
+  const GROUP_LABEL = { pyramid: 'bosses.gPyramid', tribe: 'bosses.gTribe', plunderer: 'bosses.gPlunderer', ruin: 'bosses.gRuin' };
+  const GROUP_NOTE = { pyramid: 'bosses.note', tribe: 'bosses.noteTribe', plunderer: 'bosses.notePlunderer', ruin: 'bosses.noteRuin' };
   let group = GROUP_LABEL[params.get('g')] ? params.get('g') : '';
 
   function render() {
@@ -192,9 +192,10 @@ export async function initBossesPage(root, params) {
     const f = filter.value;
     const keep = (x) => (!q || hay.get(x.id).includes(q)) && (!f || (f === 'dlc') === Boolean(x.dlc));
     const sections = [
-      { key: 'pyramid', list: bosses.filter(keep), card },
-      ...['world', 'tribe', 'plunderer', 'ruin'].map((k) => ({ key: k, list: leaders.filter((e) => e.group === k && keep(e)), card: leaderCard }))
-    ].filter((s) => (!group || (TAB_OF[s.key] || s.key) === group) && s.list.length);
+      // chefes das pirâmides + chefes-criatura sem item de invocação (Tempestade de Areia Mortal, Rei Rato Mutante)
+      { key: 'pyramid', list: [...bosses, ...leaders.filter((e) => e.group === 'world')].filter(keep), card: (x) => (x.tiers ? card(x) : leaderCard(x)) },
+      ...['tribe', 'plunderer', 'ruin'].map((k) => ({ key: k, list: leaders.filter((e) => e.group === k && keep(e)), card: leaderCard }))
+    ].filter((s) => (!group || s.key === group) && s.list.length);
     groupBar.querySelectorAll('[data-group]').forEach((b) => {
       const on = b.dataset.group === group;
       b.classList.toggle('is-active', on);
